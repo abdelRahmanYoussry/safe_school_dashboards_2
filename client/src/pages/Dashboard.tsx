@@ -3,7 +3,7 @@ import { StatCard } from "@/components/ui/StatCard";
 import { useDashboardStats, useAnalytics } from "@/hooks/use-dashboard";
 import { 
   School, Users, Activity, ShieldAlert, HeartPulse, 
-  MapPin, CheckCircle2 
+  MapPin, CheckCircle2, UserCircle
 } from "lucide-react";
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
