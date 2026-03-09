@@ -19,9 +19,9 @@ export default function AuditLogs() {
         <p className="text-muted-foreground mt-1">{t("Immutable record of platform activities.")}</p>
       </div>
 
-      <div className="glass rounded-2xl overflow-hidden border border-white/10">
+      <div className="bg-white rounded-2xl overflow-hidden border border-black/[0.07] shadow-sm">
         <Table>
-          <TableHeader className="bg-white/5">
+          <TableHeader className="bg-black/[0.03]">
             <TableRow>
               <TableHead>{t("Timestamp")}</TableHead>
               <TableHead>{t("Action")}</TableHead>
@@ -33,14 +33,14 @@ export default function AuditLogs() {
             {isLoading ? (
               Array(10).fill(0).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-4 w-32 bg-white/5" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-48 bg-white/5" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-16 bg-white/5" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-16 bg-white/5" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-32 bg-black/[0.04]" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-48 bg-black/[0.04]" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-16 bg-black/[0.04]" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-16 bg-black/[0.04]" /></TableCell>
                 </TableRow>
               ))
             ) : logs?.map((log) => (
-              <TableRow key={log.id} className="border-b border-white/5 font-mono text-sm">
+              <TableRow key={log.id} className="border-b border-black/[0.05] font-mono text-sm">
                 <TableCell className="text-muted-foreground">{new Date(log.createdAt!).toLocaleString()}</TableCell>
                 <TableCell className="text-primary">{log.action}</TableCell>
                 <TableCell>{log.userId || t('System')}</TableCell>
@@ -66,7 +66,7 @@ export default function AuditLogs() {
             size="sm"
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1 || isLoading}
-            className="border-white/10"
+            className="border-black/10"
           >
             {t("Previous")}
           </Button>
@@ -75,7 +75,7 @@ export default function AuditLogs() {
             size="sm"
             onClick={() => setPage(p => p + 1)}
             disabled={!logs || logs.length < limit || isLoading}
-            className="border-white/10"
+            className="border-black/10"
           >
             {t("Next")}
           </Button>

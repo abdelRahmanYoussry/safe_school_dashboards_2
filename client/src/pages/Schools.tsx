@@ -50,7 +50,7 @@ export default function Schools() {
               <Plus className="w-4 h-4 mr-2" /> {t("Add School")}
             </Button>
           </DialogTrigger>
-          <DialogContent className="glass-panel border-white/10 sm:max-w-[500px]">
+          <DialogContent className="glass-panel border-black/[0.06] sm:max-w-[500px]">
             <DialogHeader>
               <DialogTitle className="text-xl">{t("Onboard New School")}</DialogTitle>
             </DialogHeader>
@@ -58,15 +58,15 @@ export default function Schools() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2 col-span-2">
                   <label className="text-sm font-medium">{t("School Name")}</label>
-                  <Input required className="bg-white/5 border-white/10" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                  <Input required className="bg-black/[0.03] border-black/10" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                 </div>
                 <div className="space-y-2 col-span-2">
                   <label className="text-sm font-medium">{t("Address")}</label>
-                  <Input required className="bg-white/5 border-white/10" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} />
+                  <Input required className="bg-black/[0.03] border-black/10" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} />
                 </div>
                 <div className="space-y-2 col-span-2">
                   <label className="text-sm font-medium">{t("City")}</label>
-                  <Input required className="bg-white/5 border-white/10" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} />
+                  <Input required className="bg-black/[0.03] border-black/10" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">{t("Latitude")}</label>
@@ -79,12 +79,12 @@ export default function Schools() {
                 <div className="space-y-2 col-span-2">
                   <label className="text-sm font-medium">{t("Subscription Plan")}</label>
                   <select
-                    className="flex h-10 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-10 w-full rounded-md border border-black/10 bg-black/[0.03] px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     value={formData.planId}
                     onChange={e => setFormData({ ...formData, planId: parseInt(e.target.value) })}
                   >
                     {plans?.map(p => (
-                      <option key={p.id} value={p.id} className="bg-zinc-900">{p.name}</option>
+                      <option key={p.id} value={p.id} className="bg-white">{p.name}</option>
                     ))}
                   </select>
                 </div>
@@ -99,9 +99,9 @@ export default function Schools() {
         </Dialog>
       </div>
 
-      <div className="glass rounded-2xl overflow-hidden border border-white/10">
+      <div className="bg-white rounded-2xl overflow-hidden border border-black/[0.07] shadow-sm">
         <Table>
-          <TableHeader className="bg-white/5 border-b border-white/10">
+          <TableHeader className="bg-black/[0.03] border-b border-black/[0.07]">
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-[300px]">{t("School")}</TableHead>
               <TableHead>{t("Location")}</TableHead>
@@ -115,19 +115,19 @@ export default function Schools() {
             {isLoading ? (
               Array(5).fill(0).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-6 w-48 bg-white/5" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-24 bg-white/5" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-16 bg-white/5" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-20 bg-white/5" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-16 bg-white/5" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-48 bg-black/[0.04]" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-24 bg-black/[0.04]" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-16 bg-black/[0.04]" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-20 bg-black/[0.04]" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-16 bg-black/[0.04]" /></TableCell>
                   <TableCell><Skeleton className="h-8 w-8 ml-auto bg-white/5 rounded-md" /></TableCell>
                 </TableRow>
               ))
             ) : schools?.map((school) => (
-              <TableRow key={school.id} className="border-b border-white/5 hover:bg-white/[0.02]">
+              <TableRow key={school.id} className="border-b border-black/[0.05] hover:bg-black/[0.02]">
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold shadow-md">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#002626] to-[#045655] flex items-center justify-center text-xs font-bold text-white shadow-md">
                       {school.name.substring(0, 2).toUpperCase()}
                     </div>
                     {school.name}
@@ -148,14 +148,14 @@ export default function Schools() {
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="h-8 w-8 p-0 rounded-lg hover:bg-white/10">
+                      <Button variant="ghost" className="h-8 w-8 p-0 rounded-lg hover:bg-black/[0.07]">
                         <span className="sr-only">Open menu</span>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="glass-panel border-white/10">
+                    <DropdownMenuContent align="end" className="glass-panel border-black/[0.06]">
                       <Link href={`/schools/${school.id}`}>
-                        <DropdownMenuItem className="cursor-pointer hover:bg-white/10 focus:bg-white/10">
+                        <DropdownMenuItem className="cursor-pointer hover:bg-black/[0.05] focus:bg-black/[0.05]">
                           <Eye className="w-4 h-4 mr-2" /> {t("View Details")}
                         </DropdownMenuItem>
                       </Link>
@@ -194,7 +194,7 @@ export default function Schools() {
             size="sm"
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1 || isLoading}
-            className="border-white/10"
+            className="border-black/10"
           >
             {t("Previous")}
           </Button>

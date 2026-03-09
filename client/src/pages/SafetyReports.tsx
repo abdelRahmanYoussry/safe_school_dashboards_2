@@ -45,9 +45,9 @@ export default function SafetyReports() {
         </div>
       </div>
 
-      <div className="glass rounded-2xl overflow-hidden border border-white/10">
+      <div className="bg-white rounded-2xl overflow-hidden border border-black/[0.07] shadow-sm">
         <Table>
-          <TableHeader className="bg-white/5">
+          <TableHeader className="bg-black/[0.03]">
             <TableRow>
               <TableHead>Date</TableHead>
               <TableHead>Type</TableHead>
@@ -60,15 +60,15 @@ export default function SafetyReports() {
             {isLoading ? (
               Array(5).fill(0).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-5 w-24 bg-white/5" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-32 bg-white/5" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-24 bg-white/5" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-16 bg-white/5" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-16 bg-white/5" /></TableCell>
+                  <TableCell><Skeleton className="h-5 w-24 bg-black/[0.04]" /></TableCell>
+                  <TableCell><Skeleton className="h-5 w-32 bg-black/[0.04]" /></TableCell>
+                  <TableCell><Skeleton className="h-5 w-24 bg-black/[0.04]" /></TableCell>
+                  <TableCell><Skeleton className="h-5 w-16 bg-black/[0.04]" /></TableCell>
+                  <TableCell><Skeleton className="h-5 w-16 bg-black/[0.04]" /></TableCell>
                 </TableRow>
               ))
             ) : reports?.map((report) => (
-              <TableRow key={report.id} className="border-b border-white/5">
+              <TableRow key={report.id} className="border-b border-black/[0.05]">
                 <TableCell className="text-muted-foreground">{new Date(report.createdAt!).toLocaleDateString()}</TableCell>
                 <TableCell className="font-medium">{report.reportType}</TableCell>
                 <TableCell>{report.reportedBy}</TableCell>

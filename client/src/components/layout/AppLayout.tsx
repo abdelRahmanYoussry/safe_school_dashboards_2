@@ -65,11 +65,11 @@ export function AppLayout({ children }: { children: ReactNode }) {
       <motion.aside
         initial={{ x: -250 }}
         animate={{ x: 0 }}
-        className="w-64 flex-shrink-0 flex flex-col glass-panel border-r z-20"
+        className="w-64 flex-shrink-0 flex flex-col glass-panel border-r border-black/[0.06] z-20"
       >
-        <div className="h-16 flex items-center px-6 border-b border-white/[0.05]">
+        <div className="h-16 flex items-center px-6 border-b border-black/[0.06]">
           <div className="flex items-center gap-3 text-foreground font-semibold text-lg tracking-tight">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-primary to-indigo-500 flex items-center justify-center shadow-lg shadow-primary/20">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#002626] to-[#045655] flex items-center justify-center shadow-lg shadow-[#002626]/20">
               <ShieldAlert className="w-4 h-4 text-white" />
             </div>
             Safe School
@@ -87,15 +87,15 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <Link key={item.href} href={item.href} className="block">
                 <div className={`
                   flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative
-                  ${isActive ? 'bg-primary/10 text-primary font-medium' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'}
+                  ${isActive ? 'bg-[#002626]/10 text-[#002626] font-medium' : 'text-muted-foreground hover:text-foreground hover:bg-accent'}
                 `}>
                   {isActive && (
                     <motion.div
                       layoutId="activeNav"
-                      className="absolute left-0 w-1 h-6 bg-primary rounded-r-full"
+                      className="absolute left-0 w-1 h-6 bg-[#002626] rounded-r-full"
                     />
                   )}
-                  <item.icon className={`w-5 h-5 ${isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'}`} />
+                  <item.icon className={`w-5 h-5 ${isActive ? 'text-[#002626]' : 'text-muted-foreground group-hover:text-foreground'}`} />
                   <span className="text-sm">{t(item.label)}</span>
                 </div>
               </Link>
@@ -103,10 +103,10 @@ export function AppLayout({ children }: { children: ReactNode }) {
           })}
         </div>
 
-        <div className="p-4 border-t border-white/[0.05] space-y-2">
-          <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors group">
-            <Avatar className="w-9 h-9 border border-white/10 group-hover:border-primary/50 transition-colors">
-              <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+        <div className="p-4 border-t border-black/[0.06] space-y-2">
+          <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-black/[0.04] cursor-pointer transition-colors group">
+            <Avatar className="w-9 h-9 border border-black/10 group-hover:border-[#002626]/50 transition-colors">
+              <AvatarFallback className="bg-[#002626]/10 text-[#002626] text-xs font-bold">
                 {user?.email?.substring(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
@@ -131,39 +131,39 @@ export function AppLayout({ children }: { children: ReactNode }) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Navbar */}
-        <header className="h-16 flex-shrink-0 glass flex items-center justify-between px-8 border-b z-10">
+        <header className="h-16 flex-shrink-0 glass flex items-center justify-between px-8 border-b border-black/[0.07] z-10">
           <div className="flex items-center flex-1">
             <div className="relative w-96">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder={t("Search schools, users, tickets...")}
-                className="pl-9 bg-white/5 border-white/10 focus-visible:ring-primary/50 h-9"
+                className="pl-9 bg-black/[0.03] border-black/10 focus-visible:ring-[#002626]/50 h-9"
               />
             </div>
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="relative p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-white/5">
+            <button className="relative p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-black/[0.04]">
               <Bell className="w-5 h-5" />
               <span className="absolute top-2 right-2 w-2 h-2 bg-destructive rounded-full border border-background"></span>
             </button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-white/5 rtl:ml-2">
+                <button className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-black/[0.04] rtl:ml-2">
                   <Settings className="w-5 h-5" />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="glass-panel border-white/10 w-48 z-50">
+              <DropdownMenuContent align="end" className="glass-panel border-black/[0.06] w-48 z-50">
                 <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">
                   {t("Language")}
                 </div>
-                <DropdownMenuItem className="cursor-pointer focus:bg-white/10 hover:bg-white/10" onClick={() => i18n.changeLanguage('ar')}>
+                <DropdownMenuItem className="cursor-pointer focus:bg-black/[0.05] hover:bg-black/[0.05]" onClick={() => i18n.changeLanguage('ar')}>
                   العربية
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer focus:bg-white/10 hover:bg-white/10" onClick={() => i18n.changeLanguage('en')}>
+                <DropdownMenuItem className="cursor-pointer focus:bg-black/[0.05] hover:bg-black/[0.05]" onClick={() => i18n.changeLanguage('en')}>
                   English
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer focus:bg-white/10 hover:bg-white/10" onClick={() => i18n.changeLanguage('ur')}>
+                <DropdownMenuItem className="cursor-pointer focus:bg-black/[0.05] hover:bg-black/[0.05]" onClick={() => i18n.changeLanguage('ur')}>
                   اردو
                 </DropdownMenuItem>
               </DropdownMenuContent>

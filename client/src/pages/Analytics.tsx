@@ -14,38 +14,38 @@ export default function Analytics() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="glass p-6 rounded-2xl border border-white/10">
+        <div className="bg-white p-6 rounded-2xl border border-black/[0.07] shadow-sm">
           <h3 className="text-lg font-semibold mb-6">User Registrations (Trend)</h3>
           <div className="h-[350px]">
-            {isLoading ? <Skeleton className="w-full h-full bg-white/5" /> : (
+            {isLoading ? <Skeleton className="w-full h-full bg-black/[0.04]" /> : (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data?.userRegistrations}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                  <XAxis dataKey="name" stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
-                  <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={3} dot={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.07)" vertical={false} />
+                  <XAxis dataKey="name" stroke="rgba(0,0,0,0.35)" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis stroke="rgba(0,0,0,0.35)" fontSize={12} tickLine={false} axisLine={false} />
+                  <Line type="monotone" dataKey="value" stroke="#002626" strokeWidth={3} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             )}
           </div>
         </div>
 
-        <div className="glass p-6 rounded-2xl border border-white/10">
+        <div className="bg-white p-6 rounded-2xl border border-black/[0.07] shadow-sm">
           <h3 className="text-lg font-semibold mb-6">Safety Incidents Trend</h3>
           <div className="h-[350px]">
-            {isLoading ? <Skeleton className="w-full h-full bg-white/5" /> :
+            {isLoading ? <Skeleton className="w-full h-full bg-black/[0.04]" /> :
               !data?.safetyTrend || data.safetyTrend.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full border border-dashed border-white/10 rounded-xl bg-white/[0.02]">
+                <div className="flex flex-col items-center justify-center h-full border border-dashed border-black/10 rounded-xl bg-black/[0.02]">
                   <span className="text-muted-foreground font-medium">Feature Coming Soon</span>
                   <p className="text-xs text-muted-foreground/70 mt-1">Granular safety metrics are currently being implemented.</p>
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data?.safetyTrend}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                    <XAxis dataKey="name" stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
-                    <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ backgroundColor: '#000', borderColor: 'rgba(255,255,255,0.1)' }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.07)" vertical={false} />
+                    <XAxis dataKey="name" stroke="rgba(0,0,0,0.35)" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="rgba(0,0,0,0.35)" fontSize={12} tickLine={false} axisLine={false} />
+                    <Tooltip cursor={{ fill: 'rgba(0,38,38,0.05)' }} contentStyle={{ backgroundColor: '#fff', borderColor: 'rgba(0,0,0,0.1)' }} />
                     <Bar dataKey="value" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>

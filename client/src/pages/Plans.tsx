@@ -41,14 +41,14 @@ export default function Plans() {
               <Plus className="w-4 h-4 mr-2" /> Create Plan
             </Button>
           </DialogTrigger>
-          <DialogContent className="glass-panel border-white/10">
+          <DialogContent className="glass-panel border-black/[0.06]">
             <DialogHeader>
               <DialogTitle>New Pricing Plan</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Plan Name</label>
-                <Input required className="bg-white/5 border-white/10" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                <Input required className="bg-black/[0.03] border-black/10" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -75,10 +75,10 @@ export default function Plans() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {isLoading ? (
-          Array(3).fill(0).map((_, i) => <Skeleton key={i} className="h-96 rounded-2xl bg-white/5" />)
+          Array(3).fill(0).map((_, i) => <Skeleton key={i} className="h-96 rounded-2xl bg-black/[0.04]" />)
         ) : plans?.map((plan) => (
-          <div key={plan.id} className="glass p-8 rounded-3xl border border-white/10 flex flex-col relative group hover:-translate-y-2 transition-transform duration-300">
-            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div key={plan.id} className="bg-white p-8 rounded-3xl border border-black/[0.07] shadow-sm flex flex-col relative group hover:-translate-y-2 transition-transform duration-300">
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#002626] to-[#045655] rounded-t-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
             <div className="flex justify-between items-start mb-4">
               <h3 className="text-2xl font-bold tracking-tight">{plan.name}</h3>
@@ -93,7 +93,7 @@ export default function Plans() {
             </div>
 
             <div className="space-y-3 flex-1">
-              <p className="text-sm text-muted-foreground pb-2 border-b border-white/10">Includes:</p>
+              <p className="text-sm text-muted-foreground pb-2 border-b border-black/[0.07]">Includes:</p>
               <div className="flex items-center gap-2 text-sm">
                 <CheckCircle2 className="w-4 h-4 text-primary" /> Up to {plan.maxStudents} students
               </div>
@@ -107,7 +107,7 @@ export default function Plans() {
               ))}
             </div>
 
-            <Button className="w-full mt-8 bg-white/10 hover:bg-white/20 text-foreground border border-white/5 rounded-xl">
+            <Button className="w-full mt-8 bg-black/[0.05] hover:bg-black/[0.09] text-foreground border border-black/[0.07] rounded-xl">
               Edit Plan
             </Button>
           </div>

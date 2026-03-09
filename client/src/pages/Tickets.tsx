@@ -22,9 +22,9 @@ export default function Tickets() {
         <p className="text-muted-foreground mt-1">{t("Help desk for school administrators.")}</p>
       </div>
 
-      <div className="glass rounded-2xl overflow-hidden border border-white/10">
+      <div className="bg-white rounded-2xl overflow-hidden border border-black/[0.07] shadow-sm">
         <Table>
-          <TableHeader className="bg-white/5">
+          <TableHeader className="bg-black/[0.03]">
             <TableRow>
               <TableHead>{t("Ticket")}</TableHead>
               <TableHead>{t("Description")}</TableHead>
@@ -37,21 +37,21 @@ export default function Tickets() {
             {isLoading ? (
               Array(4).fill(0).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-5 w-32 bg-white/5" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-64 bg-white/5" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-16 bg-white/5" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-24 bg-white/5" /></TableCell>
+                  <TableCell><Skeleton className="h-5 w-32 bg-black/[0.04]" /></TableCell>
+                  <TableCell><Skeleton className="h-5 w-64 bg-black/[0.04]" /></TableCell>
+                  <TableCell><Skeleton className="h-5 w-16 bg-black/[0.04]" /></TableCell>
+                  <TableCell><Skeleton className="h-5 w-24 bg-black/[0.04]" /></TableCell>
                   <TableCell><Skeleton className="h-8 w-20 ml-auto bg-white/5 rounded-md" /></TableCell>
                 </TableRow>
               ))
             ) : tickets?.map((ticket) => (
-              <TableRow key={ticket.id} className="border-b border-white/5">
+              <TableRow key={ticket.id} className="border-b border-black/[0.05]">
                 <TableCell className="font-medium">{ticket.title}</TableCell>
                 <TableCell className="text-muted-foreground truncate max-w-[300px]">{ticket.description}</TableCell>
                 <TableCell>
                   <Badge variant="outline" className={
                     ticket.status === 'open' ? 'border-primary/30 text-primary' :
-                      ticket.status === 'in_progress' ? 'border-yellow-500/30 text-yellow-500' : 'border-white/10 text-muted-foreground'
+                      ticket.status === 'in_progress' ? 'border-yellow-500/30 text-yellow-500' : 'border-black/10 text-muted-foreground'
                   }>
                     {t(ticket.status)}
                   </Badge>
@@ -62,7 +62,7 @@ export default function Tickets() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="bg-white/5 border-white/10 hover:bg-white/10"
+                      className="bg-black/[0.03] border-black/10 hover:bg-black/[0.07]"
                       onClick={() => handleStatusChange(ticket.id, ticket.status === 'open' ? 'in_progress' : 'closed')}
                     >
                       {ticket.status === 'open' ? t('Start Work') : t('Close Ticket')}

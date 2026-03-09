@@ -7,71 +7,80 @@
 @layer base {
   :root {
     --font-sans: 'Inter', sans-serif;
-    
-    /* Sleek SaaS Dark Theme by default */
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
-    
-    --card: 240 10% 6%;
-    --card-foreground: 0 0% 98%;
-    
-    --popover: 240 10% 6%;
-    --popover-foreground: 0 0% 98%;
-    
-    --primary: 212 100% 48%; /* Striking Blue */
+
+    /* Light theme — white background, #002626 primary */
+    --background: 0 0% 97%;
+    /* near-white #F7F7F7 */
+    --foreground: 180 100% 8%;
+    /* very dark teal, close to #002626 */
+
+    --card: 0 0% 100%;
+    /* pure white cards */
+    --card-foreground: 180 100% 8%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 180 100% 8%;
+
+    --primary: 180 100% 8%;
+    /* #002626 */
     --primary-foreground: 0 0% 100%;
-    
-    --secondary: 240 10% 12%;
-    --secondary-foreground: 0 0% 98%;
-    
-    --muted: 240 10% 12%;
-    --muted-foreground: 240 5% 65%;
-    
-    --accent: 240 10% 16%;
-    --accent-foreground: 0 0% 98%;
-    
+    /* white text on primary */
+
+    --secondary: 180 15% 92%;
+    /* light teal-grey surface */
+    --secondary-foreground: 180 100% 8%;
+
+    --muted: 180 10% 93%;
+    --muted-foreground: 180 15% 40%;
+    /* medium grey-teal */
+
+    --accent: 180 20% 88%;
+    --accent-foreground: 180 100% 8%;
+
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    
-    --border: 240 10% 14%;
-    --input: 240 10% 14%;
-    --ring: 212 100% 48%;
 
-    --chart-1: 212 100% 48%;
-    --chart-2: 160 60% 45%;
+    --border: 180 15% 85%;
+    --input: 180 15% 85%;
+    --ring: 180 100% 8%;
+    /* focus ring = #002626 */
+
+    --chart-1: 180 100% 8%;
+    /* #002626 */
+    --chart-2: 160 60% 35%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    
+
     --radius: 0.75rem;
   }
 
   body {
     @apply bg-background text-foreground antialiased font-sans;
-    background-image: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.05) 0%, transparent 50%);
+    background-image: radial-gradient(circle at 50% 0%, rgba(0, 38, 38, 0.04) 0%, transparent 50%);
     background-attachment: fixed;
   }
 }
 
 @layer utilities {
   .glass {
-    @apply bg-white/[0.02] backdrop-blur-xl border border-white/[0.08] shadow-2xl;
+    @apply bg-white/80 backdrop-blur-xl border border-black/[0.07] shadow-sm;
   }
-  
+
   .glass-panel {
-    @apply bg-zinc-950/80 backdrop-blur-2xl border border-white/[0.05] shadow-2xl;
+    @apply bg-white/90 backdrop-blur-2xl border border-black/[0.06] shadow-md;
   }
 
   .glass-hover {
-    @apply hover:bg-white/[0.04] hover:border-white/[0.15] transition-all duration-300;
+    @apply hover:bg-black/[0.03] hover:border-black/[0.12] transition-all duration-300;
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#002626] to-[#004040];
   }
-  
+
   .text-gradient-primary {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-500;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#002626] to-[#045655];
   }
 
   /* Custom Scrollbar for sleekness */
@@ -79,13 +88,16 @@
     width: 6px;
     height: 6px;
   }
+
   ::-webkit-scrollbar-track {
     background: transparent;
   }
+
   ::-webkit-scrollbar-thumb {
-    @apply bg-white/10 rounded-full;
+    @apply bg-black/10 rounded-full;
   }
+
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-white/20;
+    @apply bg-black/20;
   }
 }
