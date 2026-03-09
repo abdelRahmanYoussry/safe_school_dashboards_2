@@ -35,7 +35,43 @@ export interface IStorage {
   getAuditLogs(): Promise<AuditLog[]>;
 }
 
-export class DatabaseStorage implements IStorage {
+export class MemStorage implements IStorage {
+  private plans: Map<number, Plan>;
+  private schools: Map<number, School>;
+  private safetyReports: Map<number, SafetyReport>;
+  private supportTickets: Map<number, SupportTicket>;
+  private auditLogs: Map<number, AuditLog>;
+  private currentIds: { [key: string]: number };
+
+  constructor() {
+    this.plans = new Map();
+    this.schools = new Map();
+    this.safetyReports = new Map();
+    this.supportTickets = new Map();
+    this.auditLogs = new Map();
+    this.currentIds = { plans: 1, schools: 1, reports: 1, tickets: 1, logs: 1 };
+
+    this.seed();
+  }
+
+  private seed() {
+    const plans: InsertPlan[] = [
+      { name: "Basic", maxStudents: 500, maxStaff: 50, monthlyPrice: 4900, features: ["Standard Support", "Basic Analytics"] },
+      { name: "Pro", maxStudents: 2000, maxStaff: 200, monthlyPrice: 9900, features: ["Priority Support", "Advanced Analytics", "Geofencing"] },
+      { name: "Enterprise", maxStudents: 10000, maxStaff: 1000, monthlyPrice: 24900, features: ["24/7 Support", "Custom Integration", "Unlimited Features"] }
+    ];
+
+    plans.forEach(p => this.createPlan(p));
+
+    const schools: InsertSchool[] = [
+      { name: "Greenwood International", address: "123 Educational Dr", city: "Dubai", latitude: 25.2048, longitude: 55.2708, geofenceRadius: 200, status: "active", avatar: "https://images.unsplash.com/photo-1546410531-bb4caa1b424d", planId: 2, totalUsers: 1200, totalStudents: 800, activePickups: 45 },
+      { name: "Horizon Academy", address: "456 Learning Way", city: "Abu Dhabi", latitude: 24.4539, longitude: 54.3773, geofenceRadius: 150, status: "active", avatar: "https://images.unsplash.com/photo-1592285777402-2107d3e02022", planId: 1, totalUsers: 600, totalStudents: 450, activePickups: 12 },
+      { name: "Desert Rose School", address: "789 Knowledge St", city: "Sharjah", latitude: 25.3463, longitude: 55.4209, geofenceRadius: 300, status: "suspended", avatar: "https://images.unsplash.com/photo-1523050335392-9bc5015f2108", planId: 3, totalUsers: 5000, totalStudents: 3200, activePickups: 0 }
+    ];
+
+    schools.forEach(s => this.createSchool(s));
+  }
+
   async getDashboardStats() {
     return {
       totalSchools: 124,
@@ -82,62 +118,81 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPlans(): Promise<Plan[]> {
-    return await db.select().from(plans);
+    return Array.from(this.plans.values());
   }
 
   async createPlan(plan: InsertPlan): Promise<Plan> {
-    const [created] = await db.insert(plans).values(plan).returning();
+    const id = this.currentIds.plans++;
+    const created: Plan = { ...plan, id, features: plan.features as any };
+    this.plans.set(id, created);
     return created;
   }
 
   async updatePlan(id: number, updates: Partial<InsertPlan>): Promise<Plan> {
-    const [updated] = await db.update(plans).set(updates).where(eq(plans.id, id)).returning();
+    const existing = this.plans.get(id);
+    if (!existing) throw new Error("Plan not found");
+    const updated = { ...existing, ...updates };
+    this.plans.set(id, updated);
     return updated;
   }
 
   async deletePlan(id: number): Promise<void> {
-    await db.delete(plans).where(eq(plans.id, id));
+    this.plans.delete(id);
   }
 
   async getSchools(): Promise<School[]> {
-    return await db.select().from(schools);
+    return Array.from(this.schools.values());
   }
 
   async getSchool(id: number): Promise<School | undefined> {
-    const [school] = await db.select().from(schools).where(eq(schools.id, id));
-    return school;
+    return this.schools.get(id);
   }
 
   async createSchool(school: InsertSchool): Promise<School> {
-    const [created] = await db.insert(schools).values(school).returning();
+    const id = this.currentIds.schools++;
+    const created: School = { 
+      ...school, 
+      id, 
+      createdAt: new Date(),
+      avatar: school.avatar || null,
+      planId: school.planId || null
+    };
+    this.schools.set(id, created);
     return created;
   }
 
   async updateSchool(id: number, updates: Partial<InsertSchool>): Promise<School> {
-    const [updated] = await db.update(schools).set(updates).where(eq(schools.id, id)).returning();
+    const existing = this.schools.get(id);
+    if (!existing) throw new Error("School not found");
+    const updated = { ...existing, ...updates };
+    this.schools.set(id, updated);
     return updated;
   }
 
   async deleteSchool(id: number): Promise<void> {
-    await db.delete(schools).where(eq(schools.id, id));
+    this.schools.delete(id);
   }
 
   async getSafetyReports(): Promise<SafetyReport[]> {
-    return await db.select().from(safetyReports);
+    return Array.from(this.safetyReports.values());
   }
 
   async getTickets(): Promise<SupportTicket[]> {
-    return await db.select().from(supportTickets);
+    return Array.from(this.supportTickets.values());
   }
 
   async updateTicket(id: number, updates: Partial<InsertSupportTicket>): Promise<SupportTicket> {
-    const [updated] = await db.update(supportTickets).set(updates).where(eq(supportTickets.id, id)).returning();
+    const existing = this.supportTickets.get(id);
+    if (!existing) throw new Error("Ticket not found");
+    const updated = { ...existing, ...updates };
+    this.supportTickets.set(id, updated);
     return updated;
   }
 
   async getAuditLogs(): Promise<AuditLog[]> {
-    return await db.select().from(auditLogs);
+    return Array.from(this.auditLogs.values());
   }
 }
 
-export const storage = new DatabaseStorage();
+export const storage = new MemStorage();
+
