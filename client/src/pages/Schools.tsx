@@ -11,12 +11,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Plus, MoreHorizontal, Eye, Edit2, Trash2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
 
 export default function Schools() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const { data: schools, isLoading } = useSchools(page, limit);
   const { data: plans } = usePlans();
+  const { t } = useTranslation();
   const createMutation = useCreateSchool();
   const deleteMutation = useDeleteSchool();
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -38,44 +40,44 @@ export default function Schools() {
     <PageTransition className="space-y-6">
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-3xl font-bold text-foreground tracking-tight">Schools</h1>
-          <p className="text-muted-foreground mt-1">Manage all tenant schools on the platform.</p>
+          <h1 className="text-3xl font-bold text-foreground tracking-tight">{t("Schools")}</h1>
+          <p className="text-muted-foreground mt-1">{t("Manage all tenant schools on the platform.")}</p>
         </div>
 
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
           <DialogTrigger asChild>
             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 rounded-xl hover:-translate-y-0.5 transition-transform">
-              <Plus className="w-4 h-4 mr-2" /> Add School
+              <Plus className="w-4 h-4 mr-2" /> {t("Add School")}
             </Button>
           </DialogTrigger>
           <DialogContent className="glass-panel border-white/10 sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle className="text-xl">Onboard New School</DialogTitle>
+              <DialogTitle className="text-xl">{t("Onboard New School")}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2 col-span-2">
-                  <label className="text-sm font-medium">School Name</label>
+                  <label className="text-sm font-medium">{t("School Name")}</label>
                   <Input required className="bg-white/5 border-white/10" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                 </div>
                 <div className="space-y-2 col-span-2">
-                  <label className="text-sm font-medium">Address</label>
+                  <label className="text-sm font-medium">{t("Address")}</label>
                   <Input required className="bg-white/5 border-white/10" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} />
                 </div>
                 <div className="space-y-2 col-span-2">
-                  <label className="text-sm font-medium">City</label>
+                  <label className="text-sm font-medium">{t("City")}</label>
                   <Input required className="bg-white/5 border-white/10" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Latitude</label>
+                  <label className="text-sm font-medium">{t("Latitude")}</label>
                   <Input type="number" step="any" required className="bg-white/5 border-white/10" value={formData.latitude} onChange={e => setFormData({ ...formData, latitude: parseFloat(e.target.value) })} />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Longitude</label>
+                  <label className="text-sm font-medium">{t("Longitude")}</label>
                   <Input type="number" step="any" required className="bg-white/5 border-white/10" value={formData.longitude} onChange={e => setFormData({ ...formData, longitude: parseFloat(e.target.value) })} />
                 </div>
                 <div className="space-y-2 col-span-2">
-                  <label className="text-sm font-medium">Subscription Plan</label>
+                  <label className="text-sm font-medium">{t("Subscription Plan")}</label>
                   <select
                     className="flex h-10 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     value={formData.planId}
@@ -101,12 +103,12 @@ export default function Schools() {
         <Table>
           <TableHeader className="bg-white/5 border-b border-white/10">
             <TableRow className="hover:bg-transparent">
-              <TableHead className="w-[300px]">School</TableHead>
-              <TableHead>Location</TableHead>
-              <TableHead>Users</TableHead>
-              <TableHead>Plan</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="w-[300px]">{t("School")}</TableHead>
+              <TableHead>{t("Location")}</TableHead>
+              <TableHead>{t("Users")}</TableHead>
+              <TableHead>{t("Plan")}</TableHead>
+              <TableHead>{t("Status")}</TableHead>
+              <TableHead className="text-right">{t("Actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -140,7 +142,7 @@ export default function Schools() {
                 </TableCell>
                 <TableCell>
                   <Badge variant={school.status === 'active' ? 'default' : 'secondary'} className={school.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20' : ''}>
-                    {school.status}
+                    {t(school.status)}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
@@ -154,19 +156,19 @@ export default function Schools() {
                     <DropdownMenuContent align="end" className="glass-panel border-white/10">
                       <Link href={`/schools/${school.id}`}>
                         <DropdownMenuItem className="cursor-pointer hover:bg-white/10 focus:bg-white/10">
-                          <Eye className="w-4 h-4 mr-2" /> View Details
+                          <Eye className="w-4 h-4 mr-2" /> {t("View Details")}
                         </DropdownMenuItem>
                       </Link>
                       <DropdownMenuItem className="cursor-pointer hover:bg-white/10 focus:bg-white/10">
-                        <Edit2 className="w-4 h-4 mr-2" /> Edit School
+                        <Edit2 className="w-4 h-4 mr-2" /> {t("Edit School")}
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
                         onClick={() => {
-                          if (confirm('Are you sure?')) deleteMutation.mutate(school.id);
+                          if (confirm(t('Are you sure?'))) deleteMutation.mutate(school.id);
                         }}
                       >
-                        <Trash2 className="w-4 h-4 mr-2" /> Delete
+                        <Trash2 className="w-4 h-4 mr-2" /> {t("Delete")}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -177,14 +179,14 @@ export default function Schools() {
         </Table>
         {schools?.length === 0 && (
           <div className="p-8 text-center text-muted-foreground">
-            No schools found. Add one to get started.
+            {t("No schools found. Add one to get started.")}
           </div>
         )}
       </div>
 
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
-          Showing page {page}
+          {t("Showing page")} {page}
         </div>
         <div className="flex gap-2">
           <Button
@@ -194,7 +196,7 @@ export default function Schools() {
             disabled={page === 1 || isLoading}
             className="border-white/10"
           >
-            Previous
+            {t("Previous")}
           </Button>
           <Button
             variant="outline"
@@ -203,7 +205,7 @@ export default function Schools() {
             disabled={!schools || schools.length < limit || isLoading}
             className="border-white/10"
           >
-            Next
+            {t("Next")}
           </Button>
         </div>
       </div>

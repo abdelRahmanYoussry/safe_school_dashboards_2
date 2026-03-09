@@ -1,25 +1,27 @@
 import { PageTransition } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/ui/StatCard";
 import { useDashboardStats, useAnalytics } from "@/hooks/use-dashboard";
-import { 
-  School, Users, Activity, ShieldAlert, HeartPulse, 
+import {
+  School, Users, Activity, ShieldAlert, HeartPulse,
   MapPin, CheckCircle2, UserCircle
 } from "lucide-react";
-import { 
+import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar
 } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
 
 export default function Dashboard() {
   const { data: stats, isLoading: statsLoading } = useDashboardStats();
   const { data: analytics, isLoading: analyticsLoading } = useAnalytics();
+  const { t } = useTranslation();
 
   return (
     <PageTransition className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground tracking-tight">Platform Overview</h1>
-        <p className="text-muted-foreground mt-1">Real-time pulse of the Safe School network.</p>
+        <h1 className="text-3xl font-bold text-foreground tracking-tight">{t("Platform Overview")}</h1>
+        <p className="text-muted-foreground mt-1">{t("Real-time pulse of the Safe School network.")}</p>
       </div>
 
       {/* Stats Grid */}
@@ -28,14 +30,14 @@ export default function Dashboard() {
           Array(8).fill(0).map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl bg-white/5" />)
         ) : stats ? (
           <>
-            <StatCard delay={0.1} title="Total Schools" value={stats.totalSchools} icon={School} trend={{ value: 12, label: "this month" }} />
-            <StatCard delay={0.15} title="Total Users" value={stats.totalUsers.toLocaleString()} icon={Users} trend={{ value: 5.4, label: "this week" }} />
-            <StatCard delay={0.2} title="Active Pickups" value={stats.activePickups} icon={Activity} />
-            <StatCard delay={0.25} title="System Health" value={`${stats.systemHealth}%`} icon={HeartPulse} />
-            <StatCard delay={0.3} title="Total Students" value={stats.totalStudents.toLocaleString()} icon={UserCircle} />
-            <StatCard delay={0.35} title="Total Parents" value={stats.totalParents.toLocaleString()} icon={Users} />
-            <StatCard delay={0.4} title="Safety Incidents" value={stats.safetyIncidents} icon={ShieldAlert} trend={{ value: -14, label: "vs last week" }} />
-            <StatCard delay={0.45} title="Geofence Checks" value="1.2M" icon={MapPin} />
+            <StatCard delay={0.1} title={t("Total Schools")} value={stats.totalSchools} icon={School} trend={{ value: 12, label: t("this month") }} />
+            <StatCard delay={0.15} title={t("Total Users")} value={stats.totalUsers.toLocaleString()} icon={Users} trend={{ value: 5.4, label: t("this week") }} />
+            <StatCard delay={0.2} title={t("Active Pickups")} value={stats.activePickups} icon={Activity} />
+            <StatCard delay={0.25} title={t("System Health")} value={`${stats.systemHealth}%`} icon={HeartPulse} />
+            <StatCard delay={0.3} title={t("Total Students")} value={stats.totalStudents.toLocaleString()} icon={UserCircle} />
+            <StatCard delay={0.35} title={t("Total Parents")} value={stats.totalParents.toLocaleString()} icon={Users} />
+            <StatCard delay={0.4} title={t("Safety Incidents")} value={stats.safetyIncidents} icon={ShieldAlert} trend={{ value: -14, label: t("vs last week") }} />
+            <StatCard delay={0.45} title={t("Geofence Checks")} value="1.2M" icon={MapPin} />
           </>
         ) : null}
       </div>
@@ -44,8 +46,8 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="glass p-6 rounded-2xl border border-white/10">
           <div className="mb-6">
-            <h3 className="text-lg font-semibold">Pickup Requests (Today)</h3>
-            <p className="text-sm text-muted-foreground">Volume of requests across all timezones</p>
+            <h3 className="text-lg font-semibold">{t("Pickup Requests (Today)")}</h3>
+            <p className="text-sm text-muted-foreground">{t("Volume of requests across all timezones")}</p>
           </div>
           <div className="h-[300px] w-full">
             {analyticsLoading ? (
@@ -55,14 +57,14 @@ export default function Dashboard() {
                 <AreaChart data={analytics.pickupRequests}>
                   <defs>
                     <linearGradient id="colorPickups" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
                   <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" fontSize={12} tickLine={false} axisLine={false} />
                   <YAxis stroke="rgba(255,255,255,0.5)" fontSize={12} tickLine={false} axisLine={false} />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}
                     itemStyle={{ color: '#fff' }}
                   />
@@ -75,8 +77,8 @@ export default function Dashboard() {
 
         <div className="glass p-6 rounded-2xl border border-white/10">
           <div className="mb-6">
-            <h3 className="text-lg font-semibold">School Growth</h3>
-            <p className="text-sm text-muted-foreground">New onboarded schools past 6 months</p>
+            <h3 className="text-lg font-semibold">{t("School Growth")}</h3>
+            <p className="text-sm text-muted-foreground">{t("New onboarded schools past 6 months")}</p>
           </div>
           <div className="h-[300px] w-full">
             {analyticsLoading ? (
@@ -87,7 +89,7 @@ export default function Dashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
                   <XAxis dataKey="name" stroke="rgba(255,255,255,0.5)" fontSize={12} tickLine={false} axisLine={false} />
                   <YAxis stroke="rgba(255,255,255,0.5)" fontSize={12} tickLine={false} axisLine={false} />
-                  <Tooltip 
+                  <Tooltip
                     cursor={{ fill: 'rgba(255,255,255,0.05)' }}
                     contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px' }}
                   />

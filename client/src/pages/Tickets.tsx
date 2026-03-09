@@ -4,10 +4,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 export default function Tickets() {
   const { data: tickets, isLoading } = useTickets();
   const updateMutation = useUpdateTicket();
+  const { t } = useTranslation();
 
   const handleStatusChange = (id: number, status: string) => {
     updateMutation.mutate({ id, status });
@@ -16,19 +18,19 @@ export default function Tickets() {
   return (
     <PageTransition className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground tracking-tight">Support Tickets</h1>
-        <p className="text-muted-foreground mt-1">Help desk for school administrators.</p>
+        <h1 className="text-3xl font-bold text-foreground tracking-tight">{t("Support Tickets")}</h1>
+        <p className="text-muted-foreground mt-1">{t("Help desk for school administrators.")}</p>
       </div>
 
       <div className="glass rounded-2xl overflow-hidden border border-white/10">
         <Table>
           <TableHeader className="bg-white/5">
             <TableRow>
-              <TableHead>Ticket</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead className="text-right">Action</TableHead>
+              <TableHead>{t("Ticket")}</TableHead>
+              <TableHead>{t("Description")}</TableHead>
+              <TableHead>{t("Status")}</TableHead>
+              <TableHead>{t("Date")}</TableHead>
+              <TableHead className="text-right">{t("Action")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -48,22 +50,22 @@ export default function Tickets() {
                 <TableCell className="text-muted-foreground truncate max-w-[300px]">{ticket.description}</TableCell>
                 <TableCell>
                   <Badge variant="outline" className={
-                    ticket.status === 'open' ? 'border-primary/30 text-primary' : 
-                    ticket.status === 'in_progress' ? 'border-yellow-500/30 text-yellow-500' : 'border-white/10 text-muted-foreground'
+                    ticket.status === 'open' ? 'border-primary/30 text-primary' :
+                      ticket.status === 'in_progress' ? 'border-yellow-500/30 text-yellow-500' : 'border-white/10 text-muted-foreground'
                   }>
-                    {ticket.status}
+                    {t(ticket.status)}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">{new Date(ticket.createdAt!).toLocaleDateString()}</TableCell>
                 <TableCell className="text-right">
                   {ticket.status !== 'closed' && (
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       className="bg-white/5 border-white/10 hover:bg-white/10"
                       onClick={() => handleStatusChange(ticket.id, ticket.status === 'open' ? 'in_progress' : 'closed')}
                     >
-                      {ticket.status === 'open' ? 'Start Work' : 'Close Ticket'}
+                      {ticket.status === 'open' ? t('Start Work') : t('Close Ticket')}
                     </Button>
                   )}
                 </TableCell>

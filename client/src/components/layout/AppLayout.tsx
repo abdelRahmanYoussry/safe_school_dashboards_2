@@ -21,6 +21,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -50,6 +57,7 @@ export const PageTransition = ({ children, className = "" }: { children: ReactNo
 export function AppLayout({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const { user, logoutMutation } = useAuth();
+  const { t, i18n } = useTranslation();
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
@@ -70,7 +78,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
         <div className="flex-1 overflow-y-auto py-6 px-3 space-y-1">
           <div className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
-            {user?.role === 'super_admin' ? 'Platform Admin' : 'School Admin'}
+            {user?.role === 'super_admin' ? t('Platform Admin') : t('School Admin')}
           </div>
 
           {NAV_ITEMS.map((item) => {
@@ -88,7 +96,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                     />
                   )}
                   <item.icon className={`w-5 h-5 ${isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'}`} />
-                  <span className="text-sm">{item.label}</span>
+                  <span className="text-sm">{t(item.label)}</span>
                 </div>
               </Link>
             );
@@ -103,7 +111,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{user?.role === 'super_admin' ? 'Super Admin' : 'School Admin'}</p>
+              <p className="text-sm font-medium truncate">{user?.role === 'super_admin' ? t('Super Admin') : t('School Admin')}</p>
               <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
             </div>
           </div>
@@ -115,7 +123,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             disabled={logoutMutation.isPending}
           >
             <LogOut className="w-4 h-4" />
-            <span className="text-sm">Sign Out</span>
+            <span className="text-sm">{t('Sign Out')}</span>
           </Button>
         </div>
       </motion.aside>
@@ -128,7 +136,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <div className="relative w-96">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search schools, users, tickets..."
+                placeholder={t("Search schools, users, tickets...")}
                 className="pl-9 bg-white/5 border-white/10 focus-visible:ring-primary/50 h-9"
               />
             </div>
@@ -139,9 +147,27 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <Bell className="w-5 h-5" />
               <span className="absolute top-2 right-2 w-2 h-2 bg-destructive rounded-full border border-background"></span>
             </button>
-            <button className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-white/5">
-              <Settings className="w-5 h-5" />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-white/5 rtl:ml-2">
+                  <Settings className="w-5 h-5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="glass-panel border-white/10 w-48 z-50">
+                <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">
+                  {t("Language")}
+                </div>
+                <DropdownMenuItem className="cursor-pointer focus:bg-white/10 hover:bg-white/10" onClick={() => i18n.changeLanguage('ar')}>
+                  العربية
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer focus:bg-white/10 hover:bg-white/10" onClick={() => i18n.changeLanguage('en')}>
+                  English
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer focus:bg-white/10 hover:bg-white/10" onClick={() => i18n.changeLanguage('ur')}>
+                  اردو
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 
