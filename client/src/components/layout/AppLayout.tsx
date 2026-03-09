@@ -1,23 +1,26 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  LayoutDashboard, 
-  School, 
-  BarChart3, 
-  ShieldAlert, 
-  Ticket, 
-  CreditCard, 
-  ClipboardList, 
+import {
+  LayoutDashboard,
+  School,
+  BarChart3,
+  ShieldAlert,
+  Ticket,
+  CreditCard,
+  ClipboardList,
   Map as MapIcon,
   Bell,
   Search,
   Settings,
   ChevronRight,
-  UserCircle
+  UserCircle,
+  LogOut
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
 
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -46,11 +49,12 @@ export const PageTransition = ({ children, className = "" }: { children: ReactNo
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const [location] = useLocation();
+  const { user, logoutMutation } = useAuth();
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar */}
-      <motion.aside 
+      <motion.aside
         initial={{ x: -250 }}
         animate={{ x: 0 }}
         className="w-64 flex-shrink-0 flex flex-col glass-panel border-r z-20"
@@ -66,9 +70,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
         <div className="flex-1 overflow-y-auto py-6 px-3 space-y-1">
           <div className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
-            Platform Admin
+            {user?.role === 'super_admin' ? 'Platform Admin' : 'School Admin'}
           </div>
-          
+
           {NAV_ITEMS.map((item) => {
             const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
             return (
@@ -78,7 +82,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                   ${isActive ? 'bg-primary/10 text-primary font-medium' : 'text-muted-foreground hover:text-foreground hover:bg-white/5'}
                 `}>
                   {isActive && (
-                    <motion.div 
+                    <motion.div
                       layoutId="activeNav"
                       className="absolute left-0 w-1 h-6 bg-primary rounded-r-full"
                     />
@@ -91,17 +95,28 @@ export function AppLayout({ children }: { children: ReactNode }) {
           })}
         </div>
 
-        <div className="p-4 border-t border-white/[0.05]">
-          <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors">
-            <Avatar className="w-9 h-9 border border-white/10">
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>SA</AvatarFallback>
+        <div className="p-4 border-t border-white/[0.05] space-y-2">
+          <div className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors group">
+            <Avatar className="w-9 h-9 border border-white/10 group-hover:border-primary/50 transition-colors">
+              <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">
+                {user?.email?.substring(0, 2).toUpperCase()}
+              </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">Super Admin</p>
-              <p className="text-xs text-muted-foreground truncate">admin@safeschool.app</p>
+              <p className="text-sm font-medium truncate">{user?.role === 'super_admin' ? 'Super Admin' : 'School Admin'}</p>
+              <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
             </div>
           </div>
+
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors h-10 px-3"
+            onClick={() => logoutMutation.mutate()}
+            disabled={logoutMutation.isPending}
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="text-sm">Sign Out</span>
+          </Button>
         </div>
       </motion.aside>
 
@@ -112,13 +127,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
           <div className="flex items-center flex-1">
             <div className="relative w-96">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <Input 
-                placeholder="Search schools, users, tickets..." 
+              <Input
+                placeholder="Search schools, users, tickets..."
                 className="pl-9 bg-white/5 border-white/10 focus-visible:ring-primary/50 h-9"
               />
             </div>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <button className="relative p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-white/5">
               <Bell className="w-5 h-5" />

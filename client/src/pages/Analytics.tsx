@@ -23,8 +23,7 @@ export default function Analytics() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
                   <XAxis dataKey="name" stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
                   <YAxis stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
-                  <Tooltip contentStyle={{ backgroundColor: '#000', borderColor: 'rgba(255,255,255,0.1)' }} />
-                  <Line type="smooth" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={3} dot={false} />
+                  <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={3} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             )}
@@ -34,17 +33,23 @@ export default function Analytics() {
         <div className="glass p-6 rounded-2xl border border-white/10">
           <h3 className="text-lg font-semibold mb-6">Safety Incidents Trend</h3>
           <div className="h-[350px]">
-            {isLoading ? <Skeleton className="w-full h-full bg-white/5" /> : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data?.safetyTrend}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                  <XAxis dataKey="name" stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
-                  <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ backgroundColor: '#000', borderColor: 'rgba(255,255,255,0.1)' }} />
-                  <Bar dataKey="value" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
+            {isLoading ? <Skeleton className="w-full h-full bg-white/5" /> :
+              !data?.safetyTrend || data.safetyTrend.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full border border-dashed border-white/10 rounded-xl bg-white/[0.02]">
+                  <span className="text-muted-foreground font-medium">Feature Coming Soon</span>
+                  <p className="text-xs text-muted-foreground/70 mt-1">Granular safety metrics are currently being implemented.</p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={data?.safetyTrend}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                    <XAxis dataKey="name" stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
+                    <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ backgroundColor: '#000', borderColor: 'rgba(255,255,255,0.1)' }} />
+                    <Bar dataKey="value" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
           </div>
         </div>
       </div>

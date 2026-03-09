@@ -60,10 +60,21 @@ export const auditLogs = pgTable("audit_logs", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// users
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  password: text("password").notNull(),
+  role: text("role").notNull().$type<'super_admin' | 'school_admin'>(),
+  schoolId: integer("school_id").references(() => schools.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertPlanSchema = createInsertSchema(plans).omit({ id: true });
 export const insertSchoolSchema = createInsertSchema(schools).omit({ id: true, createdAt: true });
 export const insertSafetyReportSchema = createInsertSchema(safetyReports).omit({ id: true, createdAt: true });
 export const insertSupportTicketSchema = createInsertSchema(supportTickets).omit({ id: true, createdAt: true });
+export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 
 // Exports
 export type Plan = typeof plans.$inferSelect;
@@ -71,8 +82,10 @@ export type School = typeof schools.$inferSelect;
 export type SafetyReport = typeof safetyReports.$inferSelect;
 export type SupportTicket = typeof supportTickets.$inferSelect;
 export type AuditLog = typeof auditLogs.$inferSelect;
+export type User = typeof users.$inferSelect;
 
 export type InsertPlan = z.infer<typeof insertPlanSchema>;
 export type InsertSchool = z.infer<typeof insertSchoolSchema>;
 export type InsertSafetyReport = z.infer<typeof insertSafetyReportSchema>;
 export type InsertSupportTicket = z.infer<typeof insertSupportTicketSchema>;
+export type InsertUser = z.infer<typeof insertUserSchema>;

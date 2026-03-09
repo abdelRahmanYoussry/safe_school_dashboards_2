@@ -42,11 +42,14 @@ export function useUpdateTicket() {
   });
 }
 
-export function useAuditLogs() {
+export function useAuditLogs(page: number = 1, limit: number = 20) {
   return useQuery({
-    queryKey: [api.auditLogs.list.path],
+    queryKey: [api.auditLogs.list.path, page, limit],
     queryFn: async () => {
-      const res = await fetch(api.auditLogs.list.path, { credentials: "include" });
+      const url = new URL(api.auditLogs.list.path, window.location.origin);
+      url.searchParams.append("page", page.toString());
+      url.searchParams.append("limit", limit.toString());
+      const res = await fetch(url.toString(), { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch audit logs");
       return api.auditLogs.list.responses[200].parse(await res.json());
     },

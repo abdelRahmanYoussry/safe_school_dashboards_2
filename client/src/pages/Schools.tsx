@@ -13,7 +13,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Schools() {
-  const { data: schools, isLoading } = useSchools();
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const { data: schools, isLoading } = useSchools(page, limit);
   const { data: plans } = usePlans();
   const createMutation = useCreateSchool();
   const deleteMutation = useDeleteSchool();
@@ -39,7 +41,7 @@ export default function Schools() {
           <h1 className="text-3xl font-bold text-foreground tracking-tight">Schools</h1>
           <p className="text-muted-foreground mt-1">Manage all tenant schools on the platform.</p>
         </div>
-        
+
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
           <DialogTrigger asChild>
             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 rounded-xl hover:-translate-y-0.5 transition-transform">
@@ -54,30 +56,30 @@ export default function Schools() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2 col-span-2">
                   <label className="text-sm font-medium">School Name</label>
-                  <Input required className="bg-white/5 border-white/10" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                  <Input required className="bg-white/5 border-white/10" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                 </div>
                 <div className="space-y-2 col-span-2">
                   <label className="text-sm font-medium">Address</label>
-                  <Input required className="bg-white/5 border-white/10" value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
+                  <Input required className="bg-white/5 border-white/10" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} />
                 </div>
                 <div className="space-y-2 col-span-2">
                   <label className="text-sm font-medium">City</label>
-                  <Input required className="bg-white/5 border-white/10" value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} />
+                  <Input required className="bg-white/5 border-white/10" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Latitude</label>
-                  <Input type="number" step="any" required className="bg-white/5 border-white/10" value={formData.latitude} onChange={e => setFormData({...formData, latitude: parseFloat(e.target.value)})} />
+                  <Input type="number" step="any" required className="bg-white/5 border-white/10" value={formData.latitude} onChange={e => setFormData({ ...formData, latitude: parseFloat(e.target.value) })} />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Longitude</label>
-                  <Input type="number" step="any" required className="bg-white/5 border-white/10" value={formData.longitude} onChange={e => setFormData({...formData, longitude: parseFloat(e.target.value)})} />
+                  <Input type="number" step="any" required className="bg-white/5 border-white/10" value={formData.longitude} onChange={e => setFormData({ ...formData, longitude: parseFloat(e.target.value) })} />
                 </div>
                 <div className="space-y-2 col-span-2">
                   <label className="text-sm font-medium">Subscription Plan</label>
-                  <select 
+                  <select
                     className="flex h-10 w-full rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    value={formData.planId} 
-                    onChange={e => setFormData({...formData, planId: parseInt(e.target.value)})}
+                    value={formData.planId}
+                    onChange={e => setFormData({ ...formData, planId: parseInt(e.target.value) })}
                   >
                     {plans?.map(p => (
                       <option key={p.id} value={p.id} className="bg-zinc-900">{p.name}</option>
@@ -158,10 +160,10 @@ export default function Schools() {
                       <DropdownMenuItem className="cursor-pointer hover:bg-white/10 focus:bg-white/10">
                         <Edit2 className="w-4 h-4 mr-2" /> Edit School
                       </DropdownMenuItem>
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
                         onClick={() => {
-                          if(confirm('Are you sure?')) deleteMutation.mutate(school.id);
+                          if (confirm('Are you sure?')) deleteMutation.mutate(school.id);
                         }}
                       >
                         <Trash2 className="w-4 h-4 mr-2" /> Delete
@@ -178,6 +180,32 @@ export default function Schools() {
             No schools found. Add one to get started.
           </div>
         )}
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-muted-foreground">
+          Showing page {page}
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1 || isLoading}
+            className="border-white/10"
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(p => p + 1)}
+            disabled={!schools || schools.length < limit || isLoading}
+            className="border-white/10"
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </PageTransition>
   );

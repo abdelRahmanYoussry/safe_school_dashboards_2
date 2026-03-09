@@ -1,0 +1,111 @@
+# API Gap Analysis — Super Admin Dashboard Scope
+
+> **Legend**: ✅ Present | ⚠️ Partial | ❌ Missing | 🚫 Out of Scope (other dashboard)
+
+---
+
+## Authentication
+
+| Endpoint | Status | Notes |
+|---|---|---|
+| `POST /auth/dashboard-login` | ✅ Present | Super Admin email + password login |
+| `POST /auth/logout` | ✅ Present | |
+| `POST /auth/refresh` | ✅ Present | |
+
+---
+
+## Schools Management
+
+| Endpoint | Status | Notes |
+|---|---|---|
+| `POST /schools` — create school | ✅ Present | Includes school admin provisioning |
+| `GET /schools` — list all schools | ✅ Present | |
+| `GET /schools/{id}` — school detail | ✅ Present | |
+| `PATCH /schools/{id}` — update school | ✅ Present | |
+| `DELETE /schools/{id}` — delete school | ✅ Present | Two-step with `?force=true` |
+| `GET /schools/{id}/stats` — school statistics | ✅ Present | Student count, staff count, active sessions |
+| `GET /schools/{id}/subscription` — active subscription | ✅ Present | |
+
+---
+
+## Subscription Plans Management
+
+| Endpoint | Status | Notes |
+|---|---|---|
+| `POST /subscription-plans` — create plan | ✅ Present | |
+| `GET /subscription-plans` — list plans | ✅ Present | |
+| `GET /subscription-plans/{id}` — plan detail | ✅ Present | |
+| `PATCH /subscription-plans/{id}` — update plan | ✅ Present | |
+| `DELETE /subscription-plans/{id}` — delete plan | ✅ Present | Guards against plans with active subscriptions |
+| `POST /subscription-plans/assign` — assign plan to school | ✅ Present | |
+
+---
+
+## Dashboard & Analytics
+
+| Endpoint | Status | Notes |
+|---|---|---|
+| `GET /dashboard/admin/schools` — paginated schools list | ✅ Present | |
+| `GET /dashboard/admin/schools/{schoolId}/stats` — per-school stats | ✅ Present | |
+| `GET /dashboard/admin/audit-logs` — global audit logs | ✅ Present | Filter by userId, action, dateFrom, dateTo |
+| Safety analytics (incidents summary) | ❌ Missing | No endpoint for unrecognized vehicles, unauthorized attempts, incident trends |
+
+---
+
+## Incident Reporting
+
+> Incidents = safety events logged at the gate (e.g. unrecognized vehicle, unauthorized pickup attempt, rejected pickup).
+
+| Endpoint | Status | Notes |
+|---|---|---|
+| `POST /schools/:id/incidents` — report incident | ❌ Missing | No incident reporting endpoint |
+| `GET /schools/:id/incidents` — list incidents | ❌ Missing | No incident list endpoint |
+
+---
+
+## Invitation Codes (for onboarding parents/staff)
+
+| Endpoint | Status | Notes |
+|---|---|---|
+| `POST /invitation-codes/generate` | ✅ Present | Generates code per school and role type |
+| `GET /invitation-codes` | ✅ Present | Filter by school, type, isActive |
+| `PATCH /invitation-codes/{id}/deactivate` | ✅ Present | |
+| `GET /invitation-codes/{id}/stats` | ✅ Present | Usage count, remaining, expiry |
+
+---
+
+## Out of Scope for Super Admin Dashboard
+
+| Feature | Reason |
+|---|---|
+| Parent management (list, create, edit) | School Admin Dashboard |
+| Student management | School Admin Dashboard |
+| Staff management | School Admin Dashboard |
+| Parent notifications | Parent-facing app |
+| Pickup management | School Admin / Staff-facing |
+| Billing / invoice history | Not in scope |
+| System config, health endpoint | Not in scope |
+| Webhooks, email/SMS APIs | Not in scope |
+| WebSocket real-time | Phase 4 |
+
+---
+
+## Summary
+
+### ❌ Missing (backend needs to build)
+
+| # | Endpoint | Purpose |
+|---|---|---|
+| 1 | `POST /schools/:id/incidents` | Staff reports a safety event |
+| 2 | `GET /schools/:id/incidents` | Super admin views incidents per school |
+| 3 | Safety analytics endpoint | Super admin views safety trends dashboard |
+
+### ⚠️ Partial — Exists with minor gaps
+
+| Endpoint | Gap |
+|---|---|
+| School stats response | May not include all fields needed (depends on actual response shape) |
+| Audit logs | All query params are marked `required: true` in swagger — should be optional filters |
+
+### ✅ Fully Present — No action needed
+Everything else listed above in the Present sections is fully implemented and ready to use in the Super Admin Dashboard.

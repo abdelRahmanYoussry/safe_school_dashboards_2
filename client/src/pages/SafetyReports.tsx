@@ -9,13 +9,29 @@ export default function SafetyReports() {
   const { data: reports, isLoading } = useSafetyReports();
 
   const getSeverityBadge = (severity: string) => {
-    switch(severity) {
+    switch (severity) {
       case 'critical': return <Badge className="bg-red-500/10 text-red-500 border-red-500/20">Critical</Badge>;
       case 'high': return <Badge className="bg-orange-500/10 text-orange-500 border-orange-500/20">High</Badge>;
       case 'medium': return <Badge className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20">Medium</Badge>;
       default: return <Badge className="bg-blue-500/10 text-blue-500 border-blue-500/20">Low</Badge>;
     }
   };
+
+  const isFeatureMissing = true; // Placeholder until backend `/schools/:id/incidents` is ready.
+
+  if (isFeatureMissing) {
+    return (
+      <PageTransition className="flex flex-col items-center justify-center p-12 text-center h-[60vh]">
+        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+          <ShieldAlert className="w-8 h-8 text-primary" />
+        </div>
+        <h2 className="text-2xl font-bold mb-2">Feature Coming Soon</h2>
+        <p className="text-muted-foreground max-w-md">
+          Safety Reports integration is currently under development. Check back later for real-time safety incidents.
+        </p>
+      </PageTransition>
+    );
+  }
 
   return (
     <PageTransition className="space-y-6">

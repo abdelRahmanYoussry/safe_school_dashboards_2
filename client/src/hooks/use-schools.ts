@@ -2,12 +2,17 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl } from "@shared/routes";
 import { z } from "zod";
 
-export function useSchools() {
+export function useSchools(page: number = 1, limit: number = 10) {
   return useQuery({
-    queryKey: [api.schools.list.path],
+    queryKey: [api.schools.list.path, page, limit],
     queryFn: async () => {
-      const res = await fetch(api.schools.list.path, { credentials: "include" });
+      const url = new URL(api.schools.list.path, window.location.origin);
+      url.searchParams.append("page", page.toString());
+      url.searchParams.append("limit", limit.toString());
+      const res = await fetch(url.toString(), { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch schools");
+      // The current schema expects an array, but standard pagination returns { data, meta }. 
+      // We parse what the backend actually returns according to the schema (currently z.array).
       return api.schools.list.responses[200].parse(await res.json());
     },
   });

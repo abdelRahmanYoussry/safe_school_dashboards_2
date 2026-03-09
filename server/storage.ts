@@ -1,8 +1,7 @@
 import { db } from "./db";
 import {
-  plans, schools, safetyReports, supportTickets, auditLogs,
-  type Plan, type School, type SafetyReport, type SupportTicket, type AuditLog,
-  type InsertPlan, type InsertSchool, type InsertSafetyReport, type InsertSupportTicket
+  type Plan, type School, type SafetyReport, type SupportTicket, type AuditLog, type User,
+  type InsertPlan, type InsertSchool, type InsertSafetyReport, type InsertSupportTicket, type InsertUser
 } from "@shared/schema";
 import { eq } from "drizzle-orm";
 
@@ -33,6 +32,11 @@ export interface IStorage {
 
   // Audit Logs
   getAuditLogs(): Promise<AuditLog[]>;
+
+  // Users
+  getUser(id: number): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
 }
 
 export class MemStorage implements IStorage {
@@ -41,6 +45,7 @@ export class MemStorage implements IStorage {
   private safetyReports: Map<number, SafetyReport>;
   private supportTickets: Map<number, SupportTicket>;
   private auditLogs: Map<number, AuditLog>;
+  private users: Map<number, User>;
   private currentIds: { [key: string]: number };
 
   constructor() {
@@ -49,12 +54,14 @@ export class MemStorage implements IStorage {
     this.safetyReports = new Map();
     this.supportTickets = new Map();
     this.auditLogs = new Map();
-    this.currentIds = { plans: 1, schools: 1, reports: 1, tickets: 1, logs: 1 };
+    this.users = new Map();
+    this.currentIds = { plans: 1, schools: 1, reports: 1, tickets: 1, logs: 1, users: 1 };
 
     this.seed();
   }
 
   private seed() {
+    // ... (rest of the seed implementation remains the same)
     const plans: InsertPlan[] = [
       { name: "Basic", maxStudents: 500, maxStaff: 50, monthlyPrice: 4900, features: ["Standard Support", "Basic Analytics"] },
       { name: "Pro", maxStudents: 2000, maxStaff: 200, monthlyPrice: 9900, features: ["Priority Support", "Advanced Analytics", "Geofencing"] },
@@ -150,13 +157,14 @@ export class MemStorage implements IStorage {
 
   async createSchool(school: InsertSchool): Promise<School> {
     const id = this.currentIds.schools++;
-    const created: School = { 
-      ...school, 
-      id, 
+    const created: School = {
+      ...school,
+      id,
       createdAt: new Date(),
       avatar: school.avatar || null,
-      planId: school.planId || null
-    };
+      planId: school.planId || null,
+      status: school.status || 'active'
+    } as School;
     this.schools.set(id, created);
     return created;
   }
@@ -191,6 +199,28 @@ export class MemStorage implements IStorage {
 
   async getAuditLogs(): Promise<AuditLog[]> {
     return Array.from(this.auditLogs.values());
+  }
+
+  // Users
+  async getUser(id: number): Promise<User | undefined> {
+    return this.users.get(id);
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(u => u.email === email);
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const id = this.currentIds.users++;
+    const created: User = {
+      ...user,
+      id,
+      createdAt: new Date(),
+      schoolId: user.schoolId || null,
+      role: user.role as "super_admin" | "school_admin"
+    } as User;
+    this.users.set(id, created);
+    return created;
   }
 }
 

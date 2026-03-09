@@ -1,0 +1,5498 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/auth/send-otp": {
+      "post": {
+        "operationId": "AuthController_sendOtp",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendOtpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/verify-otp": {
+      "post": {
+        "operationId": "AuthController_verifyOtp",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyOtpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns { accessToken, refreshToken } on success"
+          }
+        },
+        "summary": "Verify OTP and login",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/complete-profile": {
+      "post": {
+        "operationId": "AuthController_completeProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/dashboard-login": {
+      "post": {
+        "operationId": "AuthController_dashboardLogin",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminLoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns { accessToken, refreshToken, user }"
+          },
+          "400": {
+            "description": "Validation errors"
+          }
+        },
+        "summary": "Dashboard login for SuperAdmin and SchoolAdmin (Email/Password)",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/verify-code": {
+      "post": {
+        "operationId": "AuthController_verifyCode",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/verify-invitation-code": {
+      "post": {
+        "operationId": "AuthController_verifyInvitationCode",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyInvitationCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "invitation_code_valid"
+          },
+          "400": {
+            "description": "invitation_code_inactive | invitation_code_expired | invitation_code_max_usage_reached | school_inactive"
+          },
+          "404": {
+            "description": "invitation_code_not_found"
+          }
+        },
+        "summary": "Verify an invitation code directly",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/register-with-code": {
+      "post": {
+        "operationId": "AuthController_registerWithCode",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterWithCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "registration_successful, returns { accessToken, refreshToken }"
+          },
+          "400": {
+            "description": "Validation errors / Code errors"
+          },
+          "409": {
+            "description": "phone_already_registered | email_already_registered"
+          }
+        },
+        "summary": "Mobile user registers with verified code",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Returns new { accessToken, refreshToken } pair"
+          },
+          "400": {
+            "description": "Validation errors"
+          }
+        },
+        "summary": "Rotate a refresh token to get a new token pair",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "logged_out_successfully"
+          },
+          "400": {
+            "description": "Validation errors"
+          }
+        },
+        "summary": "Revoke a refresh token",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/users": {
+      "post": {
+        "operationId": "UsersController_createAdminUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "user_created_successfully"
+          },
+          "400": {
+            "description": "Validation errors or invalid role/fields"
+          },
+          "409": {
+            "description": "phone_already_registered | email_already_registered"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Admin create user (PARENT, DELEGATE, STAFF)",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/profile": {
+      "patch": {
+        "operationId": "UsersController_updateProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "profile_updated_successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update user profile (Self)",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/{id}/status": {
+      "patch": {
+        "operationId": "UsersController_updateStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user_status_updated_successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Deactivate/Activate user (SuperAdmin only)",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/schools": {
+      "post": {
+        "operationId": "SchoolsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSchoolDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "School created successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new school (Super Admin)",
+        "tags": [
+          "schools"
+        ]
+      },
+      "get": {
+        "operationId": "SchoolsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of schools"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all schools (Super Admin)",
+        "tags": [
+          "schools"
+        ]
+      }
+    },
+    "/schools/{id}": {
+      "get": {
+        "operationId": "SchoolsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "School details"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get school by ID",
+        "tags": [
+          "schools"
+        ]
+      },
+      "patch": {
+        "operationId": "SchoolsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSchoolDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "School updated successfully"
+          },
+          "404": {
+            "description": "School not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update school details (Super Admin)",
+        "tags": [
+          "schools"
+        ]
+      },
+      "delete": {
+        "operationId": "SchoolsController_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "force",
+            "required": false,
+            "in": "query",
+            "description": "Pass true to confirm deletion despite linked users or active sessions",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "School soft-deleted successfully"
+          },
+          "404": {
+            "description": "School not found"
+          },
+          "409": {
+            "description": "School has linked users or active sessions — confirm with ?force=true"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Soft-delete a school (Super Admin). Returns 409 with linkedUserCount + activeSessionCount if linked data exists — re-call with ?force=true to confirm.",
+        "tags": [
+          "schools"
+        ]
+      }
+    },
+    "/schools/{id}/stats": {
+      "get": {
+        "operationId": "SchoolsController_getStats",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "School statistics including student count, staff counts, active sessions, and current subscription plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchoolStatsDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "School not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get school statistics (Super Admin)",
+        "tags": [
+          "schools"
+        ]
+      }
+    },
+    "/schools/{id}/subscription": {
+      "get": {
+        "operationId": "SchoolsController_getActiveSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the currently active subscription (isActive=true AND within date range) or null if none active",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "active_subscription_retrieved_successfully",
+                    "data": {
+                      "id": "clx123",
+                      "schoolId": "clx456",
+                      "planId": "clx789",
+                      "startDate": "2026-03-01T00:00:00.000Z",
+                      "endDate": "2027-03-01T00:00:00.000Z",
+                      "isActive": true,
+                      "createdAt": "2026-03-02T10:30:00.000Z",
+                      "plan": {
+                        "id": "clx789",
+                        "name": "Premium Annual",
+                        "price": 999.99
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "School not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get active subscription for a school (Super Admin)",
+        "tags": [
+          "schools"
+        ]
+      }
+    },
+    "/subscription-plans": {
+      "post": {
+        "operationId": "SubscriptionPlansController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubscriptionPlanDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Subscription plan created successfully"
+          },
+          "400": {
+            "description": "Invalid input data"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new subscription plan (Super Admin)",
+        "tags": [
+          "subscription-plans"
+        ]
+      },
+      "get": {
+        "operationId": "SubscriptionPlansController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all subscription plans"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all subscription plans (Super Admin)",
+        "tags": [
+          "subscription-plans"
+        ]
+      }
+    },
+    "/subscription-plans/{id}": {
+      "get": {
+        "operationId": "SubscriptionPlansController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subscription plan details"
+          },
+          "404": {
+            "description": "Subscription plan not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get subscription plan details (Super Admin)",
+        "tags": [
+          "subscription-plans"
+        ]
+      },
+      "patch": {
+        "operationId": "SubscriptionPlansController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSubscriptionPlanDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Subscription plan updated successfully"
+          },
+          "404": {
+            "description": "Subscription plan not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update subscription plan (Super Admin)",
+        "tags": [
+          "subscription-plans"
+        ]
+      },
+      "delete": {
+        "operationId": "SubscriptionPlansController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subscription plan deleted successfully"
+          },
+          "404": {
+            "description": "Subscription plan not found"
+          },
+          "409": {
+            "description": "Cannot delete plan with existing subscriptions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "cannot_delete_plan_with_subscriptions",
+                    "subscriptionCount": 3
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete subscription plan (Super Admin)",
+        "tags": [
+          "subscription-plans"
+        ]
+      }
+    },
+    "/subscription-plans/assign": {
+      "post": {
+        "operationId": "SubscriptionPlansController_assign",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignSubscriptionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Subscription assigned successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "subscription_assigned_successfully",
+                    "data": {
+                      "id": "clx123",
+                      "schoolId": "clx456",
+                      "planId": "clx789",
+                      "startDate": "2026-03-01T00:00:00.000Z",
+                      "endDate": "2027-03-01T00:00:00.000Z",
+                      "isActive": true,
+                      "createdAt": "2026-03-02T10:30:00.000Z",
+                      "plan": {
+                        "id": "clx789",
+                        "name": "Premium Annual",
+                        "price": 999.99,
+                        "maxStudents": 500,
+                        "maxStaff": 50,
+                        "durationDays": 365,
+                        "features": {
+                          "hasBusTracking": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "School or plan not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Assign subscription plan to a school (Super Admin)",
+        "tags": [
+          "subscription-plans"
+        ]
+      }
+    },
+    "/students": {
+      "post": {
+        "operationId": "StudentsController_create",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/students/add-child": {
+      "post": {
+        "operationId": "StudentsController_createForParent",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStudentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/students/lookup-code/{code}": {
+      "get": {
+        "operationId": "StudentsController_lookupByCode",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/students/register-by-code": {
+      "post": {
+        "operationId": "StudentsController_registerByCode",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterByCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/students/today": {
+      "get": {
+        "operationId": "StudentsController_getTodayChildren",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/students/{id}/absent": {
+      "post": {
+        "operationId": "StudentsController_markAbsent",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      },
+      "delete": {
+        "operationId": "StudentsController_removeAbsent",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/students/delegates/pending": {
+      "get": {
+        "operationId": "StudentsController_getPendingDelegateRequests",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/students/grade/{gradeId}": {
+      "get": {
+        "operationId": "StudentsController_findAll",
+        "parameters": [
+          {
+            "name": "gradeId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/students/admin": {
+      "post": {
+        "operationId": "StudentsController_adminCreate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminCreateStudentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Student created successfully"
+          },
+          "404": {
+            "description": "Grade or gate not found / not in same school"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a student (School Admin)",
+        "tags": [
+          "students"
+        ]
+      },
+      "get": {
+        "operationId": "StudentsController_adminFindAll",
+        "parameters": [
+          {
+            "name": "gradeId",
+            "required": false,
+            "in": "query",
+            "description": "Filter students by grade ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "gateId",
+            "required": false,
+            "in": "query",
+            "description": "Filter students by gate ID (matches per-student gate or grade gate)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Case-insensitive search on student name or parentPhone",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of students"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List students paginated with optional filters (School Admin)",
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/students/admin/{id}": {
+      "get": {
+        "operationId": "StudentsController_adminFindOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Student detail with grade, gate, authorizations, session count"
+          },
+          "404": {
+            "description": "Student not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get student detail (School Admin)",
+        "tags": [
+          "students"
+        ]
+      },
+      "patch": {
+        "operationId": "StudentsController_adminUpdate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdminUpdateStudentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Student updated successfully"
+          },
+          "404": {
+            "description": "Student, grade, or gate not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update student info (School Admin)",
+        "tags": [
+          "students"
+        ]
+      },
+      "delete": {
+        "operationId": "StudentsController_adminDelete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "force",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Student deleted successfully"
+          },
+          "404": {
+            "description": "Student not found"
+          },
+          "409": {
+            "description": "Student has active sessions or authorizations — use ?force=true to confirm",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "student_has_active_references",
+                    "activeSessionCount": 2,
+                    "authorizationCount": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete student — two-step guard with ?force=true (School Admin)",
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/students/{id}": {
+      "get": {
+        "operationId": "StudentsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/students/{id}/delegates": {
+      "post": {
+        "operationId": "StudentsController_inviteDelegate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteDelegateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/students/{id}/sessions": {
+      "post": {
+        "operationId": "StudentsController_createSession",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "students"
+        ]
+      }
+    },
+    "/delegates/my-requests": {
+      "get": {
+        "operationId": "DelegatesController_getMyRequests",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Delegates"
+        ]
+      }
+    },
+    "/delegates/accept-request": {
+      "post": {
+        "operationId": "DelegatesController_acceptRequest",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptDelegateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Delegates"
+        ]
+      }
+    },
+    "/delegates/bulk-accept": {
+      "post": {
+        "operationId": "DelegatesController_bulkAcceptRequests",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkAcceptDelegateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Delegates"
+        ]
+      }
+    },
+    "/delegates/reject-request": {
+      "post": {
+        "operationId": "DelegatesController_rejectRequest",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptDelegateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Delegates"
+        ]
+      }
+    },
+    "/delegates/my-students": {
+      "get": {
+        "operationId": "DelegatesController_getMyStudents",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Delegates"
+        ]
+      }
+    },
+    "/pickup/request": {
+      "post": {
+        "operationId": "PickupController_createPickupRequest",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePickupRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pickup"
+        ]
+      }
+    },
+    "/pickup/arrive": {
+      "post": {
+        "operationId": "PickupController_announceArrival",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArrivePickupDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pickup"
+        ]
+      }
+    },
+    "/pickup/prepare": {
+      "post": {
+        "operationId": "PickupController_prepareChild",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PickupActionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pickup"
+        ]
+      }
+    },
+    "/pickup/verify": {
+      "post": {
+        "operationId": "PickupController_securityVerification",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SecurityVerificationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pickup"
+        ]
+      }
+    },
+    "/pickup/handover/parent": {
+      "post": {
+        "operationId": "PickupController_handoverToParent",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PickupActionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pickup"
+        ]
+      }
+    },
+    "/pickup/handover/delegate": {
+      "post": {
+        "operationId": "PickupController_handoverToDelegate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PickupActionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pickup"
+        ]
+      }
+    },
+    "/pickup/complete": {
+      "post": {
+        "operationId": "PickupController_completeDelivery",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PickupActionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pickup"
+        ]
+      }
+    },
+    "/pickup/reject": {
+      "post": {
+        "operationId": "PickupController_rejectPickup",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectPickupDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pickup"
+        ]
+      }
+    },
+    "/pickup/cancel": {
+      "post": {
+        "operationId": "PickupController_cancelPickup",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelPickupDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pickup"
+        ]
+      }
+    },
+    "/pickup/confirm-receipt": {
+      "post": {
+        "operationId": "PickupController_confirmReceipt",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmReceiptDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pickup"
+        ]
+      }
+    },
+    "/pickup/session/{id}": {
+      "get": {
+        "operationId": "PickupController_getSession",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pickup"
+        ]
+      }
+    },
+    "/pickup/logs": {
+      "get": {
+        "operationId": "PickupController_getPickupLogs",
+        "parameters": [
+          {
+            "name": "date",
+            "required": false,
+            "in": "query",
+            "description": "Single-day shorthand limit (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Start of date range (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "description": "End of date range (YYYY-MM-DD)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by session status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "CREATED",
+                "ARRIVED",
+                "CHILD_PREPARING",
+                "SECURITY_VERIFICATION",
+                "HANDED_TO_PARENT",
+                "HANDED_TO_DELEGATE",
+                "TRACKING_ACTIVE",
+                "DELIVERED",
+                "REJECTED",
+                "CANCELLED"
+              ]
+            }
+          },
+          {
+            "name": "studentId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by student ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pickupType",
+            "required": false,
+            "in": "query",
+            "description": "Filter by pickup type (PARENT vs DELEGATE)",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PARENT",
+                "DELEGATE"
+              ]
+            }
+          },
+          {
+            "name": "pickupMethod",
+            "required": false,
+            "in": "query",
+            "description": "Filter by pickup method (WALKING, etc)",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "WALKING",
+                "PRIVATE_CAR",
+                "BUS"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get paginated pickup logs (role-scoped)",
+        "tags": [
+          "Pickup"
+        ]
+      }
+    },
+    "/pickup/active/{schoolId}": {
+      "get": {
+        "operationId": "PickupController_getActiveSessions",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Pickup"
+        ]
+      }
+    },
+    "/pickup/my-code/{studentId}": {
+      "get": {
+        "operationId": "PickupController_getTodayCode",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get today's daily pickup code for a child",
+        "tags": [
+          "Pickup"
+        ]
+      }
+    },
+    "/school-bus/my-students": {
+      "get": {
+        "operationId": "SchoolBusController_getMyStudents",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get assigned students for current delegate bus",
+        "tags": [
+          "School Bus"
+        ]
+      }
+    },
+    "/school-bus": {
+      "post": {
+        "operationId": "SchoolBusController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSchoolBusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new school bus (strictly unassigned)",
+        "tags": [
+          "School Bus"
+        ]
+      },
+      "get": {
+        "operationId": "SchoolBusController_list",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Search term for bus name, code, or plates",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all buses in the school",
+        "tags": [
+          "School Bus"
+        ]
+      }
+    },
+    "/school-bus/{id}": {
+      "get": {
+        "operationId": "SchoolBusController_getDetail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get bus details by ID",
+        "tags": [
+          "School Bus"
+        ]
+      },
+      "patch": {
+        "operationId": "SchoolBusController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSchoolBusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update bus details",
+        "tags": [
+          "School Bus"
+        ]
+      },
+      "delete": {
+        "operationId": "SchoolBusController_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "force",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a bus (requires ?force=true if users linked)",
+        "tags": [
+          "School Bus"
+        ]
+      }
+    },
+    "/school-bus/{id}/students": {
+      "get": {
+        "operationId": "SchoolBusController_getStudents",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List assigned students for a given bus",
+        "tags": [
+          "School Bus"
+        ]
+      }
+    },
+    "/permissions/roles": {
+      "get": {
+        "operationId": "PermissionsController_getAllRoles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Permissions"
+        ]
+      },
+      "post": {
+        "operationId": "PermissionsController_createRole",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Permissions"
+        ]
+      }
+    },
+    "/permissions/roles/{id}": {
+      "get": {
+        "operationId": "PermissionsController_getRoleById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Permissions"
+        ]
+      },
+      "delete": {
+        "operationId": "PermissionsController_deleteRole",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Permissions"
+        ]
+      }
+    },
+    "/permissions": {
+      "get": {
+        "operationId": "PermissionsController_getAllPermissions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Permissions"
+        ]
+      }
+    },
+    "/permissions/roles/{roleId}/permissions": {
+      "post": {
+        "operationId": "PermissionsController_assignPermission",
+        "parameters": [
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Permissions"
+        ]
+      }
+    },
+    "/permissions/roles/{roleId}/permissions/{permissionCode}": {
+      "delete": {
+        "operationId": "PermissionsController_removePermission",
+        "parameters": [
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "permissionCode",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Permissions"
+        ]
+      }
+    },
+    "/permissions/users/{userId}/roles": {
+      "post": {
+        "operationId": "PermissionsController_assignRoleToUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Permissions"
+        ]
+      }
+    },
+    "/permissions/users/{userId}": {
+      "get": {
+        "operationId": "PermissionsController_getUserPermissions",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Permissions"
+        ]
+      }
+    },
+    "/dashboard/admin/schools": {
+      "get": {
+        "operationId": "DashboardController_getAllSchools",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
+    "/dashboard/admin/schools/{schoolId}/stats": {
+      "get": {
+        "operationId": "DashboardController_getSchoolStats",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
+    "/dashboard/admin/audit-logs": {
+      "get": {
+        "operationId": "DashboardController_getGlobalAuditLogs",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "action",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateFrom",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateTo",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
+    "/dashboard/school/students": {
+      "get": {
+        "operationId": "DashboardController_getSchoolStudents",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "search",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
+    "/dashboard/school/staff": {
+      "get": {
+        "operationId": "DashboardController_getSchoolStaff",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
+    "/dashboard/school/pickups": {
+      "get": {
+        "operationId": "DashboardController_getSchoolPickups",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateFrom",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateTo",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
+    "/dashboard/school/pickups/active": {
+      "get": {
+        "operationId": "DashboardController_getActivePickups",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
+    "/dashboard/school/grades": {
+      "get": {
+        "operationId": "DashboardController_getSchoolGrades",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
+    "/dashboard/school/buses": {
+      "get": {
+        "operationId": "DashboardController_getSchoolBuses",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
+    "/dashboard/school/stats": {
+      "get": {
+        "operationId": "DashboardController_getMySchoolStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
+    "/dashboard/school/reports/daily": {
+      "get": {
+        "operationId": "DashboardController_getDailyReport",
+        "parameters": [
+          {
+            "name": "date",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
+    "/dashboard/school/reports/monthly": {
+      "get": {
+        "operationId": "DashboardController_getMonthlyReport",
+        "parameters": [
+          {
+            "name": "year",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "month",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
+    "/dashboard/school/gates": {
+      "get": {
+        "operationId": "DashboardController_listGates",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      },
+      "post": {
+        "operationId": "DashboardController_createGate",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
+    "/dashboard/school/gates/{id}": {
+      "put": {
+        "operationId": "DashboardController_updateGate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      },
+      "delete": {
+        "operationId": "DashboardController_deleteGate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
+    "/staff": {
+      "get": {
+        "operationId": "StaffController_listStaff",
+        "parameters": [
+          {
+            "name": "role",
+            "required": false,
+            "in": "query",
+            "description": "Filter by staff role",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "TEACHER",
+                "GUARD",
+                "SUPERVISOR",
+                "SPECIALIST",
+                "EMPLOYEE"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Case-insensitive search across name and phone",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns paginated staff list with staffProfile and gate."
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List school staff (paginated, optional role/search filter)",
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/staff/{id}": {
+      "get": {
+        "operationId": "StaffController_getStaff",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns staff member with staffProfile and gate."
+          },
+          "404": {
+            "description": "staff_not_found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get a single staff member detail",
+        "tags": [
+          "staff"
+        ]
+      },
+      "patch": {
+        "operationId": "StaffController_updateStaff",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStaffDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Returns updated staff member."
+          },
+          "404": {
+            "description": "staff_not_found | gate_not_found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update staff member fields (name, avatar, gender, schoolClass, gateId, staffId)",
+        "tags": [
+          "staff"
+        ]
+      },
+      "delete": {
+        "operationId": "StaffController_deactivateStaff",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "force",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "{ message, staffId } — deactivated."
+          },
+          "404": {
+            "description": "staff_not_found"
+          },
+          "409": {
+            "description": "staff_has_active_sessions"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Deactivate a staff member (two-step: 409 first, then ?force=true)",
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/staff/{userId}/profile": {
+      "post": {
+        "operationId": "StaffController_createStaffProfile",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      },
+      "get": {
+        "operationId": "StaffController_getStaffProfile",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      },
+      "put": {
+        "operationId": "StaffController_updateStaffProfile",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      },
+      "delete": {
+        "operationId": "StaffController_deleteStaffProfile",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/staff/school/list": {
+      "get": {
+        "operationId": "StaffController_getSchoolStaff",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/staff/{userId}/gate": {
+      "put": {
+        "operationId": "StaffController_assignToGate",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/staff/{userId}/class": {
+      "put": {
+        "operationId": "StaffController_assignToClass",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "staff"
+        ]
+      }
+    },
+    "/vehicles": {
+      "post": {
+        "operationId": "VehiclesController_addVehicle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVehicleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Vehicles"
+        ]
+      }
+    },
+    "/vehicles/mine": {
+      "get": {
+        "operationId": "VehiclesController_getMyVehicles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Vehicles"
+        ]
+      }
+    },
+    "/vehicles/{id}": {
+      "patch": {
+        "operationId": "VehiclesController_updateVehicle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVehicleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Vehicles"
+        ]
+      },
+      "delete": {
+        "operationId": "VehiclesController_deleteVehicle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Vehicles"
+        ]
+      }
+    },
+    "/vehicles/{id}/set-default": {
+      "patch": {
+        "operationId": "VehiclesController_setDefault",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Vehicles"
+        ]
+      }
+    },
+    "/activities": {
+      "post": {
+        "operationId": "ActivitiesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateActivityDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Activities"
+        ]
+      },
+      "get": {
+        "operationId": "ActivitiesController_findAll",
+        "parameters": [
+          {
+            "name": "studentId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Activities"
+        ]
+      }
+    },
+    "/activities/{id}": {
+      "patch": {
+        "operationId": "ActivitiesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateActivityDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Activities"
+        ]
+      },
+      "delete": {
+        "operationId": "ActivitiesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Activities"
+        ]
+      },
+      "get": {
+        "operationId": "ActivitiesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Activities"
+        ]
+      }
+    },
+    "/activities/{id}/comments": {
+      "post": {
+        "operationId": "ActivitiesController_addComment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Activities"
+        ]
+      }
+    },
+    "/activities/{id}/like": {
+      "post": {
+        "operationId": "ActivitiesController_like",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Activities"
+        ]
+      }
+    },
+    "/activities/{id}/unlike": {
+      "delete": {
+        "operationId": "ActivitiesController_unlike",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Activities"
+        ]
+      }
+    },
+    "/invitation-codes/generate": {
+      "post": {
+        "description": "Generates a new 8-char alphanumeric invitation code. Automatically deactivates any previous active code of the same type for the school.",
+        "operationId": "InvitationCodesController_generate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateInvitationCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Invitation code generated successfully"
+          },
+          "400": {
+            "description": "Validation error or school_id_required"
+          },
+          "403": {
+            "description": "Forbidden — role not permitted"
+          },
+          "404": {
+            "description": "School not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate a school invitation code (SUPER_ADMIN + SCHOOL_ADMIN)",
+        "tags": [
+          "invitation-codes"
+        ]
+      }
+    },
+    "/invitation-codes": {
+      "get": {
+        "description": "schoolId is required for SUPER_ADMIN (as query param). SCHOOL_ADMIN is automatically scoped to their own school.",
+        "operationId": "InvitationCodesController_findAll",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": false,
+            "in": "query",
+            "description": "Required for SUPER_ADMIN",
+            "schema": {
+              "example": "clx1school123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "description": "Filter by code type",
+            "schema": {
+              "enum": [
+                "PARENT",
+                "TEACHER",
+                "GUARD",
+                "SPECIALIST"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "isActive",
+            "required": false,
+            "in": "query",
+            "description": "Filter by active status",
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of invitation codes"
+          },
+          "400": {
+            "description": "school_id_required"
+          },
+          "403": {
+            "description": "Forbidden — SCHOOL_ADMIN querying another school"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List invitation codes for a school (SUPER_ADMIN + SCHOOL_ADMIN)",
+        "tags": [
+          "invitation-codes"
+        ]
+      }
+    },
+    "/invitation-codes/{id}/deactivate": {
+      "patch": {
+        "description": "Idempotent — returns HTTP 200 with current state even if the code is already inactive.",
+        "operationId": "InvitationCodesController_deactivate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Invitation code ID (cuid)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invitation code deactivated (or already inactive)"
+          },
+          "403": {
+            "description": "Forbidden — SCHOOL_ADMIN accessing another school"
+          },
+          "404": {
+            "description": "Invitation code not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Deactivate an invitation code (SUPER_ADMIN + SCHOOL_ADMIN)",
+        "tags": [
+          "invitation-codes"
+        ]
+      }
+    },
+    "/invitation-codes/{id}/stats": {
+      "get": {
+        "description": "Returns usedCount, maxUsage, remaining, isActive, and expiresAt.",
+        "operationId": "InvitationCodesController_getStats",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Invitation code ID (cuid)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invitation code statistics"
+          },
+          "403": {
+            "description": "Forbidden — SCHOOL_ADMIN accessing another school"
+          },
+          "404": {
+            "description": "Invitation code not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get invitation code usage statistics (SUPER_ADMIN + SCHOOL_ADMIN)",
+        "tags": [
+          "invitation-codes"
+        ]
+      }
+    },
+    "/common/lookups": {
+      "get": {
+        "operationId": "CommonController_getLookups",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Common"
+        ]
+      }
+    },
+    "/common/sub-roles/{role}": {
+      "get": {
+        "operationId": "CommonController_getSubRoles",
+        "parameters": [
+          {
+            "name": "role",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lang",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Common"
+        ]
+      }
+    },
+    "/gates": {
+      "post": {
+        "operationId": "GatesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Gate created successfully"
+          },
+          "409": {
+            "description": "Gate name already exists"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new gate (School Admin)",
+        "tags": [
+          "gates"
+        ]
+      },
+      "get": {
+        "operationId": "GatesController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all gates"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all gates for school (School Admin)",
+        "tags": [
+          "gates"
+        ]
+      }
+    },
+    "/gates/{id}": {
+      "patch": {
+        "operationId": "GatesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gate updated successfully"
+          },
+          "404": {
+            "description": "Gate not found"
+          },
+          "409": {
+            "description": "Gate name already exists"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a gate (School Admin)",
+        "tags": [
+          "gates"
+        ]
+      },
+      "delete": {
+        "operationId": "GatesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "force",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gate deleted successfully"
+          },
+          "404": {
+            "description": "Gate not found"
+          },
+          "409": {
+            "description": "Gate has linked grades, ?force=true required"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a gate (School Admin)",
+        "tags": [
+          "gates"
+        ]
+      }
+    },
+    "/grades": {
+      "post": {
+        "operationId": "GradesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGradeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Grade created successfully"
+          },
+          "404": {
+            "description": "Gate not found or not in same school"
+          },
+          "409": {
+            "description": "Grade name already exists in this school"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new grade (School Admin)",
+        "tags": [
+          "grades"
+        ]
+      },
+      "get": {
+        "operationId": "GradesController_findAll",
+        "parameters": [
+          {
+            "name": "gateId",
+            "required": false,
+            "in": "query",
+            "description": "Filter grades by gate ID",
+            "schema": {
+              "example": "clx...",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of grades"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List grades for school (paginated, optional ?gateId filter)",
+        "tags": [
+          "grades"
+        ]
+      }
+    },
+    "/grades/{id}": {
+      "get": {
+        "operationId": "GradesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Grade detail"
+          },
+          "404": {
+            "description": "Grade not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get grade details with student count and gate info (School Admin)",
+        "tags": [
+          "grades"
+        ]
+      },
+      "patch": {
+        "operationId": "GradesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGradeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Grade updated successfully"
+          },
+          "404": {
+            "description": "Grade or gate not found"
+          },
+          "409": {
+            "description": "Grade name already exists"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a grade (School Admin)",
+        "tags": [
+          "grades"
+        ]
+      },
+      "delete": {
+        "operationId": "GradesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Grade deleted successfully"
+          },
+          "404": {
+            "description": "Grade not found"
+          },
+          "409": {
+            "description": "Grade has assigned students — admin must reassign them first",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "message": "grade_has_students",
+                    "studentCount": 12
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a grade (School Admin)",
+        "tags": [
+          "grades"
+        ]
+      }
+    },
+    "/vehicle-types": {
+      "post": {
+        "operationId": "VehicleTypesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVehicleTypeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Vehicle type created successfully"
+          },
+          "409": {
+            "description": "Vehicle type title already exists"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new vehicle type (School Admin)",
+        "tags": [
+          "vehicle-types"
+        ]
+      },
+      "get": {
+        "operationId": "VehicleTypesController_findAll",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Case-insensitive search on title",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all vehicle types"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all vehicle types for school (School Admin)",
+        "tags": [
+          "vehicle-types"
+        ]
+      }
+    },
+    "/vehicle-types/{id}": {
+      "get": {
+        "operationId": "VehicleTypesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vehicle type details"
+          },
+          "404": {
+            "description": "Vehicle type not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get vehicle type details with bus count (School Admin)",
+        "tags": [
+          "vehicle-types"
+        ]
+      },
+      "patch": {
+        "operationId": "VehicleTypesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVehicleTypeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Vehicle type updated successfully"
+          },
+          "404": {
+            "description": "Vehicle type not found"
+          },
+          "409": {
+            "description": "Vehicle type title already exists"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a vehicle type (School Admin)",
+        "tags": [
+          "vehicle-types"
+        ]
+      },
+      "delete": {
+        "operationId": "VehicleTypesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "force",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vehicle type deleted successfully"
+          },
+          "404": {
+            "description": "Vehicle type not found"
+          },
+          "409": {
+            "description": "Vehicle type in use by buses, ?force=true required"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a vehicle type (School Admin)",
+        "tags": [
+          "vehicle-types"
+        ]
+      }
+    },
+    "/vehicle-colors": {
+      "post": {
+        "operationId": "VehicleColorsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVehicleColorDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Vehicle color created successfully"
+          },
+          "409": {
+            "description": "Vehicle color title or colorCode already exists"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new vehicle color (School Admin)",
+        "tags": [
+          "vehicle-colors"
+        ]
+      },
+      "get": {
+        "operationId": "VehicleColorsController_findAll",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Case-insensitive search on title",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all vehicle colors"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all vehicle colors for school (School Admin)",
+        "tags": [
+          "vehicle-colors"
+        ]
+      }
+    },
+    "/vehicle-colors/{id}": {
+      "get": {
+        "operationId": "VehicleColorsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vehicle color details"
+          },
+          "404": {
+            "description": "Vehicle color not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get vehicle color details with bus count (School Admin)",
+        "tags": [
+          "vehicle-colors"
+        ]
+      },
+      "patch": {
+        "operationId": "VehicleColorsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVehicleColorDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Vehicle color updated successfully"
+          },
+          "404": {
+            "description": "Vehicle color not found"
+          },
+          "409": {
+            "description": "Vehicle color title or colorCode already exists"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a vehicle color (School Admin)",
+        "tags": [
+          "vehicle-colors"
+        ]
+      },
+      "delete": {
+        "operationId": "VehicleColorsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "force",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vehicle color deleted successfully"
+          },
+          "404": {
+            "description": "Vehicle color not found"
+          },
+          "409": {
+            "description": "Vehicle color in use by buses, ?force=true required"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a vehicle color (School Admin)",
+        "tags": [
+          "vehicle-colors"
+        ]
+      }
+    },
+    "/drivers": {
+      "post": {
+        "operationId": "DriversController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDriverDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Driver created successfully"
+          },
+          "409": {
+            "description": "Driver phone already exists"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new driver (School Admin)",
+        "tags": [
+          "drivers"
+        ]
+      },
+      "get": {
+        "operationId": "DriversController_findAll",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Case-insensitive search on name or phone",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of all drivers"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all drivers for school (School Admin)",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/drivers/{id}": {
+      "get": {
+        "operationId": "DriversController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Driver details"
+          },
+          "404": {
+            "description": "Driver not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get driver details with assigned full bus context (School Admin)",
+        "tags": [
+          "drivers"
+        ]
+      },
+      "patch": {
+        "operationId": "DriversController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDriverDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Driver updated successfully"
+          },
+          "404": {
+            "description": "Driver not found"
+          },
+          "409": {
+            "description": "Driver phone already exists"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a driver (School Admin)",
+        "tags": [
+          "drivers"
+        ]
+      },
+      "delete": {
+        "operationId": "DriversController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Driver deleted successfully"
+          },
+          "404": {
+            "description": "Driver not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a driver (School Admin)",
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/drivers/{id}/assign-bus": {
+      "post": {
+        "operationId": "DriversController_assignBus",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignBusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bus assigned successfully"
+          },
+          "404": {
+            "description": "Driver or bus not found"
+          },
+          "409": {
+            "description": "Driver already has bus or bus already has driver"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Assign driver to a bus (School Admin)",
+        "tags": [
+          "drivers"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Safe School API",
+    "description": "The Safe School Backend API documentation",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "SendOtpDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "VerifyOtpDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CompleteProfileDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AdminLoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "safeschool@gmail.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "12345678"
+          },
+          "rememberMe": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "VerifyCodeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "VerifyInvitationCodeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "AF3K9XB2"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "RegisterWithCodeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "AF3K9XB2"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string",
+            "description": "E.164 format, e.g., +966501234567"
+          },
+          "email": {
+            "type": "string"
+          },
+          "pickupMethod": {
+            "type": "string",
+            "enum": [
+              "WALKING",
+              "PRIVATE_CAR",
+              "BUS"
+            ]
+          },
+          "gateId": {
+            "type": "string"
+          },
+          "gradeId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "phone"
+        ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "example": "a1b2c3d4e5f6g7h8i9j0..."
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string",
+            "description": "E.164 format, e.g., +966501234567"
+          },
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "SUPER_ADMIN",
+              "SCHOOL_ADMIN",
+              "SCHOOL",
+              "TEACHER",
+              "GUARD",
+              "SPECIALIST",
+              "SUPERVISOR",
+              "EMPLOYEE",
+              "PARENT",
+              "DELEGATE"
+            ],
+            "description": "PARENT, DELEGATE, TEACHER, GUARD, SPECIALIST, SUPERVISOR, EMPLOYEE"
+          },
+          "pickupMethod": {
+            "type": "string",
+            "enum": [
+              "WALKING",
+              "PRIVATE_CAR",
+              "BUS"
+            ]
+          },
+          "gateId": {
+            "type": "string"
+          },
+          "gradeId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "phone",
+          "role"
+        ]
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "phone": {
+            "type": "string",
+            "example": "05xxxxxxxx"
+          },
+          "email": {
+            "type": "string",
+            "example": "john@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "NewSecure123!"
+          },
+          "avatar": {
+            "type": "string",
+            "example": "/uploads/avatar.png"
+          }
+        }
+      },
+      "CreateSchoolAdminDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Principal Skinner"
+          },
+          "email": {
+            "type": "string",
+            "example": "skinner@springfield.edu"
+          },
+          "password": {
+            "type": "string",
+            "example": "Secure123!"
+          },
+          "phone": {
+            "type": "string",
+            "example": "05xxxxxxxx"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "password",
+          "phone"
+        ]
+      },
+      "CreateSchoolDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Springfield Elementary"
+          },
+          "address": {
+            "type": "string",
+            "example": "123 Main St"
+          },
+          "lat": {
+            "type": "number",
+            "example": 24.7136
+          },
+          "lng": {
+            "type": "number",
+            "example": 46.6753
+          },
+          "geofenceRadius": {
+            "type": "number",
+            "example": 200,
+            "default": 200
+          },
+          "admin": {
+            "$ref": "#/components/schemas/CreateSchoolAdminDto"
+          }
+        },
+        "required": [
+          "name",
+          "geofenceRadius",
+          "admin"
+        ]
+      },
+      "UpdateSchoolDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Safe School International"
+          },
+          "address": {
+            "type": "string",
+            "example": "123 Education Street, Riyadh"
+          },
+          "lat": {
+            "type": "number",
+            "example": 24.7136
+          },
+          "lng": {
+            "type": "number",
+            "example": 46.6753
+          },
+          "geofenceRadius": {
+            "type": "number",
+            "example": 200,
+            "description": "Geofence radius in meters (50-5000)"
+          }
+        }
+      },
+      "CurrentPlanDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "cm123abc456def789"
+          },
+          "name": {
+            "type": "string",
+            "example": "Premium Plan"
+          },
+          "endDate": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-12-31T23:59:59.999Z"
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "endDate",
+          "isActive"
+        ]
+      },
+      "SchoolStatsDto": {
+        "type": "object",
+        "properties": {
+          "studentCount": {
+            "type": "number",
+            "example": 245,
+            "description": "Total number of students in the school"
+          },
+          "teacherCount": {
+            "type": "number",
+            "example": 28,
+            "description": "Number of active teachers"
+          },
+          "guardCount": {
+            "type": "number",
+            "example": 6,
+            "description": "Number of active guards"
+          },
+          "activeSessions": {
+            "type": "number",
+            "example": 12,
+            "description": "Number of ongoing pickup sessions (non-terminal states)"
+          },
+          "currentPlan": {
+            "nullable": true,
+            "description": "Current active subscription plan, or null if no subscription",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CurrentPlanDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "studentCount",
+          "teacherCount",
+          "guardCount",
+          "activeSessions",
+          "currentPlan"
+        ]
+      },
+      "CreateSubscriptionPlanDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Plan name",
+            "example": "Premium Annual"
+          },
+          "description": {
+            "type": "string",
+            "description": "Plan description",
+            "example": "Full-featured annual subscription with unlimited students"
+          },
+          "price": {
+            "type": "number",
+            "description": "Plan price in local currency",
+            "example": 999.99
+          },
+          "maxStudents": {
+            "type": "number",
+            "description": "Maximum number of students allowed",
+            "example": 500
+          },
+          "maxStaff": {
+            "type": "number",
+            "description": "Maximum number of staff allowed",
+            "example": 50
+          },
+          "durationDays": {
+            "type": "number",
+            "description": "Subscription duration in days",
+            "example": 365
+          },
+          "features": {
+            "type": "object",
+            "description": "Feature flags as JSON object",
+            "example": {
+              "hasBusTracking": true,
+              "maxSms": 1000,
+              "hasAnalytics": true
+            }
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the plan is active",
+            "default": true
+          }
+        },
+        "required": [
+          "name",
+          "price",
+          "maxStudents",
+          "maxStaff",
+          "durationDays",
+          "features",
+          "isActive"
+        ]
+      },
+      "UpdateSubscriptionPlanDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Plan name",
+            "example": "Premium Annual"
+          },
+          "description": {
+            "type": "string",
+            "description": "Plan description",
+            "example": "Full-featured annual subscription with unlimited students"
+          },
+          "price": {
+            "type": "number",
+            "description": "Plan price in local currency",
+            "example": 999.99
+          },
+          "maxStudents": {
+            "type": "number",
+            "description": "Maximum number of students allowed",
+            "example": 500
+          },
+          "maxStaff": {
+            "type": "number",
+            "description": "Maximum number of staff allowed",
+            "example": 50
+          },
+          "durationDays": {
+            "type": "number",
+            "description": "Subscription duration in days",
+            "example": 365
+          },
+          "features": {
+            "type": "object",
+            "description": "Feature flags as JSON object",
+            "example": {
+              "hasBusTracking": true,
+              "maxSms": 1000,
+              "hasAnalytics": true
+            }
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the plan is active",
+            "default": true
+          }
+        }
+      },
+      "AssignSubscriptionDto": {
+        "type": "object",
+        "properties": {
+          "schoolId": {
+            "type": "string",
+            "description": "School ID to assign subscription to",
+            "example": "clx1a2b3c4d5e6f7g8h9i0j"
+          },
+          "planId": {
+            "type": "string",
+            "description": "Subscription plan ID",
+            "example": "clx9z8y7x6w5v4u3t2s1r0q"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Subscription start date (ISO 8601)",
+            "example": "2026-03-01T00:00:00Z"
+          }
+        },
+        "required": [
+          "schoolId",
+          "planId",
+          "startDate"
+        ]
+      },
+      "CreateStudentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "RegisterByCodeDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AdminCreateStudentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "أحمد محمد",
+            "description": "Full student name"
+          },
+          "gradeId": {
+            "type": "string",
+            "example": "clx...",
+            "description": "Grade ID — must belong to the same school"
+          },
+          "photoUrl": {
+            "type": "string",
+            "example": "https://cdn.example.com/photo.jpg",
+            "description": "Optional profile photo URL"
+          },
+          "gateId": {
+            "type": "string",
+            "example": "clx...",
+            "description": "Per-student gate override — must belong to the same school"
+          },
+          "parentPhone": {
+            "type": "string",
+            "example": "+966500000000",
+            "description": "Parent phone for quick call"
+          },
+          "pickupMethod": {
+            "type": "string",
+            "example": "WALKING",
+            "enum": [
+              "WALKING",
+              "PRIVATE_CAR",
+              "BUS"
+            ],
+            "description": "Initial pickup method"
+          }
+        },
+        "required": [
+          "name",
+          "gradeId"
+        ]
+      },
+      "AdminUpdateStudentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "أحمد محمد",
+            "description": "Full student name"
+          },
+          "gradeId": {
+            "type": "string",
+            "example": "clx...",
+            "description": "Grade ID — must belong to the same school"
+          },
+          "photoUrl": {
+            "type": "string",
+            "example": "https://cdn.example.com/photo.jpg",
+            "description": "Optional profile photo URL"
+          },
+          "gateId": {
+            "type": "string",
+            "example": "clx...",
+            "description": "Per-student gate override — must belong to the same school"
+          },
+          "parentPhone": {
+            "type": "string",
+            "example": "+966500000000",
+            "description": "Parent phone for quick call"
+          },
+          "pickupMethod": {
+            "type": "string",
+            "example": "WALKING",
+            "enum": [
+              "WALKING",
+              "PRIVATE_CAR",
+              "BUS"
+            ],
+            "description": "Initial pickup method"
+          }
+        }
+      },
+      "InviteDelegateDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "AcceptDelegateRequestDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "BulkAcceptDelegateRequestDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreatePickupRequestDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ArrivePickupDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "PickupActionDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "SecurityVerificationDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "RejectPickupDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CancelPickupDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "ConfirmReceiptDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateSchoolBusDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The unique name of the school bus within the school"
+          },
+          "plateLetters": {
+            "type": "string",
+            "description": "The plate letters of the school bus"
+          },
+          "plateNumbers": {
+            "type": "string",
+            "description": "The plate numbers of the school bus"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "SCHOOL_OWNED",
+              "PRIVATE_HIRED"
+            ],
+            "default": "SCHOOL_OWNED",
+            "description": "Type of ownership of the bus"
+          },
+          "vehicleTypeId": {
+            "type": "string",
+            "description": "The vehicle type ID associated with the bus"
+          },
+          "vehicleColorId": {
+            "type": "string",
+            "description": "The vehicle color ID associated with the bus"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateSchoolBusDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The unique name of the school bus within the school"
+          },
+          "plateLetters": {
+            "type": "string",
+            "description": "The plate letters of the school bus"
+          },
+          "plateNumbers": {
+            "type": "string",
+            "description": "The plate numbers of the school bus"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "SCHOOL_OWNED",
+              "PRIVATE_HIRED"
+            ],
+            "default": "SCHOOL_OWNED",
+            "description": "Type of ownership of the bus"
+          },
+          "vehicleTypeId": {
+            "type": "string",
+            "description": "The vehicle type ID associated with the bus"
+          },
+          "vehicleColorId": {
+            "type": "string",
+            "description": "The vehicle color ID associated with the bus"
+          }
+        }
+      },
+      "UpdateStaffDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Full name of the staff member"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "Profile photo URL"
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE"
+            ],
+            "description": "Staff gender"
+          },
+          "schoolClass": {
+            "type": "object",
+            "description": "Assigned class/stage (TEACHER/SUPERVISOR). Pass null to unassign."
+          },
+          "gateId": {
+            "type": "object",
+            "description": "Gate ID to assign this guard to (FK → Gate). Pass null to unassign."
+          },
+          "staffId": {
+            "type": "string",
+            "description": "Staff badge / ID number"
+          }
+        }
+      },
+      "CreateVehicleDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateVehicleDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateActivityDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateActivityDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateCommentDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "GenerateInvitationCodeDto": {
+        "type": "object",
+        "properties": {
+          "schoolId": {
+            "type": "string",
+            "description": "School ID — required for SUPER_ADMIN; injected from JWT context for SCHOOL_ADMIN",
+            "example": "clx1school123"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "PARENT",
+              "TEACHER",
+              "GUARD",
+              "SPECIALIST",
+              "SUPERVISOR",
+              "EMPLOYEE"
+            ],
+            "description": "Code type: who this invitation code is for",
+            "example": "TEACHER"
+          },
+          "maxUsage": {
+            "type": "number",
+            "description": "Maximum number of registrations allowed with this code",
+            "example": 10,
+            "minimum": 1
+          },
+          "expiresAt": {
+            "type": "object",
+            "description": "Expiry date in ISO 8601 format. Omit or set to null for a never-expiring code.",
+            "example": "2026-09-01T00:00:00Z",
+            "nullable": true
+          }
+        },
+        "required": [
+          "type",
+          "maxUsage"
+        ]
+      },
+      "CreateGateDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Gate name",
+            "example": "North Gate A"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateGateDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Gate name",
+            "example": "North Gate A"
+          }
+        }
+      },
+      "CreateGradeDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Grade name",
+            "example": "Grade 1"
+          },
+          "gateId": {
+            "type": "object",
+            "description": "Gate ID to assign to this grade",
+            "example": "clx..."
+          },
+          "exitTime": {
+            "type": "string",
+            "description": "Official class dismissal time (HH:MM, 24h)",
+            "example": "13:30"
+          },
+          "pickupStartTime": {
+            "type": "string",
+            "description": "Pickup window start time (HH:MM, 24h)",
+            "example": "13:30"
+          },
+          "pickupEndTime": {
+            "type": "string",
+            "description": "Pickup window end time (HH:MM, 24h)",
+            "example": "14:00"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateGradeDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Grade name",
+            "example": "Grade 1"
+          },
+          "gateId": {
+            "type": "object",
+            "description": "Gate ID to assign to this grade",
+            "example": "clx..."
+          },
+          "exitTime": {
+            "type": "string",
+            "description": "Official class dismissal time (HH:MM, 24h)",
+            "example": "13:30"
+          },
+          "pickupStartTime": {
+            "type": "string",
+            "description": "Pickup window start time (HH:MM, 24h)",
+            "example": "13:30"
+          },
+          "pickupEndTime": {
+            "type": "string",
+            "description": "Pickup window end time (HH:MM, 24h)",
+            "example": "14:00"
+          }
+        }
+      },
+      "CreateVehicleTypeDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Vehicle type title",
+            "example": "SUV"
+          },
+          "icon": {
+            "type": "string",
+            "description": "Icon URL",
+            "example": "https://example.com/icons/suv.png"
+          }
+        },
+        "required": [
+          "title"
+        ]
+      },
+      "UpdateVehicleTypeDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Vehicle type title",
+            "example": "SUV"
+          },
+          "icon": {
+            "type": "string",
+            "description": "Icon URL",
+            "example": "https://example.com/icons/suv.png"
+          }
+        }
+      },
+      "CreateVehicleColorDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Vehicle color title",
+            "example": "Red"
+          },
+          "colorCode": {
+            "type": "string",
+            "description": "Hex color code (6-char format)",
+            "example": "#FF0000"
+          }
+        },
+        "required": [
+          "title",
+          "colorCode"
+        ]
+      },
+      "UpdateVehicleColorDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Vehicle color title",
+            "example": "Red"
+          },
+          "colorCode": {
+            "type": "string",
+            "description": "Hex color code (6-char format)",
+            "example": "#FF0000"
+          }
+        }
+      },
+      "CreateDriverDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Driver full name",
+            "example": "Ahmed Ali"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Contact phone number",
+            "example": "+966500000000"
+          },
+          "photoUrl": {
+            "type": "string",
+            "description": "Profile photo URL",
+            "example": "https://example.com/photo.jpg"
+          },
+          "licenseNumber": {
+            "type": "string",
+            "description": "Driving license number",
+            "example": "DL-123456789"
+          }
+        },
+        "required": [
+          "name",
+          "phone"
+        ]
+      },
+      "UpdateDriverDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Driver full name",
+            "example": "Ahmed Ali"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Contact phone number",
+            "example": "+966500000000"
+          },
+          "photoUrl": {
+            "type": "string",
+            "description": "Profile photo URL",
+            "example": "https://example.com/photo.jpg"
+          },
+          "licenseNumber": {
+            "type": "string",
+            "description": "Driving license number",
+            "example": "DL-123456789"
+          }
+        }
+      },
+      "AssignBusDto": {
+        "type": "object",
+        "properties": {
+          "busId": {
+            "type": "string",
+            "description": "ID of the SchoolBus to assign to this driver",
+            "example": "cuid1234"
+          }
+        },
+        "required": [
+          "busId"
+        ]
+      }
+    }
+  }
+}
