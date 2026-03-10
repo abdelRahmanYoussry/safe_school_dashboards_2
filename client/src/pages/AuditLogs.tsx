@@ -4,19 +4,46 @@ import { useAuditLogs } from "@/hooks/use-system";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useTranslation } from "react-i18next";
 
 export default function AuditLogs() {
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(20);
-  const { data: logs, isLoading } = useAuditLogs(page, limit);
+  const [limit] = useState(20);
+  const [actionFilter, setActionFilter] = useState("");
+  const [userIdFilter, setUserIdFilter] = useState("");
+
+  const { data: logs, isLoading } = useAuditLogs({
+    page,
+    limit,
+    action: actionFilter || undefined,
+    userId: userIdFilter ? parseInt(userIdFilter) : undefined
+  });
+
   const { t } = useTranslation();
 
   return (
     <PageTransition className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground tracking-tight">{t("System Audit Logs")}</h1>
-        <p className="text-muted-foreground mt-1">{t("Immutable record of platform activities.")}</p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground tracking-tight">{t("System Audit Logs")}</h1>
+          <p className="text-muted-foreground mt-1">{t("Immutable record of platform activities.")}</p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Input
+            placeholder={t("Filter by Action")}
+            className="w-48 bg-white border-black/10 rounded-xl"
+            value={actionFilter}
+            onChange={(e) => setActionFilter(e.target.value)}
+          />
+          <Input
+            placeholder={t("User ID")}
+            className="w-24 bg-white border-black/10 rounded-xl"
+            value={userIdFilter}
+            onChange={(e) => setUserIdFilter(e.target.value)}
+          />
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl overflow-hidden border border-black/[0.07] shadow-sm">

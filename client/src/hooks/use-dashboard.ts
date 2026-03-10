@@ -24,3 +24,18 @@ export function useAnalytics() {
     },
   });
 }
+
+export function useSafetyAnalytics(schoolId?: string) {
+  const path = api.stats.safetyAnalytics.path;
+  const url = schoolId ? `${path}?schoolId=${schoolId}` : path;
+
+  return useQuery({
+    queryKey: [path, schoolId],
+    queryFn: async () => {
+      const res = await fetch(url, { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch safety analytics");
+      const data = await res.json();
+      return api.stats.safetyAnalytics.responses[200].parse(data);
+    },
+  });
+}

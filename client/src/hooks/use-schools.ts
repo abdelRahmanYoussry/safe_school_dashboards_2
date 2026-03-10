@@ -18,7 +18,7 @@ export function useSchools(page: number = 1, limit: number = 10) {
   });
 }
 
-export function useSchool(id: number) {
+export function useSchool(id: string | number) {
   return useQuery({
     queryKey: [api.schools.get.path, id],
     queryFn: async () => {
@@ -35,15 +35,20 @@ export function useSchool(id: number) {
 export function useCreateSchool() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: z.infer<typeof api.schools.create.input>) => {
+    mutationFn: async (data: FormData | z.infer<typeof api.schools.create.input>) => {
+      const isFormData = data instanceof FormData;
       const res = await fetch(api.schools.create.path, {
         method: api.schools.create.method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        headers: isFormData ? {} : { "Content-Type": "application/json" },
+        body: isFormData ? data : JSON.stringify(data),
         credentials: "include",
       });
-      if (!res.ok) throw new Error("Failed to create school");
-      return api.schools.create.responses[201].parse(await res.json());
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: "Failed to create school" }));
+        throw new Error(err.message || "Failed to create school");
+      }
+      const json = await res.json();
+      return json; // Backend returns { message, data: school }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.schools.list.path] });
@@ -52,10 +57,33 @@ export function useCreateSchool() {
   });
 }
 
+export function useAssignSubscription() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: z.infer<typeof api.subscriptions.assign.input>) => {
+      const res = await fetch(api.subscriptions.assign.path, {
+        method: api.subscriptions.assign.method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: "Failed to assign subscription" }));
+        throw new Error(err.message || "Failed to assign subscription");
+      }
+      return await res.json();
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: [api.schools.get.path, variables.schoolId] });
+      queryClient.invalidateQueries({ queryKey: [api.schools.list.path] });
+    },
+  });
+}
+
 export function useUpdateSchool() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, ...data }: { id: number } & z.infer<typeof api.schools.update.input>) => {
+    mutationFn: async ({ id, ...data }: { id: string | number } & z.infer<typeof api.schools.update.input>) => {
       const url = buildUrl(api.schools.update.path, { id });
       const res = await fetch(url, {
         method: api.schools.update.method,
@@ -76,7 +104,7 @@ export function useUpdateSchool() {
 export function useDeleteSchool() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: string | number) => {
       const url = buildUrl(api.schools.delete.path, { id });
       const res = await fetch(url, {
         method: api.schools.delete.method,
@@ -87,6 +115,40 @@ export function useDeleteSchool() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [api.schools.list.path] });
       queryClient.invalidateQueries({ queryKey: [api.stats.dashboard.path] });
+    },
+  });
+}
+
+export function useSchoolIncidents(id: string | number) {
+  return useQuery({
+    queryKey: [api.schools.incidents.list.path, id],
+    queryFn: async () => {
+      const url = buildUrl(api.schools.incidents.list.path, { id });
+      const res = await fetch(url, { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch school incidents");
+      return api.schools.incidents.list.responses[200].parse(await res.json());
+    },
+    enabled: !!id,
+  });
+}
+
+export function useCreateIncident() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ schoolId, ...data }: { schoolId: string | number } & z.infer<typeof api.schools.incidents.create.input>) => {
+      const url = buildUrl(api.schools.incidents.create.path, { id: schoolId });
+      const res = await fetch(url, {
+        method: api.schools.incidents.create.method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to report incident");
+      return api.schools.incidents.create.responses[201].parse(await res.json());
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: [api.schools.incidents.list.path, variables.schoolId] });
+      queryClient.invalidateQueries({ queryKey: [api.stats.safetyAnalytics.path] });
     },
   });
 }

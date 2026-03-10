@@ -42,13 +42,19 @@ export function useUpdateTicket() {
   });
 }
 
-export function useAuditLogs(page: number = 1, limit: number = 20) {
+export function useAuditLogs(params?: { page?: number, limit?: number, userId?: number, action?: string }) {
+  const page = params?.page || 1;
+  const limit = params?.limit || 20;
+
   return useQuery({
-    queryKey: [api.auditLogs.list.path, page, limit],
+    queryKey: [api.auditLogs.list.path, page, limit, params?.userId, params?.action],
     queryFn: async () => {
       const url = new URL(api.auditLogs.list.path, window.location.origin);
       url.searchParams.append("page", page.toString());
       url.searchParams.append("limit", limit.toString());
+      if (params?.userId) url.searchParams.append("userId", params.userId.toString());
+      if (params?.action) url.searchParams.append("action", params.action);
+
       const res = await fetch(url.toString(), { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch audit logs");
       return api.auditLogs.list.responses[200].parse(await res.json());

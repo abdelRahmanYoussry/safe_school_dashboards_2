@@ -14,14 +14,26 @@ export default function Plans() {
   const [isAddOpen, setIsAddOpen] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: "", maxStudents: 500, maxStaff: 50, monthlyPrice: 9900, features: ["Standard Support", "Basic Analytics"]
+    name: "",
+    description: "",
+    price: 99.99,
+    maxStudents: 500,
+    maxStaff: 50,
+    durationDays: 365,
+    features: { hasBusTracking: false, maxSms: 500, hasAnalytics: false },
+    isActive: true,
   });
   const [errorMsg, setErrorMsg] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
-    createMutation.mutate(formData, {
+    const payload = {
+      ...formData,
+      ...(formData.description.trim() === "" ? {} : { description: formData.description.trim() }),
+    };
+    if (payload.description === "") delete (payload as any).description;
+    createMutation.mutate(payload, {
       onSuccess: () => setIsAddOpen(false),
       onError: (err: Error) => setErrorMsg(err.message)
     });
@@ -48,17 +60,45 @@ export default function Plans() {
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium">Plan Name</label>
-                <Input required className="bg-black/[0.03] border-black/10" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                <Input required className="bg-background border-border focus:border-primary focus-visible:ring-primary/20 transition-colors" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Description</label>
+                <Input className="bg-background border-border focus:border-primary focus-visible:ring-primary/20 transition-colors" value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Price ($)</label>
+                  <Input type="number" step="0.01" required className="bg-background border-border focus:border-primary focus-visible:ring-primary/20 transition-colors" value={formData.price} onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value) })} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Duration (days)</label>
+                  <Input type="number" required className="bg-background border-border focus:border-primary focus-visible:ring-primary/20 transition-colors" value={formData.durationDays} onChange={e => setFormData({ ...formData, durationDays: parseInt(e.target.value) })} />
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Max Students</label>
-                  <Input type="number" required className="bg-white/5 border-white/10" value={formData.maxStudents} onChange={e => setFormData({ ...formData, maxStudents: parseInt(e.target.value) })} />
+                  <Input type="number" required className="bg-background border-border focus:border-primary focus-visible:ring-primary/20 transition-colors" value={formData.maxStudents} onChange={e => setFormData({ ...formData, maxStudents: parseInt(e.target.value) })} />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Monthly Price (cents)</label>
-                  <Input type="number" required className="bg-white/5 border-white/10" value={formData.monthlyPrice} onChange={e => setFormData({ ...formData, monthlyPrice: parseInt(e.target.value) })} />
+                  <label className="text-sm font-medium">Max Staff</label>
+                  <Input type="number" required className="bg-background border-border focus:border-primary focus-visible:ring-primary/20 transition-colors" value={formData.maxStaff} onChange={e => setFormData({ ...formData, maxStaff: parseInt(e.target.value) })} />
                 </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Max SMS</label>
+                <Input type="number" className="bg-background border-border focus:border-primary focus-visible:ring-primary/20 transition-colors" value={formData.features.maxSms} onChange={e => setFormData({ ...formData, features: { ...formData.features, maxSms: parseInt(e.target.value) } })} />
+              </div>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" checked={formData.features.hasBusTracking} onChange={e => setFormData({ ...formData, features: { ...formData.features, hasBusTracking: e.target.checked } })} />
+                  Bus Tracking
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" checked={formData.features.hasAnalytics} onChange={e => setFormData({ ...formData, features: { ...formData.features, hasAnalytics: e.target.checked } })} />
+                  Analytics
+                </label>
               </div>
               {errorMsg && (
                 <div className="text-red-500 text-sm mt-2">
@@ -76,7 +116,9 @@ export default function Plans() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {isLoading ? (
           Array(3).fill(0).map((_, i) => <Skeleton key={i} className="h-96 rounded-2xl bg-black/[0.04]" />)
-        ) : plans?.map((plan) => (
+        ) : plans?.map((plan) => {
+          const features = plan.features as { hasBusTracking?: boolean; maxSms?: number; hasAnalytics?: boolean };
+          return (
           <div key={plan.id} className="bg-white p-8 rounded-3xl border border-black/[0.07] shadow-sm flex flex-col relative group hover:-translate-y-2 transition-transform duration-300">
             <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#002626] to-[#045655] rounded-t-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
@@ -88,9 +130,10 @@ export default function Plans() {
             </div>
 
             <div className="mb-6">
-              <span className="text-4xl font-extrabold">${(plan.monthlyPrice / 100).toFixed(2)}</span>
-              <span className="text-muted-foreground">/mo</span>
+              <span className="text-4xl font-extrabold">${plan.price.toFixed(2)}</span>
+              <span className="text-muted-foreground">/{plan.durationDays === 365 ? 'yr' : plan.durationDays === 30 ? 'mo' : `${plan.durationDays}d`}</span>
             </div>
+            {plan.description && <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>}
 
             <div className="space-y-3 flex-1">
               <p className="text-sm text-muted-foreground pb-2 border-b border-black/[0.07]">Includes:</p>
@@ -100,18 +143,29 @@ export default function Plans() {
               <div className="flex items-center gap-2 text-sm">
                 <CheckCircle2 className="w-4 h-4 text-primary" /> Up to {plan.maxStaff} staff members
               </div>
-              {(plan.features as string[]).map((f, i) => (
-                <div key={i} className="flex items-center gap-2 text-sm">
-                  <CheckCircle2 className="w-4 h-4 text-primary" /> {f}
+              {features?.hasBusTracking && (
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="w-4 h-4 text-primary" /> Bus Tracking
                 </div>
-              ))}
+              )}
+              {features?.hasAnalytics && (
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="w-4 h-4 text-primary" /> Analytics
+                </div>
+              )}
+              {features?.maxSms != null && (
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle2 className="w-4 h-4 text-primary" /> {features.maxSms} SMS / month
+                </div>
+              )}
             </div>
 
             <Button className="w-full mt-8 bg-black/[0.05] hover:bg-black/[0.09] text-foreground border border-black/[0.07] rounded-xl">
               Edit Plan
             </Button>
           </div>
-        ))}
+          );
+        })}
       </div>
     </PageTransition>
   );

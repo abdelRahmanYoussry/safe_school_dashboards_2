@@ -1,9 +1,10 @@
 import { db } from "./db";
+import * as schema from "@shared/schema";
 import {
   type Plan, type School, type SafetyReport, type SupportTicket, type AuditLog, type User,
   type InsertPlan, type InsertSchool, type InsertSafetyReport, type InsertSupportTicket, type InsertUser
 } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 export interface IStorage {
   // Stats
@@ -25,13 +26,16 @@ export interface IStorage {
 
   // Safety Reports
   getSafetyReports(): Promise<SafetyReport[]>;
+  getIncidents(schoolId: number): Promise<SafetyReport[]>;
+  createIncident(schoolId: number, data: { title: string, body: string, severity: string }): Promise<SafetyReport>;
+  getSafetyAnalytics(schoolId?: string): Promise<any>;
 
   // Tickets
   getTickets(): Promise<SupportTicket[]>;
   updateTicket(id: number, updates: Partial<InsertSupportTicket>): Promise<SupportTicket>;
 
   // Audit Logs
-  getAuditLogs(): Promise<AuditLog[]>;
+  getAuditLogs(filters?: { userId?: number, action?: string, dateFrom?: string, dateTo?: string }): Promise<AuditLog[]>;
 
   // Users
   getUser(id: number): Promise<User | undefined>;
@@ -39,190 +43,166 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
 }
 
-export class MemStorage implements IStorage {
-  private plans: Map<number, Plan>;
-  private schools: Map<number, School>;
-  private safetyReports: Map<number, SafetyReport>;
-  private supportTickets: Map<number, SupportTicket>;
-  private auditLogs: Map<number, AuditLog>;
-  private users: Map<number, User>;
-  private currentIds: { [key: string]: number };
-
-  constructor() {
-    this.plans = new Map();
-    this.schools = new Map();
-    this.safetyReports = new Map();
-    this.supportTickets = new Map();
-    this.auditLogs = new Map();
-    this.users = new Map();
-    this.currentIds = { plans: 1, schools: 1, reports: 1, tickets: 1, logs: 1, users: 1 };
-
-    this.seed();
-  }
-
-  private seed() {
-    // ... (rest of the seed implementation remains the same)
-    const plans: InsertPlan[] = [
-      { name: "Basic", maxStudents: 500, maxStaff: 50, monthlyPrice: 4900, features: ["Standard Support", "Basic Analytics"] },
-      { name: "Pro", maxStudents: 2000, maxStaff: 200, monthlyPrice: 9900, features: ["Priority Support", "Advanced Analytics", "Geofencing"] },
-      { name: "Enterprise", maxStudents: 10000, maxStaff: 1000, monthlyPrice: 24900, features: ["24/7 Support", "Custom Integration", "Unlimited Features"] }
-    ];
-
-    plans.forEach(p => this.createPlan(p));
-
-    const schools: InsertSchool[] = [
-      { name: "Greenwood International", address: "123 Educational Dr", city: "Dubai", latitude: 25.2048, longitude: 55.2708, geofenceRadius: 200, status: "active", avatar: "https://images.unsplash.com/photo-1546410531-bb4caa1b424d", planId: 2, totalUsers: 1200, totalStudents: 800, activePickups: 45 },
-      { name: "Horizon Academy", address: "456 Learning Way", city: "Abu Dhabi", latitude: 24.4539, longitude: 54.3773, geofenceRadius: 150, status: "active", avatar: "https://images.unsplash.com/photo-1592285777402-2107d3e02022", planId: 1, totalUsers: 600, totalStudents: 450, activePickups: 12 },
-      { name: "Desert Rose School", address: "789 Knowledge St", city: "Sharjah", latitude: 25.3463, longitude: 55.4209, geofenceRadius: 300, status: "suspended", avatar: "https://images.unsplash.com/photo-1523050335392-9bc5015f2108", planId: 3, totalUsers: 5000, totalStudents: 3200, activePickups: 0 }
-    ];
-
-    schools.forEach(s => this.createSchool(s));
+export class DatabaseStorage implements IStorage {
+  private get db() {
+    if (!db) {
+      throw new Error("DATABASE_URL is not configured. Please set it in your .env file.");
+    }
+    return db;
   }
 
   async getDashboardStats() {
+    const [allSchools] = await this.db.select({ count: sql<number>`count(*)` }).from(schema.schools);
+    const [allUsers] = await this.db.select({ count: sql<number>`count(*)` }).from(schema.users);
+    const [allStudents] = await this.db.select({ total: sql<number>`sum(total_students)` }).from(schema.schools);
+    const [incidents] = await this.db.select({ count: sql<number>`count(*)` }).from(schema.safetyReports);
+
     return {
-      totalSchools: 124,
-      totalUsers: 45200,
-      activePickups: 342,
-      totalStudents: 32000,
-      totalParents: 12000,
-      totalStaff: 1200,
-      safetyIncidents: 2,
+      totalSchools: Number(allSchools.count),
+      totalUsers: Number(allUsers.count),
+      activePickups: 0,
+      totalStudents: Number(allStudents.total || 0),
+      totalParents: 0,
+      totalStaff: 0,
+      safetyIncidents: Number(incidents.count),
       systemHealth: 99.9
     };
   }
 
   async getAnalytics() {
     return {
-      schoolGrowth: [
-        { name: "Jan", value: 40 },
-        { name: "Feb", value: 65 },
-        { name: "Mar", value: 85 },
-        { name: "Apr", value: 100 },
-        { name: "May", value: 124 }
-      ],
-      userRegistrations: [
-        { name: "Mon", value: 120 },
-        { name: "Tue", value: 150 },
-        { name: "Wed", value: 180 },
-        { name: "Thu", value: 140 },
-        { name: "Fri", value: 200 }
-      ],
-      pickupRequests: [
-        { name: "14:00", value: 50 },
-        { name: "14:30", value: 150 },
-        { name: "15:00", value: 800 },
-        { name: "15:30", value: 300 },
-        { name: "16:00", value: 50 }
-      ],
-      safetyTrend: [
-        { name: "Week 1", value: 5 },
-        { name: "Week 2", value: 3 },
-        { name: "Week 3", value: 4 },
-        { name: "Week 4", value: 2 }
-      ]
+      schoolGrowth: [],
+      userRegistrations: [],
+      pickupRequests: [],
+      safetyTrend: []
+    };
+  }
+
+  async getSafetyAnalytics(schoolId?: string) {
+    let query = this.db.select({
+      severity: schema.safetyReports.severity,
+      count: sql<number>`count(*)`
+    }).from(schema.safetyReports).groupBy(schema.safetyReports.severity);
+
+    if (schoolId) {
+      query = query.where(eq(schema.safetyReports.schoolId, parseInt(schoolId))) as any;
+    }
+
+    const severityStats = await query;
+    const bySeverity = severityStats.reduce((acc: any, curr) => {
+      acc[curr.severity] = Number(curr.count);
+      return acc;
+    }, {});
+
+    let totalIncidentsQuery = this.db.select({ count: sql<number>`count(*)` }).from(schema.safetyReports);
+    if (schoolId) {
+      totalIncidentsQuery = totalIncidentsQuery.where(eq(schema.safetyReports.schoolId, parseInt(schoolId))) as any;
+    }
+    const [totalIncidents] = await totalIncidentsQuery;
+
+    return {
+      totalIncidents: Number(totalIncidents.count),
+      bySeverity,
+      bySchool: []
     };
   }
 
   async getPlans(): Promise<Plan[]> {
-    return Array.from(this.plans.values());
+    return await this.db.select().from(schema.plans) as Plan[];
   }
 
   async createPlan(plan: InsertPlan): Promise<Plan> {
-    const id = this.currentIds.plans++;
-    const created: Plan = { ...plan, id, features: plan.features as any };
-    this.plans.set(id, created);
-    return created;
+    const id = (plan as any).id || Math.random().toString(36).substring(2, 11);
+    const [created] = await this.db.insert(schema.plans).values({ ...plan, id }).returning();
+    return created as Plan;
   }
 
-  async updatePlan(id: number, updates: Partial<InsertPlan>): Promise<Plan> {
-    const existing = this.plans.get(id);
-    if (!existing) throw new Error("Plan not found");
-    const updated = { ...existing, ...updates };
-    this.plans.set(id, updated);
-    return updated;
+  async updatePlan(id: string | number, updates: Partial<InsertPlan>): Promise<Plan> {
+    const [updated] = await this.db.update(schema.plans).set(updates).where(eq(schema.plans.id, String(id))).returning();
+    return updated as Plan;
   }
 
-  async deletePlan(id: number): Promise<void> {
-    this.plans.delete(id);
+  async deletePlan(id: string | number): Promise<void> {
+    await this.db.delete(schema.plans).where(eq(schema.plans.id, String(id)));
   }
 
   async getSchools(): Promise<School[]> {
-    return Array.from(this.schools.values());
+    return await this.db.select().from(schema.schools);
   }
 
-  async getSchool(id: number): Promise<School | undefined> {
-    return this.schools.get(id);
+  async getSchool(id: string | number): Promise<School | undefined> {
+    const [school] = await this.db.select().from(schema.schools).where(eq(schema.schools.id, String(id)));
+    return school;
   }
 
   async createSchool(school: InsertSchool): Promise<School> {
-    const id = this.currentIds.schools++;
-    const created: School = {
-      ...school,
-      id,
-      createdAt: new Date(),
-      avatar: school.avatar || null,
-      planId: school.planId || null,
-      status: school.status || 'active'
-    } as School;
-    this.schools.set(id, created);
+    const id = (school as any).id || Math.random().toString(36).substring(2, 11);
+    const [created] = await this.db.insert(schema.schools).values({ ...school, id }).returning();
     return created;
   }
 
-  async updateSchool(id: number, updates: Partial<InsertSchool>): Promise<School> {
-    const existing = this.schools.get(id);
-    if (!existing) throw new Error("School not found");
-    const updated = { ...existing, ...updates };
-    this.schools.set(id, updated);
+  async updateSchool(id: string | number, updates: Partial<InsertSchool>): Promise<School> {
+    const [updated] = await this.db.update(schema.schools).set(updates).where(eq(schema.schools.id, String(id))).returning();
     return updated;
   }
 
-  async deleteSchool(id: number): Promise<void> {
-    this.schools.delete(id);
+  async deleteSchool(id: string | number): Promise<void> {
+    await this.db.delete(schema.schools).where(eq(schema.schools.id, String(id)));
   }
 
   async getSafetyReports(): Promise<SafetyReport[]> {
-    return Array.from(this.safetyReports.values());
+    return await this.db.select().from(schema.safetyReports);
+  }
+
+  async getIncidents(schoolId: number): Promise<SafetyReport[]> {
+    return await this.db.select().from(schema.safetyReports).where(eq(schema.safetyReports.schoolId, schoolId));
+  }
+
+  async createIncident(schoolId: number, data: { title: string, body: string, severity: string }): Promise<SafetyReport> {
+    const [created] = await this.db.insert(schema.safetyReports).values({
+      ...data,
+      schoolId,
+      status: 'open'
+    }).returning();
+    return created;
   }
 
   async getTickets(): Promise<SupportTicket[]> {
-    return Array.from(this.supportTickets.values());
+    return await this.db.select().from(schema.supportTickets);
   }
 
   async updateTicket(id: number, updates: Partial<InsertSupportTicket>): Promise<SupportTicket> {
-    const existing = this.supportTickets.get(id);
-    if (!existing) throw new Error("Ticket not found");
-    const updated = { ...existing, ...updates };
-    this.supportTickets.set(id, updated);
+    const [updated] = await this.db.update(schema.supportTickets).set(updates).where(eq(schema.supportTickets.id, id)).returning();
     return updated;
   }
 
-  async getAuditLogs(): Promise<AuditLog[]> {
-    return Array.from(this.auditLogs.values());
+  async getAuditLogs(filters?: { userId?: number, action?: string, dateFrom?: string, dateTo?: string }): Promise<AuditLog[]> {
+    let query = this.db.select().from(schema.auditLogs).$dynamic();
+
+    if (filters?.userId) {
+      query = query.where(eq(schema.auditLogs.userId, filters.userId));
+    }
+    if (filters?.action) {
+      query = query.where(eq(schema.auditLogs.action, filters.action));
+    }
+
+    return await query;
   }
 
-  // Users
   async getUser(id: number): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await this.db.select().from(schema.users).where(eq(schema.users.id, id));
+    return user;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(u => u.email === email);
+    const [user] = await this.db.select().from(schema.users).where(eq(schema.users.email, email));
+    return user;
   }
 
   async createUser(user: InsertUser): Promise<User> {
-    const id = this.currentIds.users++;
-    const created: User = {
-      ...user,
-      id,
-      createdAt: new Date(),
-      schoolId: user.schoolId || null,
-      role: user.role as "super_admin" | "school_admin"
-    } as User;
-    this.users.set(id, created);
+    const [created] = await this.db.insert(schema.users).values(user as any).returning();
     return created;
   }
 }
 
-export const storage = new MemStorage();
-
+export const storage = new DatabaseStorage();

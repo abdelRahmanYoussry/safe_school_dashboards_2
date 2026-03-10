@@ -1,4 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
+// Force reload comment: school-create-proxy-fix
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -9,9 +10,11 @@ const httpServer = createServer(app);
 declare module "http" {
   interface IncomingMessage {
     rawBody: unknown;
+    isMultipart?: boolean;
   }
 }
 
+// Capture raw body for JSON requests
 app.use(
   express.json({
     verify: (req, _res, buf) => {

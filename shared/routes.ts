@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { insertPlanSchema, insertSchoolSchema, insertSafetyReportSchema, insertSupportTicketSchema, plans, schools, safetyReports, supportTickets, auditLogs } from './schema';
+import { insertPlanSchema, insertSchoolSchema, assignSubscriptionSchema, insertSafetyReportSchema, insertSupportTicketSchema, plans, schools, safetyReports, supportTickets, auditLogs, type Plan } from './schema';
 
 export const errorSchemas = {
   validation: z.object({ message: z.string(), field: z.string().optional() }),
@@ -36,6 +36,21 @@ export const api = {
           safetyTrend: z.array(z.object({ name: z.string(), value: z.number() }))
         })
       }
+    },
+    safetyAnalytics: {
+      method: 'GET' as const,
+      path: '/api/stats/safety-analytics' as const,
+      responses: {
+        200: z.object({
+          totalIncidents: z.number(),
+          bySeverity: z.record(z.string(), z.number()),
+          bySchool: z.array(z.object({
+            schoolId: z.string(),
+            schoolName: z.string(),
+            incidentCount: z.number()
+          }))
+        })
+      }
     }
   },
   schools: {
@@ -65,25 +80,56 @@ export const api = {
       method: 'DELETE' as const,
       path: '/api/schools/:id' as const,
       responses: { 204: z.void(), 404: errorSchemas.notFound }
+    },
+    incidents: {
+      list: {
+        method: 'GET' as const,
+        path: '/api/schools/:id/incidents' as const,
+        responses: { 200: z.array(z.custom<typeof safetyReports.$inferSelect>()) }
+      },
+      create: {
+        method: 'POST' as const,
+        path: '/api/schools/:id/incidents' as const,
+        input: z.object({
+          title: z.string(),
+          body: z.string(),
+          severity: z.string(),
+        }),
+        responses: { 201: z.custom<typeof safetyReports.$inferSelect>(), 400: errorSchemas.validation }
+      }
+    }
+  },
+  subscriptions: {
+    assign: {
+      method: 'POST' as const,
+      path: '/api/subscriptions/assign' as const,
+      input: assignSubscriptionSchema,
+      responses: {
+        201: z.object({
+          message: z.string(),
+          data: z.any()
+        }),
+        400: errorSchemas.validation
+      }
     }
   },
   plans: {
     list: {
       method: 'GET' as const,
       path: '/api/plans' as const,
-      responses: { 200: z.array(z.custom<typeof plans.$inferSelect>()) }
+      responses: { 200: z.array(z.custom<Plan>()) }
     },
     create: {
       method: 'POST' as const,
       path: '/api/plans' as const,
       input: insertPlanSchema,
-      responses: { 201: z.custom<typeof plans.$inferSelect>(), 400: errorSchemas.validation }
+      responses: { 201: z.custom<Plan>(), 400: errorSchemas.validation }
     },
     update: {
       method: 'PATCH' as const,
       path: '/api/plans/:id' as const,
       input: insertPlanSchema.partial(),
-      responses: { 200: z.custom<typeof plans.$inferSelect>(), 400: errorSchemas.validation, 404: errorSchemas.notFound }
+      responses: { 200: z.custom<Plan>(), 400: errorSchemas.validation, 404: errorSchemas.notFound }
     },
     delete: {
       method: 'DELETE' as const,

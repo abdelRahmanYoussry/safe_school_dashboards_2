@@ -655,6 +655,159 @@
         ]
       }
     },
+    "/schools/{id}/incidents": {
+      "post": {
+        "operationId": "SchoolsController_createIncident",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateIncidentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Incident created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "id": "clxabc",
+                    "title": "Unrecognized vehicle at gate 1",
+                    "body": "White sedan with no plates attempted unauthorized pickup.",
+                    "severity": "HIGH",
+                    "attachments": [],
+                    "schoolId": "clxschool",
+                    "authorId": "clxuser",
+                    "resolvedAt": null,
+                    "createdAt": "2026-03-09T20:00:00.000Z",
+                    "updatedAt": "2026-03-09T20:00:00.000Z",
+                    "author": {
+                      "id": "clxuser",
+                      "name": "Guard Ahmed",
+                      "role": "GUARD"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error — missing or invalid fields"
+          },
+          "404": {
+            "description": "School not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Report a safety incident for a school (Staff / Super Admin)",
+        "tags": [
+          "schools"
+        ]
+      },
+      "get": {
+        "operationId": "SchoolsController_listIncidents",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (default: 1)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (default: 20)",
+            "schema": {
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "severity",
+            "required": false,
+            "in": "query",
+            "description": "Filter by severity",
+            "schema": {
+              "enum": [
+                "LOW",
+                "MEDIUM",
+                "HIGH",
+                "CRITICAL"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateFrom",
+            "required": false,
+            "in": "query",
+            "description": "ISO date string — incidents from this date",
+            "schema": {
+              "example": "2026-01-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateTo",
+            "required": false,
+            "in": "query",
+            "description": "ISO date string — incidents up to this date",
+            "schema": {
+              "example": "2026-03-31",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of incidents"
+          },
+          "404": {
+            "description": "School not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List safety incidents for a school (Super Admin)",
+        "tags": [
+          "schools"
+        ]
+      }
+    },
     "/subscription-plans": {
       "post": {
         "operationId": "SubscriptionPlansController_create",
@@ -2313,18 +2466,18 @@
         "parameters": [
           {
             "name": "page",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           },
           {
             "name": "limit",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           }
         ],
@@ -2333,8 +2486,14 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Paginated list of all schools (Super Admin)",
         "tags": [
-          "Dashboard"
+          "dashboard"
         ]
       }
     },
@@ -2356,8 +2515,14 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Statistics for a single school (Super Admin)",
         "tags": [
-          "Dashboard"
+          "dashboard"
         ]
       }
     },
@@ -2367,48 +2532,52 @@
         "parameters": [
           {
             "name": "page",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           },
           {
             "name": "limit",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "number"
             }
           },
           {
             "name": "userId",
-            "required": true,
+            "required": false,
             "in": "query",
+            "description": "Filter by user ID",
             "schema": {
               "type": "string"
             }
           },
           {
             "name": "action",
-            "required": true,
+            "required": false,
             "in": "query",
+            "description": "Filter by action name (partial match)",
             "schema": {
               "type": "string"
             }
           },
           {
             "name": "dateFrom",
-            "required": true,
+            "required": false,
             "in": "query",
+            "description": "ISO date — logs from this date",
             "schema": {
               "type": "string"
             }
           },
           {
             "name": "dateTo",
-            "required": true,
+            "required": false,
             "in": "query",
+            "description": "ISO date — logs up to this date",
             "schema": {
               "type": "string"
             }
@@ -2419,8 +2588,14 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Global audit logs with optional filters (Super Admin)",
         "tags": [
-          "Dashboard"
+          "dashboard"
         ]
       }
     },
@@ -2458,8 +2633,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
-          "Dashboard"
+          "dashboard"
         ]
       }
     },
@@ -2489,8 +2669,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
-          "Dashboard"
+          "dashboard"
         ]
       }
     },
@@ -2544,8 +2729,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
-          "Dashboard"
+          "dashboard"
         ]
       }
     },
@@ -2558,8 +2748,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
-          "Dashboard"
+          "dashboard"
         ]
       }
     },
@@ -2572,8 +2767,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
-          "Dashboard"
+          "dashboard"
         ]
       }
     },
@@ -2586,8 +2786,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
-          "Dashboard"
+          "dashboard"
         ]
       }
     },
@@ -2600,8 +2805,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
-          "Dashboard"
+          "dashboard"
         ]
       }
     },
@@ -2623,8 +2833,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
-          "Dashboard"
+          "dashboard"
         ]
       }
     },
@@ -2654,8 +2869,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
-          "Dashboard"
+          "dashboard"
         ]
       }
     },
@@ -2668,8 +2888,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
-          "Dashboard"
+          "dashboard"
         ]
       },
       "post": {
@@ -2680,8 +2905,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
-          "Dashboard"
+          "dashboard"
         ]
       }
     },
@@ -2703,8 +2933,13 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
-          "Dashboard"
+          "dashboard"
         ]
       },
       "delete": {
@@ -2724,8 +2959,88 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
-          "Dashboard"
+          "dashboard"
+        ]
+      }
+    },
+    "/dashboard/admin/safety-analytics": {
+      "get": {
+        "operationId": "DashboardController_getSafetyAnalytics",
+        "parameters": [
+          {
+            "name": "schoolId",
+            "required": false,
+            "in": "query",
+            "description": "Scope analytics to a single school",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateFrom",
+            "required": false,
+            "in": "query",
+            "description": "ISO date — include incidents from this date",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateTo",
+            "required": false,
+            "in": "query",
+            "description": "ISO date — include incidents up to this date",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Aggregated safety incident data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "totalIncidents": 42,
+                    "bySeverity": {
+                      "LOW": 10,
+                      "MEDIUM": 20,
+                      "HIGH": 8,
+                      "CRITICAL": 4
+                    },
+                    "bySchool": [
+                      {
+                        "schoolId": "clxabc",
+                        "schoolName": "Springfield Elementary",
+                        "incidentCount": 25
+                      },
+                      {
+                        "schoolId": "clxdef",
+                        "schoolName": "Shelbyville Middle",
+                        "incidentCount": 17
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Global safety incident analytics: totals, severity breakdown, per-school summary (Super Admin)",
+        "tags": [
+          "dashboard"
         ]
       }
     },
@@ -4724,6 +5039,11 @@
             "type": "string",
             "example": "Springfield Elementary"
           },
+          "logoUrl": {
+            "type": "string",
+            "example": "https://cdn.example.com/schools/logo.png",
+            "description": "School logo / avatar URL"
+          },
           "address": {
             "type": "string",
             "example": "123 Main St"
@@ -4757,6 +5077,11 @@
           "name": {
             "type": "string",
             "example": "Safe School International"
+          },
+          "logoUrl": {
+            "type": "string",
+            "example": "https://cdn.example.com/schools/logo.png",
+            "description": "School logo / avatar URL"
           },
           "address": {
             "type": "string",
@@ -4844,6 +5169,44 @@
           "guardCount",
           "activeSessions",
           "currentPlan"
+        ]
+      },
+      "CreateIncidentDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Unrecognized vehicle at gate 1"
+          },
+          "body": {
+            "type": "string",
+            "example": "A white sedan with no plates attempted pickup without authorization."
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "LOW",
+              "MEDIUM",
+              "HIGH",
+              "CRITICAL"
+            ],
+            "example": "HIGH"
+          },
+          "attachments": {
+            "example": [
+              "https://cdn.example.com/photos/incident1.jpg"
+            ],
+            "description": "Optional array of attachment URLs (photos, documents)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "title",
+          "body",
+          "severity"
         ]
       },
       "CreateSubscriptionPlanDto": {

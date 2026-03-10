@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { PageTransition } from "@/components/layout/AppLayout";
-import { useSchools, useCreateSchool, useDeleteSchool } from "@/hooks/use-schools";
+import { useSchools, useCreateSchool, useDeleteSchool, useAssignSubscription } from "@/hooks/use-schools";
 import { usePlans } from "@/hooks/use-plans";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { Plus, MoreHorizontal, Eye, Edit2, Trash2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "react-i18next";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Schools() {
   const [page, setPage] = useState(1);
@@ -19,19 +20,91 @@ export default function Schools() {
   const { data: schools, isLoading } = useSchools(page, limit);
   const { data: plans } = usePlans();
   const { t } = useTranslation();
+  const { toast } = useToast();
   const createMutation = useCreateSchool();
+  const assignMutation = useAssignSubscription();
   const deleteMutation = useDeleteSchool();
   const [isAddOpen, setIsAddOpen] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: "", address: "", city: "", latitude: 0, longitude: 0, geofenceRadius: 100, planId: 1
+    name: "",
+    address: "",
+    lat: 0,
+    lng: 0,
+    geofenceRadius: 100,
+    planId: "",
+    logo: null as File | null,
+    adminName: "",
+    adminEmail: "",
+    adminPassword: "",
+    adminPhone: ""
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    createMutation.mutate(formData, {
-      onSuccess: () => {
-        setIsAddOpen(false);
+
+    const fd = new FormData();
+    // Required fields first (matching backend expectation)
+    fd.append("name", formData.name);
+    
+    // Logo is optional - only send if provided
+    if (formData.logo) {
+      fd.append("logo", formData.logo);
+    }
+
+    // Nested admin object (using bracket notation for NestJS)
+    fd.append("admin[name]", formData.adminName);
+    fd.append("admin[email]", formData.adminEmail);
+    fd.append("admin[password]", formData.adminPassword);
+    fd.append("admin[phone]", formData.adminPhone);
+
+    // Optional geo and address fields
+    if (formData.address) fd.append("address", formData.address);
+    if (formData.lat) fd.append("lat", formData.lat.toString());
+    if (formData.lng) fd.append("lng", formData.lng.toString());
+    if (formData.geofenceRadius) fd.append("geofenceRadius", formData.geofenceRadius.toString());
+
+    createMutation.mutate(fd, {
+      onSuccess: (response: any) => {
+        const schoolId = response.data.id;
+        toast({ title: t("Success"), description: t("School created successfully.") });
+        
+        if (formData.planId) {
+          assignMutation.mutate({
+            schoolId,
+            planId: formData.planId,
+            startDate: new Date().toISOString()
+          }, {
+            onSuccess: () => {
+              setIsAddOpen(false);
+              setFormData({
+                name: "", address: "", lat: 0, lng: 0, geofenceRadius: 100, planId: "", logo: null,
+                adminName: "", adminEmail: "", adminPassword: "", adminPhone: ""
+              });
+              toast({ title: t("Success"), description: t("Plan assigned successfully.") });
+            },
+            onError: (error: Error) => {
+              toast({ 
+                title: t("Plan Assignment Failed"), 
+                description: error.message, 
+                variant: "destructive" 
+              });
+            }
+          });
+        } else {
+          setIsAddOpen(false);
+          setFormData({
+            name: "", address: "", lat: 0, lng: 0, geofenceRadius: 100, planId: "", logo: null,
+            adminName: "", adminEmail: "", adminPassword: "", adminPhone: ""
+          });
+        }
+      },
+      onError: (error: Error) => {
+        toast({ 
+          title: t("Creation Failed"), 
+          description: error.message, 
+          variant: "destructive" 
+        });
       }
     });
   };
@@ -46,52 +119,83 @@ export default function Schools() {
 
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 rounded-xl hover:-translate-y-0.5 transition-transform">
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/25 rounded-xl hover:-translate-y-0.5 transition-transform h-11 px-6 font-bold">
               <Plus className="w-4 h-4 mr-2" /> {t("Add School")}
             </Button>
           </DialogTrigger>
-          <DialogContent className="glass-panel border-black/[0.06] sm:max-w-[500px]">
+          <DialogContent className="glass-panel border-black/[0.06] sm:max-w-[500px] rounded-3xl">
             <DialogHeader>
-              <DialogTitle className="text-xl">{t("Onboard New School")}</DialogTitle>
+              <DialogTitle className="text-2xl font-black">{t("Onboard New School")}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2 col-span-2">
-                  <label className="text-sm font-medium">{t("School Name")}</label>
-                  <Input required className="bg-black/[0.03] border-black/10" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                  <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t("School Name")}</label>
+                  <Input required className="bg-black/[0.03] border-black/10 rounded-xl h-11" placeholder="e.g. Greenwood International" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                 </div>
                 <div className="space-y-2 col-span-2">
-                  <label className="text-sm font-medium">{t("Address")}</label>
-                  <Input required className="bg-black/[0.03] border-black/10" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} />
+                  <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t("School Logo")} ({t("Optional")})</label>
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    className="bg-black/[0.03] border-black/10 rounded-xl h-11 pt-2"
+                    onChange={e => setFormData({ ...formData, logo: e.target.files?.[0] || null })}
+                  />
+                  <p className="text-xs text-muted-foreground">{t("If not provided, a default logo will be used")}</p>
                 </div>
                 <div className="space-y-2 col-span-2">
-                  <label className="text-sm font-medium">{t("City")}</label>
-                  <Input required className="bg-black/[0.03] border-black/10" value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} />
+                  <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t("Address")}</label>
+                  <Input required className="bg-black/[0.03] border-black/10 rounded-xl h-11" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">{t("Latitude")}</label>
-                  <Input type="number" step="any" required className="bg-white/5 border-white/10" value={formData.latitude} onChange={e => setFormData({ ...formData, latitude: parseFloat(e.target.value) })} />
+                  <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t("Latitude")}</label>
+                  <Input type="number" step="any" required className="bg-black/[0.03] border-black/10 rounded-xl h-11" value={formData.lat} onChange={e => setFormData({ ...formData, lat: parseFloat(e.target.value) })} />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">{t("Longitude")}</label>
-                  <Input type="number" step="any" required className="bg-white/5 border-white/10" value={formData.longitude} onChange={e => setFormData({ ...formData, longitude: parseFloat(e.target.value) })} />
+                  <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t("Longitude")}</label>
+                  <Input type="number" step="any" required className="bg-black/[0.03] border-black/10 rounded-xl h-11" value={formData.lng} onChange={e => setFormData({ ...formData, lng: parseFloat(e.target.value) })} />
                 </div>
                 <div className="space-y-2 col-span-2">
-                  <label className="text-sm font-medium">{t("Subscription Plan")}</label>
+                  <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t("Geofence Radius (m)")}</label>
+                  <Input type="number" required className="bg-black/[0.03] border-black/10 rounded-xl h-11" value={formData.geofenceRadius} onChange={e => setFormData({ ...formData, geofenceRadius: parseInt(e.target.value) })} />
+                </div>
+                <div className="space-y-2 col-span-2">
+                  <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t("Subscription Plan")}</label>
                   <select
-                    className="flex h-10 w-full rounded-md border border-black/10 bg-black/[0.03] px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-11 w-full rounded-xl border border-black/10 bg-black/[0.03] px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
                     value={formData.planId}
-                    onChange={e => setFormData({ ...formData, planId: parseInt(e.target.value) })}
+                    onChange={e => setFormData({ ...formData, planId: e.target.value })}
                   >
                     {plans?.map(p => (
-                      <option key={p.id} value={p.id} className="bg-white">{p.name}</option>
+                      <option key={p.id} value={p.id} className="bg-white">{p.name} - ${p.monthlyPrice / 100}/mo</option>
                     ))}
                   </select>
                 </div>
+                <div className="space-y-4 col-span-2 pt-4 border-t border-black/5">
+                  <h4 className="text-sm font-black uppercase tracking-widest text-primary">{t("School Administrator")}</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t("Admin Name")}</label>
+                      <Input required className="bg-black/[0.03] border-black/10 rounded-xl h-10" value={formData.adminName} onChange={e => setFormData({ ...formData, adminName: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t("Admin Email")}</label>
+                      <Input required type="email" className="bg-black/[0.03] border-black/10 rounded-xl h-10" value={formData.adminEmail} onChange={e => setFormData({ ...formData, adminEmail: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t("Password")}</label>
+                      <Input required type="password" placeholder="••••••••" className="bg-black/[0.03] border-black/10 rounded-xl h-10" value={formData.adminPassword} onChange={e => setFormData({ ...formData, adminPassword: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t("Phone Number")}</label>
+                      <Input required className="bg-black/[0.03] border-black/10 rounded-xl h-10" value={formData.adminPhone} onChange={e => setFormData({ ...formData, adminPhone: e.target.value })} />
+                    </div>
+                  </div>
+                </div>
               </div>
               <div className="flex justify-end pt-4">
-                <Button type="submit" disabled={createMutation.isPending} className="bg-primary text-primary-foreground rounded-xl">
-                  {createMutation.isPending ? "Creating..." : "Create School"}
+                <Button type="submit" disabled={createMutation.isPending || assignMutation.isPending} className="w-full h-12 text-lg font-bold rounded-xl shadow-lg shadow-primary/20">
+                  {createMutation.isPending || assignMutation.isPending ? t("Saving...") : t("Onboard School")}
                 </Button>
               </div>
             </form>
@@ -99,50 +203,59 @@ export default function Schools() {
         </Dialog>
       </div>
 
-      <div className="bg-white rounded-2xl overflow-hidden border border-black/[0.07] shadow-sm">
+      <div className="bg-white rounded-3xl overflow-hidden border border-black/[0.07] shadow-sm">
         <Table>
           <TableHeader className="bg-black/[0.03] border-b border-black/[0.07]">
-            <TableRow className="hover:bg-transparent">
-              <TableHead className="w-[300px]">{t("School")}</TableHead>
+            <TableRow className="hover:bg-transparent h-12 text-muted-foreground/60 uppercase text-[10px] font-black tracking-widest">
+              <TableHead className="px-6">{t("School")}</TableHead>
               <TableHead>{t("Location")}</TableHead>
               <TableHead>{t("Users")}</TableHead>
               <TableHead>{t("Plan")}</TableHead>
               <TableHead>{t("Status")}</TableHead>
-              <TableHead className="text-right">{t("Actions")}</TableHead>
+              <TableHead className="text-right px-6">{t("Actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               Array(5).fill(0).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-6 w-48 bg-black/[0.04]" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-24 bg-black/[0.04]" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-16 bg-black/[0.04]" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-20 bg-black/[0.04]" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-16 bg-black/[0.04]" /></TableCell>
-                  <TableCell><Skeleton className="h-8 w-8 ml-auto bg-white/5 rounded-md" /></TableCell>
+                  <TableCell className="px-6 py-4"><Skeleton className="h-10 w-48 bg-black/[0.04] rounded-xl" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-24 bg-black/[0.04] rounded-lg" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-16 bg-black/[0.04] rounded-lg" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-20 bg-black/[0.04] rounded-lg" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-16 bg-black/[0.04] rounded-lg" /></TableCell>
+                  <TableCell className="px-6 text-right"><Skeleton className="h-8 w-8 ml-auto bg-black/[0.04] rounded-lg" /></TableCell>
                 </TableRow>
               ))
             ) : schools?.map((school) => (
-              <TableRow key={school.id} className="border-b border-black/[0.05] hover:bg-black/[0.02]">
-                <TableCell className="font-medium">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#002626] to-[#045655] flex items-center justify-center text-xs font-bold text-white shadow-md">
-                      {school.name.substring(0, 2).toUpperCase()}
+              <TableRow key={school.id} className="border-b border-black/[0.05] hover:bg-black/[0.01] transition-colors group">
+                <TableCell className="px-6 py-4 font-bold">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl overflow-hidden bg-black/[0.03] border border-black/[0.08] flex items-center justify-center text-xs font-black text-white shadow-sm ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
+                      {school.logoUrl ? (
+                        <img src={school.logoUrl} className="w-full h-full object-cover" alt={school.name} />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-[#002626] to-[#045655] flex items-center justify-center">
+                          {school.name.substring(0, 2).toUpperCase()}
+                        </div>
+                      )}
                     </div>
-                    {school.name}
+                    <div className="flex flex-col">
+                      <span className="text-foreground">{school.name}</span>
+                      <span className="text-[10px] text-muted-foreground/60 font-medium tracking-tight uppercase">ID: {school.id}</span>
+                    </div>
                   </div>
                 </TableCell>
-                <TableCell className="text-muted-foreground">{school.city}</TableCell>
-                <TableCell>{school.totalUsers}</TableCell>
+                <TableCell className="text-muted-foreground font-medium">{school.address}</TableCell>
+                <TableCell className="font-bold text-foreground/80">-</TableCell>
                 <TableCell>
-                  <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                    {plans?.find(p => p.id === school.planId)?.name || 'Unknown'}
+                  <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 font-bold px-3 py-0.5 rounded-lg whitespace-nowrap">
+                    {plans?.find(p => p.id === school.planId)?.name || 'Basic'}
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={school.status === 'active' ? 'default' : 'secondary'} className={school.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20' : ''}>
-                    {t(school.status)}
+                  <Badge variant={school.isActive ? 'default' : 'secondary'} className={school.isActive ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20 font-bold' : 'font-bold'}>
+                    {school.isActive ? t('active') : t('inactive')}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
