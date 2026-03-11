@@ -15,6 +15,8 @@ const upload = multer({ storage: multer.memoryStorage() });
 async function proxyToBackend(req: any, method: string, path: string, body?: any) {
   const sessionData = req.session as any;
   const token = sessionData?.accessToken;
+  
+  console.log(`[proxy] ${method} ${path} - token exists:`, !!token, "token preview:", token?.substring(0, 20));
 
   const headers: Record<string, string> = {
     Accept: "application/json",
@@ -74,30 +76,71 @@ export async function registerRoutes(
 
   setupAuth(app);
 
-  // Dashboard Stats
-  app.get(api.stats.dashboard.path, withFallback(
-    () => storage.getDashboardStats(),
-    {
-      totalSchools: 0,
-      totalUsers: 0,
-      activePickups: 0,
-      totalStudents: 0,
-      totalParents: 0,
-      totalStaff: 0,
-      safetyIncidents: 0,
-      systemHealth: 0
+  // Dashboard Stats - Proxy to real backend
+  app.get(api.stats.dashboard.path, async (req, res) => {
+    try {
+      console.log("[stats] dashboard: starting proxy...");
+      const backendRes = await proxyToBackend(req, "GET", "/safeschool/stats/dashboard");
+      const data = await backendRes.json() as any;
+      console.log("[stats] dashboard: backend status=", backendRes.status, "data=", JSON.stringify(data).substring(0, 200));
+      if (!backendRes.ok) {
+        console.warn("[stats] dashboard proxy error:", data);
+        return res.json({
+          totalSchools: 0,
+          totalUsers: 0,
+          activePickups: 0,
+          totalStudents: 0,
+          totalParents: 0,
+          totalStaff: 0,
+          safetyIncidents: 0,
+          systemHealth: 0
+        });
+      }
+      // Extract nested data from backend response: { error, statusCode, message, data, errors }
+      res.json(data.data || data);
+    } catch (err: any) {
+      console.warn("[stats] dashboard proxy error:", err.message);
+      res.json({
+        totalSchools: 0,
+        totalUsers: 0,
+        activePickups: 0,
+        totalStudents: 0,
+        totalParents: 0,
+        totalStaff: 0,
+        safetyIncidents: 0,
+        systemHealth: 0
+      });
     }
-  ));
+  });
 
-  app.get(api.stats.analytics.path, withFallback(
-    () => storage.getAnalytics(),
-    {
-      schoolGrowth: [],
-      userRegistrations: [],
-      pickupRequests: [],
-      safetyTrend: []
+  // Analytics Stats - Proxy to real backend
+  app.get(api.stats.analytics.path, async (req, res) => {
+    try {
+      console.log("[stats] analytics: starting proxy...");
+      const backendRes = await proxyToBackend(req, "GET", "/safeschool/stats/analytics");
+      const data = await backendRes.json() as any;
+      console.log("[stats] analytics: backend status=", backendRes.status, "data=", JSON.stringify(data).substring(0, 200));
+      if (!backendRes.ok) {
+        console.warn("[stats] analytics proxy error:", data);
+        return res.json({
+          schoolGrowth: [],
+          userRegistrations: [],
+          pickupRequests: [],
+          safetyTrend: []
+        });
+      }
+      // Extract nested data from backend response: { error, statusCode, message, data, errors }
+      res.json(data.data || data);
+    } catch (err: any) {
+      console.warn("[stats] analytics proxy error:", err.message);
+      res.json({
+        schoolGrowth: [],
+        userRegistrations: [],
+        pickupRequests: [],
+        safetyTrend: []
+      });
     }
-  ));
+  });
 
   app.get(api.stats.safetyAnalytics.path, async (req, res) => {
     const schoolId = req.query.schoolId as string;
