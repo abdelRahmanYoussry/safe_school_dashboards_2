@@ -12,6 +12,7 @@ export default function SchoolDetails() {
   const schoolId = id || "0";
   const { data: school, isLoading: schoolLoading } = useSchool(schoolId);
   const { data: incidents, isLoading: incidentsLoading } = useSchoolIncidents(schoolId);
+  const stats = school?.stats;
 
   const getSeverityBadge = (severity: string) => {
     const s = severity?.toUpperCase() || 'LOW';
@@ -58,7 +59,7 @@ export default function SchoolDetails() {
               </div>
               <div className="flex items-center gap-1.5">
                 <Globe className="w-4 h-4" />
-                <span>Plan ID: {school.planId}</span>
+                <span>Plan: {stats?.currentPlan?.name || "None"}</span>
               </div>
             </div>
           </div>
@@ -66,9 +67,9 @@ export default function SchoolDetails() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <StatCard title="Total Users" value="-" icon={Users} />
-        <StatCard title="Students" value="-" icon={UserCircle} />
-        <StatCard title="Active Pickups" value="-" icon={Car} />
+        <StatCard title="Total Users" value={String((stats?.teacherCount || 0) + (stats?.guardCount || 0) + (stats?.studentCount || 0))} icon={Users} />
+        <StatCard title="Students" value={String(stats?.studentCount || 0)} icon={UserCircle} />
+        <StatCard title="Active Pickups" value={String(stats?.activeSessions || 0)} icon={Car} />
         <StatCard title="Geofence Radius" value={`${school.geofenceRadius}m`} icon={ShieldAlert} />
       </div>
 
@@ -122,6 +123,54 @@ export default function SchoolDetails() {
                   <TableRow>
                     <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
                       No incidents reported for this school.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          <div className="bg-white rounded-3xl border border-black/[0.05] shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-black/[0.05] flex items-center justify-between">
+              <h3 className="text-xl font-bold flex items-center gap-2">
+                <Users className="w-5 h-5 text-primary" />
+                Invitation Codes
+              </h3>
+              <Badge variant="outline">{school?.invitationCodes?.length || 0} Total</Badge>
+            </div>
+            <Table>
+              <TableHeader className="bg-black/[0.01]">
+                <TableRow>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Code</TableHead>
+                  <TableHead>Usage</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {school?.invitationCodes && school.invitationCodes.length > 0 ? (
+                  school.invitationCodes.map((code: any) => (
+                    <TableRow key={code.id} className="hover:bg-black/[0.01]">
+                      <TableCell className="font-medium text-sm">
+                        {code.type}
+                      </TableCell>
+                      <TableCell>
+                        <code className="bg-black/[0.05] px-2 py-1 rounded text-sm font-bold tracking-wider">{code.code}</code>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {code.usedCount} / {code.maxUsage}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className={code.isActive ? 'text-emerald-500 border-emerald-500/20' : ''}>
+                          {code.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
+                      No invitation codes found for this school.
                     </TableCell>
                   </TableRow>
                 )}

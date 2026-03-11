@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { PageTransition } from "@/components/layout/AppLayout";
-import { useSchools, useCreateSchool, useDeleteSchool, useAssignSubscription } from "@/hooks/use-schools";
+import { useSchools, useCreateSchool, useUpdateSchool, useDeleteSchool, useAssignSubscription } from "@/hooks/use-schools";
 import { usePlans } from "@/hooks/use-plans";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/hooks/use-toast";
+import { Switch } from "@/components/ui/switch";
 
 export default function Schools() {
   const [page, setPage] = useState(1);
@@ -22,6 +23,7 @@ export default function Schools() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const createMutation = useCreateSchool();
+  const updateMutation = useUpdateSchool();
   const assignMutation = useAssignSubscription();
   const deleteMutation = useDeleteSchool();
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -109,6 +111,73 @@ export default function Schools() {
     });
   };
 
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editingSchoolId, setEditingSchoolId] = useState<string | null>(null);
+  const [editFormData, setEditFormData] = useState({
+    name: "",
+    address: "",
+    lat: 0,
+    lng: 0,
+    geofenceRadius: 100,
+    isActive: true,
+    planId: "",
+    adminName: "",
+    adminEmail: "",
+    adminPhone: "",
+    adminPassword: "",
+  });
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSchoolId) return;
+
+    updateMutation.mutate({
+      id: editingSchoolId,
+      name: editFormData.name,
+      address: editFormData.address,
+      lat: editFormData.lat,
+      lng: editFormData.lng,
+      geofenceRadius: editFormData.geofenceRadius,
+      isActive: editFormData.isActive,
+      planId: editFormData.planId || undefined,
+      adminName: editFormData.adminName || undefined,
+      adminEmail: editFormData.adminEmail || undefined,
+      adminPhone: editFormData.adminPhone || undefined,
+      adminPassword: editFormData.adminPassword || undefined,
+    }, {
+      onSuccess: () => {
+        toast({ title: t("Success"), description: t("School updated successfully.") });
+        setIsEditOpen(false);
+        setEditingSchoolId(null);
+      },
+      onError: (error: Error) => {
+        toast({ 
+          title: t("Update Failed"), 
+          description: error.message, 
+          variant: "destructive" 
+        });
+      }
+    });
+  };
+
+  const openEditModal = (school: any) => {
+    setEditingSchoolId(school.id);
+    setEditFormData({
+      name: school.name || "",
+      address: school.address || "",
+      lat: school.lat || 0,
+      lng: school.lng || 0,
+      geofenceRadius: school.geofenceRadius || 100,
+      isActive: school.isActive ?? true,
+      planId: school.planId || "",
+      adminName: school.adminName || "",
+      adminEmail: school.adminEmail || "",
+      adminPhone: school.adminPhone || "",
+      adminPassword: "",
+    });
+    setIsEditOpen(true);
+  };
+
   return (
     <PageTransition className="space-y-6">
       <div className="flex justify-between items-end">
@@ -167,7 +236,7 @@ export default function Schools() {
                     onChange={e => setFormData({ ...formData, planId: e.target.value })}
                   >
                     {plans?.map(p => (
-                      <option key={p.id} value={p.id} className="bg-white">{p.name} - ${p.monthlyPrice / 100}/mo</option>
+                      <option key={p.id} value={p.id} className="bg-white">{p.name} - ${p.price / 100}/mo</option>
                     ))}
                   </select>
                 </div>
@@ -201,6 +270,80 @@ export default function Schools() {
             </form>
           </DialogContent>
         </Dialog>
+
+        <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+          <DialogContent className="glass-panel border-black/[0.06] sm:max-w-[500px] rounded-3xl">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-black">{t("Edit School")}</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleEditSubmit} className="space-y-4 mt-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2 col-span-2">
+                  <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t("School Name")}</label>
+                  <Input required className="bg-black/[0.03] border-black/10 rounded-xl h-11" value={editFormData.name} onChange={e => setEditFormData({ ...editFormData, name: e.target.value })} />
+                </div>
+                <div className="space-y-2 col-span-2">
+                  <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t("Address")}</label>
+                  <Input required className="bg-black/[0.03] border-black/10 rounded-xl h-11" value={editFormData.address} onChange={e => setEditFormData({ ...editFormData, address: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t("Latitude")}</label>
+                  <Input type="number" step="any" required className="bg-black/[0.03] border-black/10 rounded-xl h-11" value={editFormData.lat} onChange={e => setEditFormData({ ...editFormData, lat: parseFloat(e.target.value) })} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t("Longitude")}</label>
+                  <Input type="number" step="any" required className="bg-black/[0.03] border-black/10 rounded-xl h-11" value={editFormData.lng} onChange={e => setEditFormData({ ...editFormData, lng: parseFloat(e.target.value) })} />
+                </div>
+                <div className="space-y-2 col-span-2">
+                  <label className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{t("Subscription Plan")}</label>
+                  <select
+                    className="flex h-11 w-full rounded-xl border border-black/10 bg-black/[0.03] px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
+                    value={editFormData.planId}
+                    onChange={e => setEditFormData({ ...editFormData, planId: e.target.value })}
+                  >
+                    <option value="">{t("Select Plan")}</option>
+                    {plans?.map(p => (
+                      <option key={p.id} value={p.id} className="bg-white">{p.name} - ${p.price / 100}/mo</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-4 col-span-2 pt-4 border-t border-black/5">
+                  <h4 className="text-sm font-black uppercase tracking-widest text-primary">{t("School Administrator")}</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t("Admin Name")}</label>
+                      <Input className="bg-black/[0.03] border-black/10 rounded-xl h-10" value={editFormData.adminName} onChange={e => setEditFormData({ ...editFormData, adminName: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t("Admin Email")}</label>
+                      <Input type="email" className="bg-black/[0.03] border-black/10 rounded-xl h-10" value={editFormData.adminEmail} onChange={e => setEditFormData({ ...editFormData, adminEmail: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t("Password")}</label>
+                      <Input type="password" placeholder={t("Leave blank to keep")} className="bg-black/[0.03] border-black/10 rounded-xl h-10" value={editFormData.adminPassword} onChange={e => setEditFormData({ ...editFormData, adminPassword: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{t("Phone Number")}</label>
+                      <Input className="bg-black/[0.03] border-black/10 rounded-xl h-10" value={editFormData.adminPhone} onChange={e => setEditFormData({ ...editFormData, adminPhone: e.target.value })} />
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-2 col-span-2 flex items-center justify-between mt-2 p-3 bg-black/[0.02] rounded-xl border border-black/[0.05]">
+                  <label className="text-sm font-bold text-foreground uppercase tracking-wider">{t("Active Status")}</label>
+                  <Switch
+                    checked={editFormData.isActive}
+                    onCheckedChange={(checked) => setEditFormData({ ...editFormData, isActive: checked })}
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end pt-4">
+                <Button type="submit" disabled={updateMutation.isPending} className="w-full h-12 text-lg font-bold rounded-xl shadow-lg shadow-primary/20">
+                  {updateMutation.isPending ? t("Saving...") : t("Save Changes")}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="bg-white rounded-3xl overflow-hidden border border-black/[0.07] shadow-sm">
@@ -209,7 +352,6 @@ export default function Schools() {
             <TableRow className="hover:bg-transparent h-12 text-muted-foreground/60 uppercase text-[10px] font-black tracking-widest">
               <TableHead className="px-6">{t("School")}</TableHead>
               <TableHead>{t("Location")}</TableHead>
-              <TableHead>{t("Users")}</TableHead>
               <TableHead>{t("Plan")}</TableHead>
               <TableHead>{t("Status")}</TableHead>
               <TableHead className="text-right px-6">{t("Actions")}</TableHead>
@@ -221,7 +363,6 @@ export default function Schools() {
                 <TableRow key={i}>
                   <TableCell className="px-6 py-4"><Skeleton className="h-10 w-48 bg-black/[0.04] rounded-xl" /></TableCell>
                   <TableCell><Skeleton className="h-6 w-24 bg-black/[0.04] rounded-lg" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-16 bg-black/[0.04] rounded-lg" /></TableCell>
                   <TableCell><Skeleton className="h-6 w-20 bg-black/[0.04] rounded-lg" /></TableCell>
                   <TableCell><Skeleton className="h-6 w-16 bg-black/[0.04] rounded-lg" /></TableCell>
                   <TableCell className="px-6 text-right"><Skeleton className="h-8 w-8 ml-auto bg-black/[0.04] rounded-lg" /></TableCell>
@@ -247,16 +388,31 @@ export default function Schools() {
                   </div>
                 </TableCell>
                 <TableCell className="text-muted-foreground font-medium">{school.address}</TableCell>
-                <TableCell className="font-bold text-foreground/80">-</TableCell>
                 <TableCell>
                   <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 font-bold px-3 py-0.5 rounded-lg whitespace-nowrap">
-                    {plans?.find(p => p.id === school.planId)?.name || 'Basic'}
+                    {school.plan || school.planName || plans?.find(p => p.id === school.planId)?.name || 'Basic'}
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  <Badge variant={school.isActive ? 'default' : 'secondary'} className={school.isActive ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20 font-bold' : 'font-bold'}>
-                    {school.isActive ? t('active') : t('inactive')}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant={school.isActive ? 'default' : 'secondary'} className={school.isActive ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20 font-bold' : 'font-bold'}>
+                      {school.isActive ? t('active') : t('inactive')}
+                    </Badge>
+                    <Switch
+                      checked={school.isActive}
+                      onCheckedChange={(checked) => {
+                        updateMutation.mutate({ id: school.id, isActive: checked }, {
+                          onSuccess: () => {
+                            toast({ title: t("Success"), description: t(checked ? "School activated successfully." : "School deactivated successfully.") });
+                          },
+                          onError: (error) => {
+                            toast({ title: t("Update Failed"), description: error.message, variant: "destructive" });
+                          }
+                        });
+                      }}
+                      disabled={updateMutation.isPending}
+                    />
+                  </div>
                 </TableCell>
                 <TableCell className="text-right">
                   <DropdownMenu>
@@ -272,7 +428,10 @@ export default function Schools() {
                           <Eye className="w-4 h-4 mr-2" /> {t("View Details")}
                         </DropdownMenuItem>
                       </Link>
-                      <DropdownMenuItem className="cursor-pointer hover:bg-white/10 focus:bg-white/10">
+                      <DropdownMenuItem 
+                        className="cursor-pointer hover:bg-white/10 focus:bg-white/10"
+                        onClick={() => openEditModal(school)}
+                      >
                         <Edit2 className="w-4 h-4 mr-2" /> {t("Edit School")}
                       </DropdownMenuItem>
                       <DropdownMenuItem

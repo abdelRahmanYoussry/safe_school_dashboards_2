@@ -103,6 +103,7 @@ export const insertSchoolSchema = z.object({
   lng: z.number(),
   geofenceRadius: z.number().min(50).max(5000),
   logoUrl: z.string().url().optional().or(z.literal("")),
+  isActive: z.boolean().optional(),
   admin: insertSchoolAdminSchema
 });
 

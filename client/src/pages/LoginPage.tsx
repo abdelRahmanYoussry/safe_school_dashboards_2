@@ -57,7 +57,11 @@ export default function LoginPage() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            goToSlide((prev) => (prev + 1) % onboardingSlides.length);
+            setActiveSlide((prev: number) => {
+                const nextSlide = (prev + 1) % onboardingSlides.length;
+                goToSlide(nextSlide);
+                return nextSlide;
+            });
         }, 4000);
         return () => clearInterval(interval);
     }, [goToSlide]);
@@ -175,10 +179,11 @@ export default function LoginPage() {
                                                         onFocus={(e) =>
                                                             (e.currentTarget.style.borderColor = BRAND_GREEN)
                                                         }
-                                                        onBlur={(e) =>
-                                                            (e.currentTarget.style.borderColor = "#E5E7EB")
-                                                        }
                                                         {...field}
+                                                        onBlur={(e) => {
+                                                            field.onBlur();
+                                                            e.currentTarget.style.borderColor = "#E5E7EB";
+                                                        }}
                                                     />
                                                 </div>
                                             </FormControl>
@@ -216,10 +221,11 @@ export default function LoginPage() {
                                                         onFocus={(e) =>
                                                             (e.currentTarget.style.borderColor = BRAND_GREEN)
                                                         }
-                                                        onBlur={(e) =>
-                                                            (e.currentTarget.style.borderColor = "#E5E7EB")
-                                                        }
                                                         {...field}
+                                                        onBlur={(e) => {
+                                                            field.onBlur();
+                                                            e.currentTarget.style.borderColor = "#E5E7EB";
+                                                        }}
                                                     />
                                                 </div>
                                             </FormControl>

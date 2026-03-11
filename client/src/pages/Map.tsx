@@ -26,8 +26,8 @@ export default function MapView() {
   }
 
   // Get map bounds
-  const lats = schools.map(s => s.latitude);
-  const lons = schools.map(s => s.longitude);
+  const lats = schools.map(s => s.lat);
+  const lons = schools.map(s => s.lng);
   const minLat = Math.min(...lats);
   const maxLat = Math.max(...lats);
   const minLon = Math.min(...lons);
@@ -67,7 +67,7 @@ export default function MapView() {
         <div>
           <h1 className="text-3xl font-bold text-foreground tracking-tight">Global Map</h1>
           <p className="text-muted-foreground mt-1">
-            {schools.length} schools • {schools.reduce((sum, s) => sum + s.activePickups, 0)} active pickups
+            {schools.length} schools • {schools.reduce((sum, s) => sum + ((s as any).activePickups || 0), 0)} active pickups
           </p>
         </div>
         <div className="flex gap-2">
@@ -118,8 +118,8 @@ export default function MapView() {
             {schools.map((school) => (
               <circle
                 key={`geofence-${school.id}`}
-                cx={toSvgX(school.longitude)}
-                cy={toSvgY(school.latitude)}
+                cx={toSvgX(school.lng)}
+                cy={toSvgY(school.lat)}
                 r={geofenceToPx(school.geofenceRadius)}
                 fill="hsl(var(--primary))"
                 opacity="0.05"
@@ -138,10 +138,10 @@ export default function MapView() {
                 transition={{ delay: schools.indexOf(school) * 0.05 }}
               >
                 {/* Pulse ring for active pickups */}
-                {school.activePickups > 0 && (
+                {((school as any).activePickups || 0) > 0 && (
                   <circle
-                    cx={toSvgX(school.longitude)}
-                    cy={toSvgY(school.latitude)}
+                    cx={toSvgX(school.lng)}
+                    cy={toSvgY(school.lat)}
                     r="8"
                     fill="none"
                     stroke="hsl(var(--accent))"
@@ -153,10 +153,10 @@ export default function MapView() {
 
                 {/* Main marker */}
                 <circle
-                  cx={toSvgX(school.longitude)}
-                  cy={toSvgY(school.latitude)}
+                  cx={toSvgX(school.lng)}
+                  cy={toSvgY(school.lat)}
                   r="6"
-                  fill={school.status === 'active' ? 'hsl(var(--primary))' : 'hsl(var(--muted))'}
+                  fill={school.isActive ? 'hsl(var(--primary))' : 'hsl(var(--muted))'}
                   stroke="hsl(var(--background))"
                   strokeWidth="2"
                 />
@@ -167,8 +167,8 @@ export default function MapView() {
 
                   {/* Background for info */}
                   <rect
-                    x={toSvgX(school.longitude) - 85}
-                    y={toSvgY(school.latitude) - 50}
+                    x={toSvgX(school.lng) - 85}
+                    y={toSvgY(school.lat) - 50}
                     width="170"
                     height="50"
                     rx="6"
@@ -181,8 +181,8 @@ export default function MapView() {
 
                   {/* School name */}
                   <text
-                    x={toSvgX(school.longitude)}
-                    y={toSvgY(school.latitude) - 32}
+                    x={toSvgX(school.lng)}
+                    y={toSvgY(school.lat) - 32}
                     textAnchor="middle"
                     fontSize="12"
                     fontWeight="600"
@@ -196,8 +196,8 @@ export default function MapView() {
 
                   {/* Users info */}
                   <text
-                    x={toSvgX(school.longitude)}
-                    y={toSvgY(school.latitude) - 18}
+                    x={toSvgX(school.lng)}
+                    y={toSvgY(school.lat) - 18}
                     textAnchor="middle"
                     fontSize="11"
                     fill="hsl(var(--muted-foreground))"
@@ -205,13 +205,13 @@ export default function MapView() {
                     className="group-hover:opacity-100 transition-opacity"
                     pointerEvents="none"
                   >
-                    Users: {school.totalUsers}
+                    Users: {(school as any).totalUsers || 0}
                   </text>
 
                   {/* Active pickups */}
                   <text
-                    x={toSvgX(school.longitude)}
-                    y={toSvgY(school.latitude) - 5}
+                    x={toSvgX(school.lng)}
+                    y={toSvgY(school.lat) - 5}
                     textAnchor="middle"
                     fontSize="11"
                     fill="hsl(var(--accent))"
@@ -220,7 +220,7 @@ export default function MapView() {
                     className="group-hover:opacity-100 transition-opacity"
                     pointerEvents="none"
                   >
-                    Active: {school.activePickups}
+                    Active: {(school as any).activePickups || 0}
                   </text>
                 </g>
               </motion.g>

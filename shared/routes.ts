@@ -57,12 +57,12 @@ export const api = {
     list: {
       method: 'GET' as const,
       path: '/api/schools' as const,
-      responses: { 200: z.array(z.custom<typeof schools.$inferSelect>()) }
+      responses: { 200: z.array(z.custom<typeof schools.$inferSelect & { plan?: string, planName?: string, planId?: string, adminName?: string, adminEmail?: string, adminPhone?: string }>()) }
     },
     get: {
       method: 'GET' as const,
       path: '/api/schools/:id' as const,
-      responses: { 200: z.custom<typeof schools.$inferSelect>(), 404: errorSchemas.notFound }
+      responses: { 200: z.custom<any>(), 404: errorSchemas.notFound }
     },
     create: {
       method: 'POST' as const,
@@ -73,13 +73,38 @@ export const api = {
     update: {
       method: 'PATCH' as const,
       path: '/api/schools/:id' as const,
-      input: insertSchoolSchema.partial(),
+      input: insertSchoolSchema.partial().extend({
+        adminName: z.string().optional(),
+        adminEmail: z.string().email().optional(),
+        adminPhone: z.string().optional(),
+        adminPassword: z.string().optional(),
+        planId: z.string().optional(),
+      }),
       responses: { 200: z.custom<typeof schools.$inferSelect>(), 400: errorSchemas.validation, 404: errorSchemas.notFound }
     },
     delete: {
       method: 'DELETE' as const,
       path: '/api/schools/:id' as const,
       responses: { 204: z.void(), 404: errorSchemas.notFound }
+    },
+    stats: {
+      method: 'GET' as const,
+      path: '/api/schools/:id/stats' as const,
+      responses: { 
+        200: z.object({
+          studentCount: z.number(),
+          teacherCount: z.number(),
+          guardCount: z.number(),
+          activeSessions: z.number(),
+          currentPlan: z.object({
+            id: z.string(),
+            name: z.string(),
+            endDate: z.string().nullable(),
+            isActive: z.boolean(),
+          }).nullable()
+        }),
+        404: errorSchemas.notFound
+      }
     },
     incidents: {
       list: {
