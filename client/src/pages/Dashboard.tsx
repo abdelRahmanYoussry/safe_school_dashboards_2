@@ -3,7 +3,7 @@ import { StatCard } from "@/components/ui/StatCard";
 import { useDashboardStats, useAnalytics } from "@/hooks/use-dashboard";
 import {
   School, Users, Activity, ShieldAlert, HeartPulse,
-  MapPin, CheckCircle2, UserCircle
+  UserCircle
 } from "lucide-react";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -30,14 +30,13 @@ export default function Dashboard() {
           Array(8).fill(0).map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl bg-black/[0.04]" />)
         ) : stats ? (
           <>
-            <StatCard delay={0.1} title={t("Total Schools")} value={stats.totalSchools} icon={School} trend={{ value: 12, label: t("this month") }} />
-            <StatCard delay={0.15} title={t("Total Users")} value={stats.totalUsers.toLocaleString()} icon={Users} trend={{ value: 5.4, label: t("this week") }} />
+            <StatCard delay={0.1} title={t("Total Schools")} value={stats.totalSchools} icon={School} />
+            <StatCard delay={0.15} title={t("Total Users")} value={stats.totalUsers.toLocaleString()} icon={Users} />
             <StatCard delay={0.2} title={t("Active Pickups")} value={stats.activePickups} icon={Activity} />
             <StatCard delay={0.25} title={t("System Health")} value={`${stats.systemHealth}%`} icon={HeartPulse} />
             <StatCard delay={0.3} title={t("Total Students")} value={stats.totalStudents.toLocaleString()} icon={UserCircle} />
             <StatCard delay={0.35} title={t("Total Parents")} value={stats.totalParents.toLocaleString()} icon={Users} />
-            <StatCard delay={0.4} title={t("Safety Incidents")} value={stats.safetyIncidents} icon={ShieldAlert} trend={{ value: -14, label: t("vs last week") }} />
-            <StatCard delay={0.45} title={t("Geofence Checks")} value="1.2M" icon={MapPin} />
+            <StatCard delay={0.4} title={t("Safety Incidents")} value={stats.safetyIncidents} icon={ShieldAlert} />
           </>
         ) : null}
       </div>
