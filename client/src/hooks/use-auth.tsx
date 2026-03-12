@@ -75,6 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (!response.ok) throw new Error("Logout failed");
         },
         onSuccess: () => {
+            localStorage.removeItem("safe_school_remember_me");
             queryClient.setQueryData(["/api/user"], null);
             toast({
                 title: "Logged out",

@@ -12,6 +12,7 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Mail, Lock, Loader2, Globe } from "lucide-react";
 import { Redirect } from "wouter";
 import { useTranslation } from "react-i18next";
@@ -42,8 +43,9 @@ const onboardingSlides = [
 ];
 
 export default function LoginPage() {
-    const { user, loginMutation } = useAuth();
+    const { user, loginMutation, isLoading: isAuthLoading } = useAuth();
     const { t, i18n } = useTranslation();
+    const [rememberMe, setRememberMe] = useState(false);
     const [activeSlide, setActiveSlide] = useState(0);
     const [isFading, setIsFading] = useState(false);
 
@@ -74,6 +76,28 @@ export default function LoginPage() {
         },
     });
 
+    useEffect(() => {
+        if (isAuthLoading || user) return;
+        
+        const saved = localStorage.getItem("safe_school_remember_me");
+        if (saved) {
+            try {
+                const { email, password, timestamp } = JSON.parse(saved);
+                const isExpired = new Date().getTime() - timestamp > 7 * 24 * 60 * 60 * 1000;
+                if (!isExpired) {
+                    setRememberMe(true);
+                    form.setValue("email", email);
+                    form.setValue("password", password);
+                    loginMutation.mutate({ email, password });
+                } else {
+                    localStorage.removeItem("safe_school_remember_me");
+                }
+            } catch (e) {
+                // ignore
+            }
+        }
+    }, [isAuthLoading, user]);
+
     if (user) {
         return <Redirect to="/" />;
     }
@@ -82,7 +106,7 @@ export default function LoginPage() {
         <div className="min-h-screen flex" style={{ backgroundColor: LIGHT_BG }}>
             {/* ===== LEFT SIDE — Login Form ===== */}
             <div
-                className="flex flex-col w-full lg:w-1/2 min-h-screen relative"
+                className="flex flex-col w-full md:w-1/2 min-h-screen relative"
                 style={{ backgroundColor: LIGHT_BG }}
             >
                 {/* Language Switcher */}
@@ -147,7 +171,19 @@ export default function LoginPage() {
                         <Form {...form}>
                             <form
                                 onSubmit={form.handleSubmit((data) =>
-                                    loginMutation.mutate(data)
+                                    loginMutation.mutate(data, {
+                                        onSuccess: () => {
+                                            if (rememberMe) {
+                                                localStorage.setItem("safe_school_remember_me", JSON.stringify({
+                                                    email: data.email,
+                                                    password: data.password,
+                                                    timestamp: new Date().getTime()
+                                                }));
+                                            } else {
+                                                localStorage.removeItem("safe_school_remember_me");
+                                            }
+                                        }
+                                    })
                                 )}
                                 className="space-y-5"
                             >
@@ -234,6 +270,22 @@ export default function LoginPage() {
                                     )}
                                 />
 
+                                {/* Remember Me */}
+                                <div className="flex items-center space-x-2 rtl:space-x-reverse pt-2">
+                                    <Checkbox 
+                                        id="remember" 
+                                        checked={rememberMe}
+                                        onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                                        style={{ accentColor: BRAND_GREEN }}
+                                    />
+                                    <label
+                                        htmlFor="remember"
+                                        className="text-sm font-medium leading-none cursor-pointer text-gray-600"
+                                    >
+                                        {t("Remember me")}
+                                    </label>
+                                </div>
+
                                 {/* Submit */}
                                 <Button
                                     type="submit"
@@ -263,7 +315,7 @@ export default function LoginPage() {
 
             {/* ===== RIGHT SIDE — Onboarding Carousel (hidden on mobile) ===== */}
             <div
-                className="hidden lg:flex flex-col w-1/2 min-h-screen items-center justify-center relative overflow-hidden"
+                className="hidden md:flex flex-col w-1/2 min-h-screen items-center justify-center relative overflow-hidden"
                 style={{ backgroundColor: BRAND_GREEN }}
             >
                 {/* Subtle decorative circles */}
