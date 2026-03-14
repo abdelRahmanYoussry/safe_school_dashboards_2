@@ -4,12 +4,7 @@ import { Bell, Search, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { AdminSidebar } from "./AdminSidebar";
 import { useTranslation } from "react-i18next";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Link } from "wouter";
 
 export const PageTransition = ({ children, className = "" }: { children: ReactNode, className?: string }) => {
   return (
@@ -49,27 +44,11 @@ export function AdminLayout({ children }: { children: ReactNode }) {
               <Bell className="w-5 h-5" />
               <span className="absolute top-2 right-2 w-2 h-2 bg-destructive rounded-full border border-background"></span>
             </button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-black/[0.04] rtl:ml-2">
-                  <Settings className="w-5 h-5" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="glass-panel border-black/[0.06] w-48 z-50">
-                <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">
-                  {t("Language")}
-                </div>
-                <DropdownMenuItem className="cursor-pointer focus:bg-black/[0.05] hover:bg-black/[0.05]" onClick={() => i18n.changeLanguage('ar')}>
-                  العربية
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer focus:bg-black/[0.05] hover:bg-black/[0.05]" onClick={() => i18n.changeLanguage('en')}>
-                  English
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer focus:bg-black/[0.05] hover:bg-black/[0.05]" onClick={() => i18n.changeLanguage('ur')}>
-                  اردو
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Link href="/admin/settings">
+              <button className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-black/[0.04] rtl:ml-2">
+                <Settings className="w-5 h-5" />
+              </button>
+            </Link>
           </div>
         </header>
 

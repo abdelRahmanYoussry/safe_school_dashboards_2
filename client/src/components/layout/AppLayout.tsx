@@ -22,12 +22,6 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -147,31 +141,15 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <Bell className="w-5 h-5" />
               <span className="absolute top-2 right-2 w-2 h-2 bg-destructive rounded-full border border-background"></span>
             </button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-black/[0.04] rtl:ml-2">
-                  <Settings className="w-5 h-5" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="glass-panel border-black/[0.06] w-48 z-50">
-                <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">
-                  {t("Language")}
-                </div>
-                <DropdownMenuItem className="cursor-pointer focus:bg-black/[0.05] hover:bg-black/[0.05]" onClick={() => i18n.changeLanguage('ar')}>
-                  العربية
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer focus:bg-black/[0.05] hover:bg-black/[0.05]" onClick={() => i18n.changeLanguage('en')}>
-                  English
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer focus:bg-black/[0.05] hover:bg-black/[0.05]" onClick={() => i18n.changeLanguage('ur')}>
-                  اردو
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Link href="/settings">
+              <button className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-black/[0.04] rtl:ml-2">
+                <Settings className="w-5 h-5" />
+              </button>
+            </Link>
           </div>
         </header>
 
-        {/* Page Content */}
+        {/* Page Content */ }
         <main className="flex-1 overflow-auto p-8 relative">
           <AnimatePresence mode="wait">
             {children}

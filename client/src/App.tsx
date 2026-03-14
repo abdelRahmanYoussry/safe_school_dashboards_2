@@ -6,6 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 // Pages
 import Dashboard from "./pages/Dashboard";
@@ -20,6 +22,7 @@ import MapView from "./pages/Map";
 import NotFound from "@/pages/not-found";
 import LoginPage from "./pages/LoginPage";
 import AdminLoginPage from "./admin/pages/AdminLoginPage";
+import SuperAdminSettingsPage from "./pages/SettingsPage";
 
 
 import { AdminLayout } from "./admin/components/AdminLayout";
@@ -29,10 +32,20 @@ import StaffPage from "./admin/pages/StaffPage";
 import PickupPage from "./admin/pages/PickupPage";
 import TransportationPage from "./admin/pages/TransportationPage";
 import InvitationsPage from "./admin/pages/InvitationsPage";
-import SettingsPage from "./admin/pages/SettingsPage";
+import AdminSettingsPage from "./admin/pages/SettingsPage";
 
 function ProtectedRoute({ component: Component, path }: { component: React.ComponentType, path: string }) {
   const { user, isLoading } = useAuth();
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    if (user && user.role?.toLowerCase() !== 'school_admin') {
+      const savedLang = localStorage.getItem("super_admin_lang");
+      if (savedLang && i18n.language !== savedLang) {
+        i18n.changeLanguage(savedLang);
+      }
+    }
+  }, [user, i18n]);
 
   if (isLoading) {
     return (
@@ -64,6 +77,16 @@ function ProtectedRoute({ component: Component, path }: { component: React.Compo
 
 function AdminProtectedRoute({ component: Component, path }: { component: React.ComponentType, path: string }) {
     const { user, isLoading } = useAuth();
+    const { i18n } = useTranslation();
+  
+    useEffect(() => {
+      if (user && user.role?.toLowerCase() === 'school_admin') {
+        const savedLang = localStorage.getItem("school_admin_lang");
+        if (savedLang && i18n.language !== savedLang) {
+          i18n.changeLanguage(savedLang);
+        }
+      }
+    }, [user, i18n]);
   
     if (isLoading) {
       return (
@@ -106,6 +129,7 @@ function Router() {
       <ProtectedRoute path="/tickets" component={Tickets} />
       <ProtectedRoute path="/audit-logs" component={AuditLogs} />
       <ProtectedRoute path="/map" component={MapView} />
+      <ProtectedRoute path="/settings" component={SuperAdminSettingsPage} />
 
       {/* School Admin Routes */}
       <AdminProtectedRoute path="/admin" component={AdminDashboard} />
@@ -114,7 +138,7 @@ function Router() {
       <AdminProtectedRoute path="/admin/pickup" component={PickupPage} />
       <AdminProtectedRoute path="/admin/transportation" component={TransportationPage} />
       <AdminProtectedRoute path="/admin/invitations" component={InvitationsPage} />
-      <AdminProtectedRoute path="/admin/settings" component={SettingsPage} />
+      <AdminProtectedRoute path="/admin/settings" component={AdminSettingsPage} />
 
       <Route component={NotFound} />
     </Switch>

@@ -105,7 +105,15 @@ const resources = {
             "Safer School Environment": "بيئة مدرسية أكثر أماناً",
             "We protect your children through an advanced verification system and seamless coordination between management and parents.": "نحمي أطفالك من خلال نظام تحقق متطور وتنسيق سلس بين الإدارة وأولياء الأمور لضمان سلامتهم.",
             "Sign In - Admin Dashboard": "تسجيل الدخول - لوحة المدير",
-            "Smart platform for safely organizing child pickup by guardians": "منصة ذكية لتنظيم تسليم الأطفال لذويهم بأمان"
+            "Smart platform for safely organizing child pickup by guardians": "منصة ذكية لتنظيم تسليم الأطفال لذويهم بأمان",
+            // Settings
+            "Settings": "الإعدادات",
+            "Language Settings": "إعدادات اللغة",
+            "Language Configuration": "تكوين اللغة",
+            "Choose your preferred language for the dashboard interface.": "اختر لغتك المفضلة لواجهة لوحة القيادة.",
+            "School Settings": "إعدادات المدرسة",
+            "General Settings": "الإعدادات العامة",
+            "Configure school details, pickup timings, and geofence": "تكوين تفاصيل المدرسة وتوقيتات الالتقاط والسياج الجغرافي"
         }
     },
     en: {
@@ -208,7 +216,15 @@ const resources = {
             "Safer School Environment": "Safer School Environment",
             "We protect your children through an advanced verification system and seamless coordination between management and parents.": "We protect your children through an advanced verification system and seamless coordination between management and parents.",
             "Sign In - Admin Dashboard": "Sign In - Admin Dashboard",
-            "Smart platform for safely organizing child pickup by guardians": "Smart platform for safely organizing child pickup by guardians"
+            "Smart platform for safely organizing child pickup by guardians": "Smart platform for safely organizing child pickup by guardians",
+            // Settings
+            "Settings": "Settings",
+            "Language Settings": "Language Settings",
+            "Language Configuration": "Language Configuration",
+            "Choose your preferred language for the dashboard interface.": "Choose your preferred language for the dashboard interface.",
+            "School Settings": "School Settings",
+            "General Settings": "General Settings",
+            "Configure school details, pickup timings, and geofence": "Configure school details, pickup timings, and geofence"
         }
     },
     ur: {
@@ -311,7 +327,15 @@ const resources = {
             "Safer School Environment": "محفوظ اسکول کا ماحول",
             "We protect your children through an advanced verification system and seamless coordination between management and parents.": "ہم آپ کے بچوں کو ایک جدید تصدیقی نظام اور انتظام اور والدین کے درمیان ہموار ہم آہنگی کے ذریعے محفوظ رکھتے ہیں۔",
             "Sign In - Admin Dashboard": "سائن ان کریں - ایڈمن ڈیش بورڈ",
-            "Smart platform for safely organizing child pickup by guardians": "سرپرستوں کے ذریعہ بچوں کے پک اپ کو محفوظ طریقے سے منظم کرنے کا سمارٹ پلیٹ فارم"
+            "Smart platform for safely organizing child pickup by guardians": "سرپرستوں کے ذریعہ بچوں کے پک اپ کو محفوظ طریقے سے منظم کرنے کا سمارٹ پلیٹ فارم",
+            // Settings
+            "Settings": "ترتیبات",
+            "Language Settings": "زبان کی ترتیبات",
+            "Language Configuration": "زبان کی تشکیل",
+            "Choose your preferred language for the dashboard interface.": "ڈیش بورڈ انٹرفیس کے لیے اپنی پسندیدہ زبان کا انتخاب کریں۔",
+            "School Settings": "اسکول کی ترتیبات",
+            "General Settings": "عمومی ترتیبات",
+            "Configure school details, pickup timings, and geofence": "اسکول کی تفصیلات، پک اپ کے اوقات، اور جیو فینس کو ترتیب دیں"
         }
     }
 };
