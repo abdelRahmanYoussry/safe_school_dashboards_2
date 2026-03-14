@@ -6,7 +6,7 @@ import {
     UseMutationResult,
 } from "@tanstack/react-query";
 import { insertUserSchema, User as SelectUser, InsertUser } from "@shared/schema";
-import { queryClient } from "../lib/queryClient";
+import { queryClient, scopedFetch } from "../lib/queryClient";
 import { useToast } from "./use-toast";
 
 type AuthContextType = {
@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } = useQuery<SelectUser | null, Error>({
         queryKey: ["/api/user"],
         queryFn: async () => {
-            const response = await fetch("/api/user");
+            const response = await scopedFetch("/api/user");
             if (response.status === 401) return null;
             if (!response.ok) throw new Error("Could not fetch current user");
             return response.json();
@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const loginMutation = useMutation<SelectUser, Error, LoginData>({
         mutationFn: async (credentials) => {
-            const response = await fetch("/api/login", {
+            const response = await scopedFetch("/api/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(credentials),
@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const logoutMutation = useMutation<void, Error, void>({
         mutationFn: async () => {
-            const response = await fetch("/api/logout", { method: "POST" });
+            const response = await scopedFetch("/api/logout", { method: "POST" });
             if (!response.ok) throw new Error("Logout failed");
         },
         onSuccess: () => {
@@ -86,7 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const registerMutation = useMutation<SelectUser, Error, InsertUser>({
         mutationFn: async (newUser) => {
-            const response = await fetch("/api/register", {
+            const response = await scopedFetch("/api/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newUser),

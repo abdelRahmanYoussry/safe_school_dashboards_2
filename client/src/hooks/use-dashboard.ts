@@ -1,11 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@shared/routes";
+import { scopedFetch } from "@/lib/queryClient";
+import { ANALYTICS_DATA } from "@/lib/analyticsData";
+
 
 export function useDashboardStats() {
   return useQuery({
     queryKey: [api.stats.dashboard.path],
     queryFn: async () => {
-      const res = await fetch(api.stats.dashboard.path, { credentials: "include" });
+      const res = await scopedFetch(api.stats.dashboard.path);
       if (!res.ok) throw new Error("Failed to fetch dashboard stats");
       const data = await res.json();
       return api.stats.dashboard.responses[200].parse(data);
@@ -13,14 +16,16 @@ export function useDashboardStats() {
   });
 }
 
+// (This chunk is just to remove the misplaced import if it exists)
+// It was added after line 16 in previous step
+
+
 export function useAnalytics() {
   return useQuery({
     queryKey: [api.stats.analytics.path],
     queryFn: async () => {
-      const res = await fetch(api.stats.analytics.path, { credentials: "include" });
-      if (!res.ok) throw new Error("Failed to fetch analytics");
-      const data = await res.json();
-      return api.stats.analytics.responses[200].parse(data);
+      // Mocked data as per user request to use the specific model
+      return ANALYTICS_DATA;
     },
   });
 }
@@ -32,7 +37,7 @@ export function useSafetyAnalytics(schoolId?: string) {
   return useQuery({
     queryKey: [path, schoolId],
     queryFn: async () => {
-      const res = await fetch(url, { credentials: "include" });
+      const res = await scopedFetch(url);
       if (!res.ok) throw new Error("Failed to fetch safety analytics");
       const data = await res.json();
       return api.stats.safetyAnalytics.responses[200].parse(data);

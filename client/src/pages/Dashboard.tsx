@@ -42,7 +42,8 @@ export default function Dashboard() {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
+        {/* Pickup Requests */}
         <div className="bg-white p-6 rounded-2xl border border-black/[0.07] shadow-sm">
           <div className="mb-6">
             <h3 className="text-lg font-semibold">{t("Pickup Requests (Today)")}</h3>
@@ -74,10 +75,11 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* School Growth */}
         <div className="bg-white p-6 rounded-2xl border border-black/[0.07] shadow-sm">
           <div className="mb-6">
             <h3 className="text-lg font-semibold">{t("School Growth")}</h3>
-            <p className="text-sm text-muted-foreground">{t("New onboarded schools past 6 months")}</p>
+            <p className="text-sm text-muted-foreground">{t("New onboarded schools")}</p>
           </div>
           <div className="h-[300px] w-full">
             {analyticsLoading ? (
@@ -93,6 +95,64 @@ export default function Dashboard() {
                     contentStyle={{ backgroundColor: '#ffffff', borderColor: 'rgba(0,0,0,0.1)', borderRadius: '8px', color: '#002626' }}
                   />
                   <Bar dataKey="value" fill="#002626" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : null}
+          </div>
+        </div>
+
+        {/* User Registrations */}
+        <div className="bg-white p-6 rounded-2xl border border-black/[0.07] shadow-sm">
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold">{t("User Registrations")}</h3>
+            <p className="text-sm text-muted-foreground">{t("Platform adoption over time")}</p>
+          </div>
+          <div className="h-[300px] w-full">
+            {analyticsLoading ? (
+              <Skeleton className="w-full h-full bg-black/[0.04]" />
+            ) : analytics ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={analytics.userRegistrations}>
+                  <defs>
+                    <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#004d4d" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="#004d4d" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.07)" vertical={false} />
+                  <XAxis dataKey="name" stroke="rgba(0,0,0,0.35)" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis stroke="rgba(0,0,0,0.35)" fontSize={12} tickLine={false} axisLine={false} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#ffffff', borderColor: 'rgba(0,0,0,0.1)', borderRadius: '8px', color: '#002626' }}
+                    itemStyle={{ color: '#002626' }}
+                  />
+                  <Area type="monotone" dataKey="value" stroke="#004d4d" strokeWidth={2} fillOpacity={1} fill="url(#colorUsers)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : null}
+          </div>
+        </div>
+
+        {/* Safety Trend */}
+        <div className="bg-white p-6 rounded-2xl border border-black/[0.07] shadow-sm">
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold">{t("Safety Trend")}</h3>
+            <p className="text-sm text-muted-foreground">{t("Critical safety alerts handled")}</p>
+          </div>
+          <div className="h-[300px] w-full">
+            {analyticsLoading ? (
+              <Skeleton className="w-full h-full bg-black/[0.04]" />
+            ) : analytics ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={analytics.safetyTrend}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.07)" vertical={false} />
+                  <XAxis dataKey="name" stroke="rgba(0,0,0,0.35)" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis stroke="rgba(0,0,0,0.35)" fontSize={12} tickLine={false} axisLine={false} />
+                  <Tooltip
+                    cursor={{ fill: 'rgba(0,38,38,0.05)' }}
+                    contentStyle={{ backgroundColor: '#ffffff', borderColor: 'rgba(0,0,0,0.1)', borderRadius: '8px', color: '#002626' }}
+                  />
+                  <Bar dataKey="value" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             ) : null}

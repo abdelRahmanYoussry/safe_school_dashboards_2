@@ -10,7 +10,7 @@ import { useTranslation } from "react-i18next";
 
 interface Column<T> {
   header: string;
-  accessor: (item: T) => React.ReactNode;
+  accessor: (item: T, index: number) => React.ReactNode;
 }
 
 interface DataTableProps<T> {
@@ -44,7 +44,7 @@ export function DataTable<T>({ columns, data, onRowClick }: DataTableProps<T>) {
               >
                 {columns.map((column, j) => (
                   <TableCell key={j} className="py-4 font-medium text-foreground/80">
-                    {column.accessor(item)}
+                    {column.accessor(item, i)}
                   </TableCell>
                 ))}
               </TableRow>

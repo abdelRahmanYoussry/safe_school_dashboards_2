@@ -10,16 +10,34 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+export async function scopedFetch(
+  url: string | URL | Request,
+  init?: RequestInit
+): Promise<Response> {
+  const scope = typeof window !== "undefined" && window.location.pathname.startsWith('/admin') ? 'admin' : 'super';
+  
+  const headers = new Headers(init?.headers);
+  headers.set("X-Session-Scope", scope);
+  
+  return fetch(url, {
+    ...init,
+    headers,
+    credentials: "include",
+  });
+}
+
 export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
+  const headers: Record<string, string> = {};
+  if (data) headers["Content-Type"] = "application/json";
+
+  const res = await scopedFetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers,
     body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
   });
 
   await throwIfResNotOk(res);
@@ -32,9 +50,7 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
     async ({ queryKey }) => {
-      const res = await fetch(queryKey.join("/") as string, {
-        credentials: "include",
-      });
+      const res = await scopedFetch(queryKey.join("/") as string);
 
       if (unauthorizedBehavior === "returnNull" && res.status === 401) {
         return null;

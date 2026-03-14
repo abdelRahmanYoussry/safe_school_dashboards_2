@@ -10,6 +10,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 
+import { useState } from "react";
+
 export default function StudentsPage() {
   const { t } = useTranslation();
 
@@ -50,10 +52,20 @@ export default function StudentsPage() {
 }
 
 function StudentListTab() {
-  const { data, isLoading } = useAdminStudents();
+  const [page, setPage] = useState(1);
+  const limit = 20;
+  const { data, isLoading } = useAdminStudents(page, limit);
   const { t } = useTranslation();
 
   const columns = [
+    {
+      header: "#",
+      accessor: (_: any, index: number) => (
+        <span className="text-muted-foreground font-mono text-xs">
+          {(page - 1) * limit + index + 1}
+        </span>
+      )
+    },
     { 
       header: "Student", 
       accessor: (s: any) => (
@@ -85,18 +97,52 @@ function StudentListTab() {
 
   if (isLoading) return <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin text-[#002626]" /></div>;
 
+  const hasMore = (data?.data?.length || 0) === limit;
+
   return (
     <div className="space-y-4">
       <DataTable columns={columns} data={data?.data || []} />
+      
+      <div className="flex items-center justify-between px-2 py-4">
+        <p className="text-sm text-muted-foreground">
+          {t("Page")} {page}
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="px-4 py-2 text-sm font-medium rounded-lg border border-black/5 bg-white shadow-sm disabled:opacity-50 transition-all hover:bg-black/5"
+          >
+            {t("Previous")}
+          </button>
+          <button
+            onClick={() => setPage(p => p + 1)}
+            disabled={!hasMore}
+            className="px-4 py-2 text-sm font-medium rounded-lg border border-black/5 bg-[#002626] text-white shadow-sm disabled:opacity-50 transition-all hover:bg-[#002626]/90"
+          >
+            {t("Next")}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
 
 function ParentListTab() {
-  const { data, isLoading } = useAdminParents();
+  const [page, setPage] = useState(1);
+  const limit = 20;
+  const { data, isLoading } = useAdminParents(page, limit);
   const { t } = useTranslation();
 
   const columns = [
+    {
+      header: "#",
+      accessor: (_: any, index: number) => (
+        <span className="text-muted-foreground font-mono text-xs">
+          {(page - 1) * limit + index + 1}
+        </span>
+      )
+    },
     { 
       header: "Parent", 
       accessor: (p: any) => (
@@ -115,16 +161,52 @@ function ParentListTab() {
 
   if (isLoading) return <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin text-[#002626]" /></div>;
 
+  const hasMore = (data?.data?.length || 0) === limit;
+
   return (
-    <DataTable columns={columns} data={data?.data || []} />
+    <div className="space-y-4">
+      <DataTable columns={columns} data={data?.data || []} />
+      
+      <div className="flex items-center justify-between px-2 py-4">
+        <p className="text-sm text-muted-foreground">
+          {t("Page")} {page}
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="px-4 py-2 text-sm font-medium rounded-lg border border-black/5 bg-white shadow-sm disabled:opacity-50 transition-all hover:bg-black/5"
+          >
+            {t("Previous")}
+          </button>
+          <button
+            onClick={() => setPage(p => p + 1)}
+            disabled={!hasMore}
+            className="px-4 py-2 text-sm font-medium rounded-lg border border-black/5 bg-[#002626] text-white shadow-sm disabled:opacity-50 transition-all hover:bg-[#002626]/90"
+          >
+            {t("Next")}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
 function DelegateListTab() {
-  const { data, isLoading } = useAdminDelegates();
+  const [page, setPage] = useState(1);
+  const limit = 20;
+  const { data, isLoading } = useAdminDelegates(page, limit);
   const { t } = useTranslation();
 
   const columns = [
+    {
+      header: "#",
+      accessor: (_: any, index: number) => (
+        <span className="text-muted-foreground font-mono text-xs">
+          {(page - 1) * limit + index + 1}
+        </span>
+      )
+    },
     { 
       header: "Delegate", 
       accessor: (d: any) => (
@@ -143,16 +225,52 @@ function DelegateListTab() {
 
   if (isLoading) return <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin text-[#002626]" /></div>;
 
+  const hasMore = (data?.data?.length || 0) === limit;
+
   return (
-    <DataTable columns={columns} data={data?.data || []} />
+    <div className="space-y-4">
+      <DataTable columns={columns} data={data?.data || []} />
+      
+      <div className="flex items-center justify-between px-2 py-4">
+        <p className="text-sm text-muted-foreground">
+          {t("Page")} {page}
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="px-4 py-2 text-sm font-medium rounded-lg border border-black/5 bg-white shadow-sm disabled:opacity-50 transition-all hover:bg-black/5"
+          >
+            {t("Previous")}
+          </button>
+          <button
+            onClick={() => setPage(p => p + 1)}
+            disabled={!hasMore}
+            className="px-4 py-2 text-sm font-medium rounded-lg border border-black/5 bg-[#002626] text-white shadow-sm disabled:opacity-50 transition-all hover:bg-[#002626]/90"
+          >
+            {t("Next")}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
 function InvitationListTab() {
-  const { data, isLoading } = useAdminDelegateRequests();
+  const [page, setPage] = useState(1);
+  const limit = 20;
+  const { data, isLoading } = useAdminDelegateRequests(page, limit);
   const { t } = useTranslation();
 
   const columns = [
+    {
+      header: "#",
+      accessor: (_: any, index: number) => (
+        <span className="text-muted-foreground font-mono text-xs">
+          {(page - 1) * limit + index + 1}
+        </span>
+      )
+    },
     { 
       header: "Student", 
       accessor: (r: any) => (
@@ -180,7 +298,33 @@ function InvitationListTab() {
 
   if (isLoading) return <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin text-[#002626]" /></div>;
 
+  const hasMore = (data?.data?.length || 0) === limit;
+
   return (
-    <DataTable columns={columns} data={data?.data || []} />
+    <div className="space-y-4">
+      <DataTable columns={columns} data={data?.data || []} />
+      
+      <div className="flex items-center justify-between px-2 py-4">
+        <p className="text-sm text-muted-foreground">
+          {t("Page")} {page}
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="px-4 py-2 text-sm font-medium rounded-lg border border-black/5 bg-white shadow-sm disabled:opacity-50 transition-all hover:bg-black/5"
+          >
+            {t("Previous")}
+          </button>
+          <button
+            onClick={() => setPage(p => p + 1)}
+            disabled={!hasMore}
+            className="px-4 py-2 text-sm font-medium rounded-lg border border-black/5 bg-[#002626] text-white shadow-sm disabled:opacity-50 transition-all hover:bg-[#002626]/90"
+          >
+            {t("Next")}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
