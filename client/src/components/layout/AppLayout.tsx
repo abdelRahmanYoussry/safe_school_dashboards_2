@@ -78,7 +78,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
         <div className="flex-1 overflow-y-auto py-6 px-3 space-y-1">
           <div className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-4">
-            {user?.role === 'super_admin' ? t('Platform Admin') : t('School Admin')}
+            {user?.role?.toLowerCase() === 'super_admin' ? t('Platform Admin') : t('School Admin')}
           </div>
 
           {NAV_ITEMS.map((item) => {

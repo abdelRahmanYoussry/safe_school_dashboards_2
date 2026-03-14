@@ -96,7 +96,16 @@ const resources = {
             "User ID": "معرف المستخدم",
             "School ID": "معرف المدرسة",
             "System": "النظام",
-            "No audit logs found.": "لم يتم العثور على سجلات تدقيق."
+            "No audit logs found.": "لم يتم العثور على سجلات تدقيق.",
+            // Login & Onboarding
+            "Organized Pickup Management System": "نظام منظم لإدارة الاستلام",
+            "Smart platform helping schools organize student pickup precisely, reducing congestion and ensuring top safety.": "منصة ذكية تساعد المدرسة على تنظيم عملية استلام الطلاب بدقة، وتقليل الازدحام، وضمان أعلى مستويات الأمان.",
+            "Real-time Student Attendance Tracking": "متابعة فورية لحضور الطلاب",
+            "Track attendance moment by moment, with real-time notifications to parents and comprehensive daily reports.": "تابع حضور وغياب الطلاب لحظةً بلحظة، مع إشعارات آنية لأولياء الأمور وتقارير يومية شاملة.",
+            "Safer School Environment": "بيئة مدرسية أكثر أماناً",
+            "We protect your children through an advanced verification system and seamless coordination between management and parents.": "نحمي أطفالك من خلال نظام تحقق متطور وتنسيق سلس بين الإدارة وأولياء الأمور لضمان سلامتهم.",
+            "Sign In - Admin Dashboard": "تسجيل الدخول - لوحة المدير",
+            "Smart platform for safely organizing child pickup by guardians": "منصة ذكية لتنظيم تسليم الأطفال لذويهم بأمان"
         }
     },
     en: {
@@ -190,7 +199,16 @@ const resources = {
             "User ID": "User ID",
             "School ID": "School ID",
             "System": "System",
-            "No audit logs found.": "No audit logs found."
+            "No audit logs found.": "No audit logs found.",
+            // Login & Onboarding
+            "Organized Pickup Management System": "Organized Pickup Management System",
+            "Smart platform helping schools organize student pickup precisely, reducing congestion and ensuring top safety.": "Smart platform helping schools organize student pickup precisely, reducing congestion and ensuring top safety.",
+            "Real-time Student Attendance Tracking": "Real-time Student Attendance Tracking",
+            "Track attendance moment by moment, with real-time notifications to parents and comprehensive daily reports.": "Track attendance moment by moment, with real-time notifications to parents and comprehensive daily reports.",
+            "Safer School Environment": "Safer School Environment",
+            "We protect your children through an advanced verification system and seamless coordination between management and parents.": "We protect your children through an advanced verification system and seamless coordination between management and parents.",
+            "Sign In - Admin Dashboard": "Sign In - Admin Dashboard",
+            "Smart platform for safely organizing child pickup by guardians": "Smart platform for safely organizing child pickup by guardians"
         }
     },
     ur: {
@@ -284,7 +302,16 @@ const resources = {
             "User ID": "صارف ID",
             "School ID": "اسکول ID",
             "System": "سسٹم",
-            "No audit logs found.": "کوئی آڈٹ لاگز نہیں ملے."
+            "No audit logs found.": "کوئی آڈٹ لاگز نہیں ملے.",
+            // Login & Onboarding
+            "Organized Pickup Management System": "منظم پک اپ مینجمنٹ سسٹم",
+            "Smart platform helping schools organize student pickup precisely, reducing congestion and ensuring top safety.": "سمارٹ پلیٹ فارم اسکولوں کو طلباء کے پک اپ کو درست طریقے سے منظم کرنے، بھیڑ کو کم کرنے اور اعلیٰ ترین حفاظت کو یقینی بنانے میں مدد فراہم کرتا ہے۔",
+            "Real-time Student Attendance Tracking": "ریئل ٹائم طالب علم کی حاضری کا پتہ لگانا",
+            "Track attendance moment by moment, with real-time notifications to parents and comprehensive daily reports.": "والدین کو ریئل ٹائم اطلاعات اور جامع روزانہ رپورٹس کے ساتھ، لمحہ بہ لمحہ حاضری کو ٹریک کریں۔",
+            "Safer School Environment": "محفوظ اسکول کا ماحول",
+            "We protect your children through an advanced verification system and seamless coordination between management and parents.": "ہم آپ کے بچوں کو ایک جدید تصدیقی نظام اور انتظام اور والدین کے درمیان ہموار ہم آہنگی کے ذریعے محفوظ رکھتے ہیں۔",
+            "Sign In - Admin Dashboard": "سائن ان کریں - ایڈمن ڈیش بورڈ",
+            "Smart platform for safely organizing child pickup by guardians": "سرپرستوں کے ذریعہ بچوں کے پک اپ کو محفوظ طریقے سے منظم کرنے کا سمارٹ پلیٹ فارم"
         }
     }
 };

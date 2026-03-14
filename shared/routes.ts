@@ -188,6 +188,58 @@ export const api = {
       path: '/api/audit-logs' as const,
       responses: { 200: z.array(z.custom<typeof auditLogs.$inferSelect>()) }
     }
+  },
+  admin: {
+    stats: {
+      method: 'GET' as const,
+      path: '/api/admin/stats' as const,
+      responses: { 200: z.any() }
+    },
+    students: {
+      method: 'GET' as const,
+      path: '/api/admin/students' as const,
+      responses: { 200: z.any() }
+    },
+    parents: {
+      method: 'GET' as const,
+      path: '/api/admin/parents' as const,
+      responses: { 200: z.any() }
+    },
+    delegates: {
+      method: 'GET' as const,
+      path: '/api/admin/delegates' as const,
+      responses: { 200: z.any() }
+    },
+    delegateRequests: {
+      method: 'GET' as const,
+      path: '/api/admin/delegate-requests' as const,
+      responses: { 200: z.any() }
+    },
+    staff: {
+      method: 'GET' as const,
+      path: '/api/admin/staff' as const,
+      responses: { 200: z.any() }
+    },
+    drivers: {
+      method: 'GET' as const,
+      path: '/api/admin/drivers' as const,
+      responses: { 200: z.any() }
+    },
+    buses: {
+      method: 'GET' as const,
+      path: '/api/admin/buses' as const,
+      responses: { 200: z.any() }
+    },
+    invitationCodes: {
+      method: 'GET' as const,
+      path: '/api/admin/invitation-codes' as const,
+      responses: { 200: z.any() }
+    },
+    pickupActive: {
+      method: 'GET' as const,
+      path: '/api/admin/pickup/active' as const,
+      responses: { 200: z.any() }
+    }
   }
 };
 

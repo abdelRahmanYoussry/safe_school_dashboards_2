@@ -439,5 +439,106 @@ export async function registerRoutes(
     []
   ));
 
+  // Admin Proxy Routes
+  app.get(api.admin.stats.path, async (req, res) => {
+    try {
+      const backendRes = await proxyToBackend(req, "GET", "/safeschool/dashboard/school/stats");
+      const data = await backendRes.json() as any;
+      res.status(backendRes.status).json(data.data || data);
+    } catch (err: any) {
+      res.status(500).json({ message: "BFF_PROXY_ERROR: " + err.message });
+    }
+  });
+
+  app.get(api.admin.students.path, async (req, res) => {
+    try {
+      const backendRes = await proxyToBackend(req, "GET", "/safeschool/dashboard/school/students");
+      const data = await backendRes.json() as any;
+      res.status(backendRes.status).json(data);
+    } catch (err: any) {
+      res.status(500).json({ message: "BFF_PROXY_ERROR: " + err.message });
+    }
+  });
+
+  app.get(api.admin.parents.path, async (req, res) => {
+    try {
+      const backendRes = await proxyToBackend(req, "GET", "/safeschool/dashboard/school/parents");
+      const data = await backendRes.json() as any;
+      res.status(backendRes.status).json(data);
+    } catch (err: any) {
+      res.status(500).json({ message: "BFF_PROXY_ERROR: " + err.message });
+    }
+  });
+
+  app.get(api.admin.delegates.path, async (req, res) => {
+    try {
+      const backendRes = await proxyToBackend(req, "GET", "/safeschool/dashboard/school/delegates");
+      const data = await backendRes.json() as any;
+      res.status(backendRes.status).json(data);
+    } catch (err: any) {
+      res.status(500).json({ message: "BFF_PROXY_ERROR: " + err.message });
+    }
+  });
+
+  app.get(api.admin.delegateRequests.path, async (req, res) => {
+    try {
+      const backendRes = await proxyToBackend(req, "GET", "/safeschool/dashboard/school/delegate-requests");
+      const data = await backendRes.json() as any;
+      res.status(backendRes.status).json(data);
+    } catch (err: any) {
+      res.status(500).json({ message: "BFF_PROXY_ERROR: " + err.message });
+    }
+  });
+
+  app.get(api.admin.staff.path, async (req, res) => {
+    try {
+      const backendRes = await proxyToBackend(req, "GET", "/safeschool/dashboard/school/staff");
+      const data = await backendRes.json() as any;
+      res.status(backendRes.status).json(data);
+    } catch (err: any) {
+      res.status(500).json({ message: "BFF_PROXY_ERROR: " + err.message });
+    }
+  });
+
+  app.get(api.admin.drivers.path, async (req, res) => {
+    try {
+      const backendRes = await proxyToBackend(req, "GET", "/safeschool/dashboard/school/drivers");
+      const data = await backendRes.json() as any;
+      res.status(backendRes.status).json(data);
+    } catch (err: any) {
+      res.status(500).json({ message: "BFF_PROXY_ERROR: " + err.message });
+    }
+  });
+
+  app.get(api.admin.buses.path, async (req, res) => {
+    try {
+      const backendRes = await proxyToBackend(req, "GET", "/safeschool/dashboard/school/buses");
+      const data = await backendRes.json() as any;
+      res.status(backendRes.status).json(data);
+    } catch (err: any) {
+      res.status(500).json({ message: "BFF_PROXY_ERROR: " + err.message });
+    }
+  });
+
+  app.get(api.admin.invitationCodes.path, async (req, res) => {
+    try {
+      const backendRes = await proxyToBackend(req, "GET", "/safeschool/dashboard/school/invitation-codes");
+      const data = await backendRes.json() as any;
+      res.status(backendRes.status).json(data);
+    } catch (err: any) {
+      res.status(500).json({ message: "BFF_PROXY_ERROR: " + err.message });
+    }
+  });
+
+  app.get(api.admin.pickupActive.path, async (req, res) => {
+    try {
+      const backendRes = await proxyToBackend(req, "GET", "/safeschool/dashboard/school/pickups/active");
+      const data = await backendRes.json() as any;
+      res.status(backendRes.status).json(data.data || data);
+    } catch (err: any) {
+      res.status(500).json({ message: "BFF_PROXY_ERROR: " + err.message });
+    }
+  });
+
   return httpServer;
 }

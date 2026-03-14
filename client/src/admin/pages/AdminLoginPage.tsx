@@ -42,7 +42,7 @@ const onboardingSlides = [
     },
 ];
 
-export default function LoginPage() {
+export default function AdminLoginPage() {
     const { user, loginMutation, isLoading: isAuthLoading } = useAuth();
     const { t, i18n } = useTranslation();
     const [rememberMe, setRememberMe] = useState(false);
@@ -159,7 +159,7 @@ export default function LoginPage() {
                             className="text-2xl font-bold mb-1"
                             style={{ color: BRAND_GREEN }}
                         >
-                            {t("Sign In")}
+                            {t("Sign In - Admin Dashboard")}
                         </h1>
                         <p className="text-sm text-gray-500">
                             {t("Smart platform for safely organizing child pickup by guardians")}
