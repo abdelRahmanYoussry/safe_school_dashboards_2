@@ -24,14 +24,13 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 
 const NAV_ITEMS = [
-  { label: "Dashboard", href: "/", icon: LayoutDashboard },
-  { label: "Schools", href: "/schools", icon: School },
-  { label: "Analytics", href: "/analytics", icon: BarChart3 },
-  { label: "Safety Reports", href: "/safety-reports", icon: ShieldAlert },
-  { label: "Tickets", href: "/tickets", icon: Ticket },
-  { label: "Plans", href: "/plans", icon: CreditCard },
-  { label: "Audit Logs", href: "/audit-logs", icon: ClipboardList },
-  { label: "Map View", href: "/map", icon: MapIcon },
+  { label: "Dashboard", href: "/", image: "/nav-icons/dashboard.png" },
+  { label: "Schools", href: "/schools", image: "/nav-icons/schools.png" },
+  { label: "Analytics", href: "/analytics", image: "/nav-icons/analytics.png" },
+  { label: "Safety Reports", href: "/safety-reports", image: "/nav-icons/safety-reports.png" },
+  { label: "Tickets", href: "/tickets", image: "/nav-icons/tickets.png" },
+  { label: "Plans", href: "/plans", image: "/nav-icons/plans.png" },
+  { label: "Audit Logs", href: "/audit-logs", image: "/nav-icons/audit-logs.png" },
 ];
 
 export const PageTransition = ({ children, className = "" }: { children: ReactNode, className?: string }) => {
@@ -63,8 +62,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
       >
         <div className="h-16 flex items-center px-6 border-b border-black/[0.06]">
           <div className="flex items-center gap-3 text-foreground font-semibold text-lg tracking-tight">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#002626] to-[#045655] flex items-center justify-center shadow-lg shadow-[#002626]/20">
-              <ShieldAlert className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-[#002626] to-[#045655] flex items-center justify-center shadow-lg shadow-[#002626]/20 overflow-hidden p-1">
+              <img src="/favicon.png" className="w-full h-full object-contain" alt="Logo" />
             </div>
             Safe School
           </div>
@@ -80,8 +79,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
             return (
               <Link key={item.href} href={item.href} className="block">
                 <div className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative
-                  ${isActive ? 'bg-[#002626]/10 text-[#002626] font-medium' : 'text-muted-foreground hover:text-foreground hover:bg-accent'}
+                  flex items-center gap-3 px-3 py-2.5 transition-all duration-200 group relative
+                  ${isActive ? 'text-[#002626] font-bold' : 'text-muted-foreground hover:text-foreground'}
                 `}>
                   {isActive && (
                     <motion.div
@@ -89,7 +88,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
                       className="absolute left-0 w-1 h-6 bg-[#002626] rounded-r-full"
                     />
                   )}
-                  <item.icon className={`w-5 h-5 ${isActive ? 'text-[#002626]' : 'text-muted-foreground group-hover:text-foreground'}`} />
+                  {item.image && (
+                    <img 
+                      src={item.image} 
+                      className={`w-7 h-7 object-contain transition-all duration-200 ${isActive ? 'opacity-100 scale-110' : 'opacity-40 group-hover:opacity-70 group-hover:scale-105'}`} 
+                      alt="" 
+                    />
+                  )}
                   <span className="text-sm">{t(item.label)}</span>
                 </div>
               </Link>

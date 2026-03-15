@@ -350,6 +350,7 @@ export default function Schools() {
         <Table>
           <TableHeader className="bg-black/[0.03] border-b border-black/[0.07]">
             <TableRow className="hover:bg-transparent h-12 text-muted-foreground/60 uppercase text-[10px] font-black tracking-widest">
+              <TableHead className="px-6 w-12">#</TableHead>
               <TableHead className="px-6">{t("School")}</TableHead>
               <TableHead>{t("Location")}</TableHead>
               <TableHead>{t("Plan")}</TableHead>
@@ -361,6 +362,7 @@ export default function Schools() {
             {isLoading ? (
               Array(5).fill(0).map((_, i) => (
                 <TableRow key={i}>
+                  <TableCell className="px-6 py-4 w-12"><Skeleton className="h-6 w-6 bg-black/[0.04] rounded-lg" /></TableCell>
                   <TableCell className="px-6 py-4"><Skeleton className="h-10 w-48 bg-black/[0.04] rounded-xl" /></TableCell>
                   <TableCell><Skeleton className="h-6 w-24 bg-black/[0.04] rounded-lg" /></TableCell>
                   <TableCell><Skeleton className="h-6 w-20 bg-black/[0.04] rounded-lg" /></TableCell>
@@ -368,8 +370,11 @@ export default function Schools() {
                   <TableCell className="px-6 text-right"><Skeleton className="h-8 w-8 ml-auto bg-black/[0.04] rounded-lg" /></TableCell>
                 </TableRow>
               ))
-            ) : schools?.map((school) => (
+            ) : schools?.map((school, index) => (
               <TableRow key={school.id} className="border-b border-black/[0.05] hover:bg-black/[0.01] transition-colors group">
+                <TableCell className="px-6 py-4 font-bold text-muted-foreground/40 text-xs w-12">
+                  {(page - 1) * limit + index + 1}
+                </TableCell>
                 <TableCell className="px-6 py-4 font-bold">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-xl overflow-hidden bg-black/[0.03] border border-black/[0.08] flex items-center justify-center text-xs font-black text-white shadow-sm ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
@@ -383,7 +388,12 @@ export default function Schools() {
                     </div>
                     <div className="flex flex-col">
                       <span className="text-foreground">{school.name}</span>
-                      <span className="text-[10px] text-muted-foreground/60 font-medium tracking-tight uppercase">ID: {school.id}</span>
+                      <div className="flex flex-col gap-0.5 mt-0.5">
+                        <span className="text-[10px] text-muted-foreground/60 font-medium tracking-tight uppercase">ID: {school.id}</span>
+                        {school.adminEmail && (
+                          <span className="text-[10px] text-primary/60 font-medium tracking-tight lowercase truncate max-w-[150px]">{school.adminEmail}</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </TableCell>
