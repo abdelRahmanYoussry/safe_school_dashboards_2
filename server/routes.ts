@@ -15,8 +15,6 @@ const upload = multer({ storage: multer.memoryStorage() });
 async function proxyToBackend(req: any, method: string, path: string, body?: any) {
   const sessionData = req.session as any;
   const token = sessionData?.accessToken;
-  
-  console.log(`[proxy] ${method} ${path} - token exists:`, !!token, "token preview:", token?.substring(0, 20));
 
   const headers: Record<string, string> = {
     Accept: "application/json",
@@ -24,16 +22,22 @@ async function proxyToBackend(req: any, method: string, path: string, body?: any
 
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
+  // Pass through cache headers from client to backend
+  if (req.headers["if-none-match"]) {
+    headers["If-None-Match"] = req.headers["if-none-match"];
+  }
+  if (req.headers["if-modified-since"]) {
+    headers["If-Modified-Since"] = req.headers["if-modified-since"];
+  }
+
   // Append query parameters if they exist
   const query = new URLSearchParams(req.query).toString();
   const url = `${BACKEND_URL}${path}${query ? `?${query}` : ""}`;
 
-  // Standard JSON proxying
-  headers["Content-Type"] = "application/json";
   const fetchOptions: RequestInit = {
     method,
     headers,
-    body: body !== undefined ? JSON.stringify(body) : undefined
+    body: (method !== "GET" && method !== "HEAD" && body !== undefined) ? JSON.stringify(body) : undefined
   };
 
   return fetch(url, fetchOptions);
@@ -79,66 +83,36 @@ export async function registerRoutes(
   // Dashboard Stats - Proxy to real backend
   app.get(api.stats.dashboard.path, async (req, res) => {
     try {
-      console.log("[stats] dashboard: starting proxy...");
       const backendRes = await proxyToBackend(req, "GET", "/safeschool/stats/dashboard");
+      
+      if (backendRes.status === 304) return res.status(304).end();
+
       const data = await backendRes.json() as any;
-      console.log("[stats] dashboard: backend status=", backendRes.status, "data=", JSON.stringify(data).substring(0, 200));
       if (!backendRes.ok) {
-        console.warn("[stats] dashboard proxy error:", data);
-        return res.json({
-          totalSchools: 0,
-          totalUsers: 0,
-          activePickups: 0,
-          totalStudents: 0,
-          totalParents: 0,
-          totalStaff: 0,
-          safetyIncidents: 0,
-          systemHealth: 0
-        });
+        return res.status(backendRes.status).json(data);
       }
-      // Extract nested data from backend response: { error, statusCode, message, data, errors }
       res.json(data.data || data);
     } catch (err: any) {
       console.warn("[stats] dashboard proxy error:", err.message);
-      res.json({
-        totalSchools: 0,
-        totalUsers: 0,
-        activePickups: 0,
-        totalStudents: 0,
-        totalParents: 0,
-        totalStaff: 0,
-        safetyIncidents: 0,
-        systemHealth: 0
-      });
+      res.status(500).json({ message: "Failed to reach backend" });
     }
   });
 
   // Analytics Stats - Proxy to real backend
   app.get(api.stats.analytics.path, async (req, res) => {
     try {
-      console.log("[stats] analytics: starting proxy...");
       const backendRes = await proxyToBackend(req, "GET", "/safeschool/stats/analytics");
+
+      if (backendRes.status === 304) return res.status(304).end();
+
       const data = await backendRes.json() as any;
-      console.log("[stats] analytics: backend status=", backendRes.status, "data=", JSON.stringify(data).substring(0, 200));
       if (!backendRes.ok) {
-        console.warn("[stats] analytics proxy error:", data);
-        return res.json({
-          schoolGrowth: [],
-          userRegistrations: [],
-          pickupRequests: [],
-          safetyTrend: []
-        });
+        return res.status(backendRes.status).json(data);
       }
-      // Extract nested data from backend response: { error, statusCode, message, data, errors }
       res.json(data.data || data);
     } catch (err: any) {
       console.warn("[stats] analytics proxy error:", err.message);
-      res.json({
-        schoolGrowth: [],
-        userRegistrations: [],
-        pickupRequests: [],
-        safetyTrend: []
-      });
+      res.status(500).json({ message: "Failed to reach backend" });
     }
   });
 
@@ -157,12 +131,17 @@ export async function registerRoutes(
   app.get(api.plans.list.path, async (req, res) => {
     try {
       const backendRes = await proxyToBackend(req, "GET", "/safeschool/subscription-plans");
+      
+      if (backendRes.status === 304) return res.status(304).end();
+
       const data = await backendRes.json() as any;
-      if (!backendRes.ok) return res.json([]);
+      if (!backendRes.ok) {
+        return res.status(backendRes.status).json(data);
+      }
       res.json(data.data || []);
     } catch (err: any) {
       console.warn("[plans] GET proxy error:", err.message);
-      res.json([]);
+      res.status(500).json({ message: "Failed to reach backend" });
     }
   });
 
@@ -216,12 +195,17 @@ export async function registerRoutes(
   app.get(api.schools.list.path, async (req, res) => {
     try {
       const backendRes = await proxyToBackend(req, "GET", "/safeschool/schools");
+
+      if (backendRes.status === 304) return res.status(304).end();
+
       const data = await backendRes.json() as any;
-      if (!backendRes.ok) return res.json([]);
+      if (!backendRes.ok) {
+        return res.status(backendRes.status).json(data);
+      }
       res.json(data.data || []);
     } catch (err: any) {
       console.warn("[schools] GET list proxy error:", err.message);
-      res.json([]);
+      res.status(500).json({ message: "Failed to reach backend" });
     }
   });
 
@@ -229,12 +213,17 @@ export async function registerRoutes(
     try {
       const id = req.params.id;
       const backendRes = await proxyToBackend(req, "GET", `/safeschool/schools/${id}`);
+
+      if (backendRes.status === 304) return res.status(304).end();
+
       const data = await backendRes.json() as any;
-      if (!backendRes.ok) return res.status(backendRes.status).json({ message: "School not found" });
+      if (!backendRes.ok) {
+        return res.status(backendRes.status).json(data);
+      }
       res.json(data.data);
     } catch (err: any) {
       console.warn("[schools] GET proxy error:", err.message);
-      res.status(404).json({ message: "School not found" });
+      res.status(500).json({ message: "Failed to reach backend" });
     }
   });
 
@@ -383,12 +372,17 @@ export async function registerRoutes(
     try {
       const id = req.params.id;
       const backendRes = await proxyToBackend(req, "GET", `/safeschool/schools/${id}/incidents`);
+
+      if (backendRes.status === 304) return res.status(304).end();
+
       const data = await backendRes.json() as any;
-      if (!backendRes.ok) return res.json([]);
+      if (!backendRes.ok) {
+        return res.status(backendRes.status).json(data);
+      }
       res.json(data.data || []);
     } catch (err: any) {
       console.warn("[schools] GET incidents proxy error:", err.message);
-      res.json([]);
+      res.status(500).json({ message: "Failed to reach backend" });
     }
   });
 

@@ -7,6 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useTranslation } from "react-i18next";
+import { cn } from "@/lib/utils";
 
 interface Column<T> {
   header: string;
@@ -28,7 +29,14 @@ export function DataTable<T>({ columns, data, onRowClick }: DataTableProps<T>) {
         <TableHeader className="bg-black/[0.1] backdrop-blur-md">
           <TableRow className="hover:bg-transparent border-black/5">
             {columns.map((column, i) => (
-              <TableHead key={i} className="text-[#002626] font-semibold h-12">
+              <TableHead 
+                key={i} 
+                className={cn(
+                  "text-[#002626] font-semibold h-12 px-2",
+                  i === 0 && "pl-6",
+                  i === columns.length - 1 && "pr-6"
+                )}
+              >
                 {t(column.header)}
               </TableHead>
             ))}
@@ -43,7 +51,14 @@ export function DataTable<T>({ columns, data, onRowClick }: DataTableProps<T>) {
                 onClick={() => onRowClick?.(item)}
               >
                 {columns.map((column, j) => (
-                  <TableCell key={j} className="py-4 font-medium text-foreground/80">
+                  <TableCell 
+                    key={j} 
+                    className={cn(
+                      "py-4 font-medium text-foreground/80 px-2",
+                      j === 0 && "pl-6",
+                      j === columns.length - 1 && "pr-6"
+                    )}
+                  >
                     {column.accessor(item, i)}
                   </TableCell>
                 ))}

@@ -50,28 +50,28 @@ export default function AuditLogs() {
         <Table>
           <TableHeader className="bg-black/[0.03]">
             <TableRow>
-              <TableHead>{t("Timestamp")}</TableHead>
-              <TableHead>{t("Action")}</TableHead>
-              <TableHead>{t("User ID")}</TableHead>
-              <TableHead>{t("School ID")}</TableHead>
+              <TableHead className="pl-6 pr-2">{t("Timestamp")}</TableHead>
+              <TableHead className="px-2">{t("Action")}</TableHead>
+              <TableHead className="px-2">{t("User ID")}</TableHead>
+              <TableHead className="pl-2 pr-6">{t("School ID")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               Array(10).fill(0).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-4 w-32 bg-black/[0.04]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-48 bg-black/[0.04]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-16 bg-black/[0.04]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-16 bg-black/[0.04]" /></TableCell>
+                  <TableCell className="pl-6 pr-2"><Skeleton className="h-4 w-32 bg-black/[0.04]" /></TableCell>
+                  <TableCell className="px-2"><Skeleton className="h-4 w-48 bg-black/[0.04]" /></TableCell>
+                  <TableCell className="px-2"><Skeleton className="h-4 w-16 bg-black/[0.04]" /></TableCell>
+                  <TableCell className="pl-2 pr-6"><Skeleton className="h-4 w-16 bg-black/[0.04]" /></TableCell>
                 </TableRow>
               ))
             ) : logs?.map((log) => (
               <TableRow key={log.id} className="border-b border-black/[0.05] font-mono text-sm">
-                <TableCell className="text-muted-foreground">{new Date(log.createdAt!).toLocaleString()}</TableCell>
-                <TableCell className="text-primary">{log.action}</TableCell>
-                <TableCell>{log.userId || t('System')}</TableCell>
-                <TableCell>{log.schoolId || '-'}</TableCell>
+                <TableCell className="pl-6 pr-2 text-muted-foreground">{new Date(log.createdAt!).toLocaleString()}</TableCell>
+                <TableCell className="px-2 text-primary">{log.action}</TableCell>
+                <TableCell className="px-2">{log.userId || t('System')}</TableCell>
+                <TableCell className="pl-2 pr-6">{log.schoolId || '-'}</TableCell>
               </TableRow>
             ))}
           </TableBody>

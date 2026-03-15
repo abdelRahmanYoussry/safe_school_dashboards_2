@@ -142,35 +142,35 @@ export default function SafetyReports() {
           <Table>
             <TableHeader className="bg-black/[0.03]">
               <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Incident</TableHead>
-                <TableHead>Severity</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead className="pl-6 pr-2">Date</TableHead>
+                <TableHead className="px-2">Incident</TableHead>
+                <TableHead className="px-2">Severity</TableHead>
+                <TableHead className="pl-2 pr-6">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 Array(5).fill(0).map((_, i) => (
                   <TableRow key={i}>
-                    <TableCell><Skeleton className="h-5 w-24 bg-black/[0.04]" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-48 bg-black/[0.04]" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-16 bg-black/[0.04]" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-16 bg-black/[0.04]" /></TableCell>
+                    <TableCell className="pl-6 pr-2"><Skeleton className="h-5 w-24 bg-black/[0.04]" /></TableCell>
+                    <TableCell className="px-2"><Skeleton className="h-5 w-48 bg-black/[0.04]" /></TableCell>
+                    <TableCell className="px-2"><Skeleton className="h-5 w-16 bg-black/[0.04]" /></TableCell>
+                    <TableCell className="pl-2 pr-6"><Skeleton className="h-5 w-16 bg-black/[0.04]" /></TableCell>
                   </TableRow>
                 ))
               ) : incidents?.map((incident) => (
                 <TableRow key={incident.id} className="border-b border-black/[0.05] hover:bg-black/[0.01] transition-colors">
-                  <TableCell className="text-muted-foreground font-medium">
+                  <TableCell className="pl-6 pr-2 text-muted-foreground font-medium">
                     {new Date(incident.createdAt!).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="px-2">
                     <div className="flex flex-col">
                       <span className="font-bold text-foreground">{incident.title}</span>
                       <span className="text-xs text-muted-foreground line-clamp-1">{incident.body}</span>
                     </div>
                   </TableCell>
-                  <TableCell>{getSeverityBadge(incident.severity)}</TableCell>
-                  <TableCell>
+                  <TableCell className="px-2">{getSeverityBadge(incident.severity)}</TableCell>
+                  <TableCell className="pl-2 pr-6">
                     <Badge variant="outline" className={incident.status === 'open' ? 'text-primary border-primary/20 bg-primary/5' : 'text-muted-foreground'}>
                       {incident.status}
                     </Badge>

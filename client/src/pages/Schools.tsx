@@ -350,32 +350,34 @@ export default function Schools() {
         <Table>
           <TableHeader className="bg-black/[0.03] border-b border-black/[0.07]">
             <TableRow className="hover:bg-transparent h-12 text-muted-foreground/60 uppercase text-[10px] font-black tracking-widest">
-              <TableHead className="px-6 w-12">#</TableHead>
-              <TableHead className="px-6">{t("School")}</TableHead>
-              <TableHead>{t("Location")}</TableHead>
-              <TableHead>{t("Plan")}</TableHead>
-              <TableHead>{t("Status")}</TableHead>
-              <TableHead className="text-right px-6">{t("Actions")}</TableHead>
+              <TableHead className="pl-6 pr-2 w-12">#</TableHead>
+              <TableHead className="px-2">{t("School")}</TableHead>
+              <TableHead className="px-2">{t("Location")}</TableHead>
+              <TableHead className="px-2">{t("Admin Email")}</TableHead>
+              <TableHead className="px-2">{t("Plan")}</TableHead>
+              <TableHead className="px-2">{t("Status")}</TableHead>
+              <TableHead className="text-right pl-2 pr-6">{t("Actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               Array(5).fill(0).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell className="px-6 py-4 w-12"><Skeleton className="h-6 w-6 bg-black/[0.04] rounded-lg" /></TableCell>
-                  <TableCell className="px-6 py-4"><Skeleton className="h-10 w-48 bg-black/[0.04] rounded-xl" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-24 bg-black/[0.04] rounded-lg" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-20 bg-black/[0.04] rounded-lg" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-16 bg-black/[0.04] rounded-lg" /></TableCell>
-                  <TableCell className="px-6 text-right"><Skeleton className="h-8 w-8 ml-auto bg-black/[0.04] rounded-lg" /></TableCell>
+                  <TableCell className="pl-6 pr-2 py-4 w-12"><Skeleton className="h-6 w-6 bg-black/[0.04] rounded-lg" /></TableCell>
+                  <TableCell className="px-2 py-4"><Skeleton className="h-10 w-48 bg-black/[0.04] rounded-xl" /></TableCell>
+                  <TableCell className="px-2"><Skeleton className="h-6 w-32 bg-black/[0.04] rounded-lg" /></TableCell>
+                  <TableCell className="px-2"><Skeleton className="h-6 w-40 bg-black/[0.04] rounded-lg" /></TableCell>
+                  <TableCell className="px-2"><Skeleton className="h-6 w-20 bg-black/[0.04] rounded-lg" /></TableCell>
+                  <TableCell className="px-2"><Skeleton className="h-6 w-16 bg-black/[0.04] rounded-lg" /></TableCell>
+                  <TableCell className="pl-2 pr-6 text-right"><Skeleton className="h-8 w-8 ml-auto bg-black/[0.04] rounded-lg" /></TableCell>
                 </TableRow>
               ))
             ) : schools?.map((school, index) => (
               <TableRow key={school.id} className="border-b border-black/[0.05] hover:bg-black/[0.01] transition-colors group">
-                <TableCell className="px-6 py-4 font-bold text-muted-foreground/40 text-xs w-12">
+                <TableCell className="pl-6 pr-2 py-4 font-bold text-muted-foreground/40 text-xs w-12">
                   {(page - 1) * limit + index + 1}
                 </TableCell>
-                <TableCell className="px-6 py-4 font-bold">
+                <TableCell className="px-2 py-4 font-bold">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-xl overflow-hidden bg-black/[0.03] border border-black/[0.08] flex items-center justify-center text-xs font-black text-white shadow-sm ring-2 ring-transparent group-hover:ring-primary/20 transition-all">
                       {school.logoUrl ? (
@@ -388,22 +390,24 @@ export default function Schools() {
                     </div>
                     <div className="flex flex-col">
                       <span className="text-foreground">{school.name}</span>
-                      <div className="flex flex-col gap-0.5 mt-0.5">
-                        <span className="text-[10px] text-muted-foreground/60 font-medium tracking-tight uppercase">ID: {school.id}</span>
-                        {school.adminEmail && (
-                          <span className="text-[10px] text-primary/60 font-medium tracking-tight lowercase truncate max-w-[150px]">{school.adminEmail}</span>
-                        )}
-                      </div>
+                      <span className="text-[10px] text-muted-foreground/60 font-medium tracking-tight uppercase mt-0.5">ID: {school.id}</span>
                     </div>
                   </div>
                 </TableCell>
-                <TableCell className="text-muted-foreground font-medium">{school.address}</TableCell>
-                <TableCell>
+                <TableCell className="px-2 text-muted-foreground font-medium">{school.address}</TableCell>
+                <TableCell className="px-2">
+                  {school.adminEmail ? (
+                    <span className="text-xs text-primary/70 font-bold bg-primary/5 px-2 py-1 rounded-lg border border-primary/10">{school.adminEmail}</span>
+                  ) : (
+                    <span className="text-xs text-muted-foreground/40 italic">-</span>
+                  )}
+                </TableCell>
+                <TableCell className="px-2">
                   <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 font-bold px-3 py-0.5 rounded-lg whitespace-nowrap">
                     {school.plan || school.planName || plans?.find(p => p.id === school.planId)?.name || 'Basic'}
                   </Badge>
                 </TableCell>
-                <TableCell>
+                <TableCell className="px-2">
                   <div className="flex items-center gap-2">
                     <Badge variant={school.isActive ? 'default' : 'secondary'} className={school.isActive ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 hover:bg-emerald-500/20 font-bold' : 'font-bold'}>
                       {school.isActive ? t('active') : t('inactive')}
@@ -424,7 +428,7 @@ export default function Schools() {
                     />
                   </div>
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="pl-2 pr-6 text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" className="h-8 w-8 p-0 rounded-lg hover:bg-black/[0.07]">

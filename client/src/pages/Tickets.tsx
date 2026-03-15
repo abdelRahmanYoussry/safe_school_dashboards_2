@@ -26,29 +26,29 @@ export default function Tickets() {
         <Table>
           <TableHeader className="bg-black/[0.03]">
             <TableRow>
-              <TableHead>{t("Ticket")}</TableHead>
-              <TableHead>{t("Description")}</TableHead>
-              <TableHead>{t("Status")}</TableHead>
-              <TableHead>{t("Date")}</TableHead>
-              <TableHead className="text-right">{t("Action")}</TableHead>
+              <TableHead className="pl-6 pr-2">{t("Ticket")}</TableHead>
+              <TableHead className="px-2">{t("Description")}</TableHead>
+              <TableHead className="px-2">{t("Status")}</TableHead>
+              <TableHead className="px-2">{t("Date")}</TableHead>
+              <TableHead className="text-right pl-2 pr-6">{t("Action")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               Array(4).fill(0).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-5 w-32 bg-black/[0.04]" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-64 bg-black/[0.04]" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-16 bg-black/[0.04]" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-24 bg-black/[0.04]" /></TableCell>
-                  <TableCell><Skeleton className="h-8 w-20 ml-auto bg-white/5 rounded-md" /></TableCell>
+                  <TableCell className="pl-6 pr-2"><Skeleton className="h-5 w-32 bg-black/[0.04]" /></TableCell>
+                  <TableCell className="px-2"><Skeleton className="h-5 w-64 bg-black/[0.04]" /></TableCell>
+                  <TableCell className="px-2"><Skeleton className="h-5 w-16 bg-black/[0.04]" /></TableCell>
+                  <TableCell className="px-2"><Skeleton className="h-5 w-24 bg-black/[0.04]" /></TableCell>
+                  <TableCell className="pl-2 pr-6 text-right"><Skeleton className="h-8 w-20 ml-auto bg-white/5 rounded-md" /></TableCell>
                 </TableRow>
               ))
             ) : tickets?.map((ticket) => (
               <TableRow key={ticket.id} className="border-b border-black/[0.05]">
-                <TableCell className="font-medium">{ticket.title}</TableCell>
-                <TableCell className="text-muted-foreground truncate max-w-[300px]">{ticket.description}</TableCell>
-                <TableCell>
+                <TableCell className="pl-6 pr-2 font-medium">{ticket.title}</TableCell>
+                <TableCell className="px-2 text-muted-foreground truncate max-w-[300px]">{ticket.description}</TableCell>
+                <TableCell className="px-2">
                   <Badge variant="outline" className={
                     ticket.status === 'open' ? 'border-primary/30 text-primary' :
                       ticket.status === 'in_progress' ? 'border-yellow-500/30 text-yellow-500' : 'border-black/10 text-muted-foreground'
@@ -56,8 +56,8 @@ export default function Tickets() {
                     {t(ticket.status)}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground">{new Date(ticket.createdAt!).toLocaleDateString()}</TableCell>
-                <TableCell className="text-right">
+                <TableCell className="px-2 text-sm text-muted-foreground">{new Date(ticket.createdAt!).toLocaleDateString()}</TableCell>
+                <TableCell className="pl-2 pr-6 text-right">
                   {ticket.status !== 'closed' && (
                     <Button
                       variant="outline"
