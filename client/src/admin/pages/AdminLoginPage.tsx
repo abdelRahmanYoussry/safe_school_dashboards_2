@@ -77,9 +77,11 @@ export default function AdminLoginPage() {
     });
 
     useEffect(() => {
-        if (isAuthLoading || user || loginMutation.isPending) return;
+        if (isAuthLoading || loginMutation.isPending) return;
+        // Only auto-login if there's no school-admin session already active
+        if (user && user.role?.toLowerCase() === 'school_admin') return;
         
-        const saved = localStorage.getItem("safe_school_remember_me");
+        const saved = localStorage.getItem("safe_school_remember_me_admin");
         if (saved) {
             try {
                 const { email, password, timestamp } = JSON.parse(saved);
@@ -90,7 +92,7 @@ export default function AdminLoginPage() {
                     form.setValue("password", password);
                     loginMutation.mutate({ email, password });
                 } else {
-                    localStorage.removeItem("safe_school_remember_me");
+                    localStorage.removeItem("safe_school_remember_me_admin");
                 }
             } catch (e) {
                 // ignore
@@ -98,8 +100,9 @@ export default function AdminLoginPage() {
         }
     }, [isAuthLoading, user, loginMutation.isPending]);
 
-    if (user) {
-        return <Redirect to={user.role?.toLowerCase() === 'school_admin' ? "/admin" : "/"} />;
+    // Only redirect school admins — a super_admin in the admin session is a mis-login
+    if (user && user.role?.toLowerCase() === 'school_admin') {
+        return <Redirect to="/admin" />;
     }
 
     return (
@@ -174,13 +177,13 @@ export default function AdminLoginPage() {
                                     loginMutation.mutate(data, {
                                         onSuccess: () => {
                                             if (rememberMe) {
-                                                localStorage.setItem("safe_school_remember_me", JSON.stringify({
+                                                localStorage.setItem("safe_school_remember_me_admin", JSON.stringify({
                                                     email: data.email,
                                                     password: data.password,
                                                     timestamp: new Date().getTime()
                                                 }));
                                             } else {
-                                                localStorage.removeItem("safe_school_remember_me");
+                                                localStorage.removeItem("safe_school_remember_me_admin");
                                             }
                                         }
                                     })

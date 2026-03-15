@@ -3,7 +3,9 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     if (res.status === 401) {
-      window.location.href = '/login';
+      // Redirect to the appropriate login page based on the current route
+      const isAdminRoute = window.location.pathname.startsWith('/admin');
+      window.location.href = isAdminRoute ? '/admin/login' : '/login';
     }
     const text = (await res.text()) || res.statusText;
     throw new Error(`${res.status}: ${text}`);
