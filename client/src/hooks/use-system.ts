@@ -57,7 +57,9 @@ export function useAuditLogs(params?: { page?: number, limit?: number, userId?: 
 
       const res = await scopedFetch(url.toString());
       if (!res.ok) throw new Error("Failed to fetch audit logs");
-      return api.auditLogs.list.responses[200].parse(await res.json());
+      const data = api.auditLogs.list.responses[200].parse(await res.json());
+      // Return the paginated response with items, metadata, etc.
+      return data;
     },
   });
 }

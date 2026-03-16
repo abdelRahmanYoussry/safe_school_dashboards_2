@@ -13,7 +13,7 @@ export default function AuditLogs() {
   const [actionFilter, setActionFilter] = useState("");
   const [userIdFilter, setUserIdFilter] = useState("");
 
-  const { data: logs, isLoading } = useAuditLogs({
+  const { data: auditData, isLoading } = useAuditLogs({
     page,
     limit,
     action: actionFilter || undefined,
@@ -21,6 +21,10 @@ export default function AuditLogs() {
   });
 
   const { t } = useTranslation();
+  
+  const logs = auditData?.items || [];
+  const totalPages = auditData?.totalPages || 0;
+  const totalRecords = auditData?.total || 0;
 
   return (
     <PageTransition className="space-y-6">
@@ -66,17 +70,19 @@ export default function AuditLogs() {
                   <TableCell className="pl-2 pr-6"><Skeleton className="h-4 w-16 bg-black/[0.04]" /></TableCell>
                 </TableRow>
               ))
-            ) : logs?.map((log) => (
-              <TableRow key={log.id} className="border-b border-black/[0.05] font-mono text-sm">
-                <TableCell className="pl-6 pr-2 text-muted-foreground">{new Date(log.createdAt!).toLocaleString()}</TableCell>
-                <TableCell className="px-2 text-primary">{log.action}</TableCell>
-                <TableCell className="px-2">{log.userId || t('System')}</TableCell>
-                <TableCell className="pl-2 pr-6">{log.schoolId || '-'}</TableCell>
-              </TableRow>
-            ))}
+            ) : logs?.length > 0 ? (
+              logs.map((log) => (
+                <TableRow key={log.id} className="border-b border-black/[0.05] font-mono text-sm">
+                  <TableCell className="pl-6 pr-2 text-muted-foreground">{new Date(log.createdAt!).toLocaleString()}</TableCell>
+                  <TableCell className="px-2 text-primary">{log.action}</TableCell>
+                  <TableCell className="px-2">{log.userId || t('System')}</TableCell>
+                  <TableCell className="pl-2 pr-6">{log.schoolId || '-'}</TableCell>
+                </TableRow>
+              ))
+            ) : null}
           </TableBody>
         </Table>
-        {logs?.length === 0 && (
+        {!isLoading && logs?.length === 0 && (
           <div className="p-8 text-center text-muted-foreground">
             {t("No audit logs found.")}
           </div>
@@ -85,7 +91,7 @@ export default function AuditLogs() {
 
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
-          {t("Showing page")} {page}
+          {t("Showing page")} <span className="font-semibold text-foreground">{page}</span> {t("of")} <span className="font-semibold text-foreground">{totalPages}</span> ({totalRecords} {t("total records")})
         </div>
         <div className="flex gap-2">
           <Button
@@ -101,7 +107,7 @@ export default function AuditLogs() {
             variant="outline"
             size="sm"
             onClick={() => setPage(p => p + 1)}
-            disabled={!logs || logs.length < limit || isLoading}
+            disabled={page >= totalPages || isLoading}
             className="border-black/10"
           >
             {t("Next")}

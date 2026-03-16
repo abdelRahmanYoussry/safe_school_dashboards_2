@@ -191,7 +191,15 @@ export const api = {
     list: {
       method: 'GET' as const,
       path: '/api/audit-logs' as const,
-      responses: { 200: z.array(z.custom<typeof auditLogs.$inferSelect>()) }
+      responses: { 
+        200: z.object({
+          items: z.array(z.custom<typeof auditLogs.$inferSelect>()),
+          total: z.number(),
+          page: z.number(),
+          limit: z.number(),
+          totalPages: z.number()
+        })
+      }
     }
   },
   admin: {
