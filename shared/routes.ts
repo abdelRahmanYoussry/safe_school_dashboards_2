@@ -21,7 +21,12 @@ export const api = {
           totalParents: z.number(),
           totalStaff: z.number(),
           safetyIncidents: z.number(),
-          systemHealth: z.number()
+          systemHealth: z.number(),
+          schools: z.object({ total: z.number(), active: z.number(), inactive: z.number() }),
+          users: z.object({ total: z.number(), active: z.number(), inactive: z.number() }),
+          students: z.object({ total: z.number(), active: z.number(), inactive: z.number() }),
+          parents: z.object({ total: z.number(), active: z.number(), inactive: z.number() }),
+          staff: z.object({ total: z.number(), active: z.number(), inactive: z.number() })
         })
       }
     },

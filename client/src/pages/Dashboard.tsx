@@ -2,9 +2,10 @@ import { PageTransition } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/ui/StatCard";
 import { useDashboardStats, useAnalytics } from "@/hooks/use-dashboard";
 import {
-  School, Users, Activity, ShieldAlert, HeartPulse,
-  UserCircle
+  Building2, Users, Navigation, ShieldAlert, HeartPulse,
+  GraduationCap, Briefcase, Car
 } from "lucide-react";
+import { useLocation } from "wouter";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar
@@ -16,6 +17,7 @@ export default function Dashboard() {
   const { data: stats, isLoading: statsLoading } = useDashboardStats();
   const { data: analytics, isLoading: analyticsLoading } = useAnalytics();
   const { t } = useTranslation();
+  const [, setLocation] = useLocation();
 
   return (
     <PageTransition className="space-y-8">
@@ -30,13 +32,72 @@ export default function Dashboard() {
           Array(8).fill(0).map((_, i) => <Skeleton key={i} className="h-32 rounded-2xl bg-black/[0.04]" />)
         ) : stats ? (
           <>
-            <StatCard delay={0.1} title={t("Total Schools")} value={stats.totalSchools} icon={School} />
-            <StatCard delay={0.15} title={t("Total Users")} value={stats.totalUsers.toLocaleString()} icon={Users} />
-            <StatCard delay={0.2} title={t("Active Pickups")} value={stats.activePickups} icon={Activity} />
-            <StatCard delay={0.25} title={t("System Health")} value={`${stats.systemHealth}%`} icon={HeartPulse} />
-            <StatCard delay={0.3} title={t("Total Students")} value={stats.totalStudents.toLocaleString()} icon={UserCircle} />
-            <StatCard delay={0.35} title={t("Total Parents")} value={stats.totalParents.toLocaleString()} icon={Users} />
-            <StatCard delay={0.4} title={t("Safety Incidents")} value={stats.safetyIncidents} icon={ShieldAlert} />
+            <StatCard 
+              delay={0.1} 
+              title={t("Total Schools")} 
+              value={stats.schools.total} 
+              activeValue={stats.schools.active}
+              inactiveValue={stats.schools.inactive}
+              icon={Building2} 
+              onClick={() => setLocation("/schools")}
+            />
+            <StatCard 
+              delay={0.15} 
+              title={t("Total Users")} 
+              value={stats.users.total.toLocaleString()} 
+              activeValue={stats.users.active}
+              inactiveValue={stats.users.inactive}
+              icon={Users} 
+              onClick={() => setLocation("/users")}
+            />
+            <StatCard 
+              delay={0.2} 
+              title={t("Active Pickups")} 
+              value={stats.activePickups} 
+              icon={Car} 
+              onClick={() => setLocation("/map")}
+            />
+            <StatCard 
+              delay={0.25} 
+              title={t("System Health")} 
+              value={`${stats.systemHealth}%`} 
+              icon={HeartPulse} 
+              onClick={() => setLocation("/analytics")}
+            />
+            <StatCard 
+              delay={0.3} 
+              title={t("Total Students")} 
+              value={stats.students.total.toLocaleString()} 
+              activeValue={stats.students.active}
+              inactiveValue={stats.students.inactive}
+              icon={GraduationCap} 
+              onClick={() => setLocation("/students")}
+            />
+            <StatCard 
+              delay={0.35} 
+              title={t("Total Parents")} 
+              value={stats.parents.total.toLocaleString()} 
+              activeValue={stats.parents.active}
+              inactiveValue={stats.parents.inactive}
+              icon={Users} 
+              onClick={() => setLocation("/parents")}
+            />
+            <StatCard 
+              delay={0.4} 
+              title={t("Total Staff")} 
+              value={stats.staff.total.toLocaleString()} 
+              activeValue={stats.staff.active}
+              inactiveValue={stats.staff.inactive}
+              icon={Briefcase} 
+              onClick={() => setLocation("/staff")}
+            />
+            <StatCard 
+              delay={0.45} 
+              title={t("Safety Incidents")} 
+              value={stats.safetyIncidents} 
+              icon={ShieldAlert} 
+              onClick={() => setLocation("/safety-reports")}
+            />
           </>
         ) : null}
       </div>
