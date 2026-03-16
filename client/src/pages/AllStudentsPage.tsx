@@ -21,8 +21,8 @@ export default function StudentsPage() {
   });
 
   const students: any[] = (data?.data || []) as any[];
-  const total: number = data?.total || 0;
-  const totalPages: number = data?.totalPages || Math.max(1, Math.ceil(total / limit));
+  const total: number = data?.meta?.total || 0;
+  const totalPages: number = data?.meta?.totalPages || Math.max(1, Math.ceil(total / limit));
   console.log('[AllStudentsPage] data:', { total, page, limit, totalPages, studentsLength: students.length });
 
   const handleSearch = () => {

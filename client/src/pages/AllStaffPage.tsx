@@ -34,8 +34,8 @@ export default function StaffPage() {
   });
 
   const staff: any[] = (data?.data || []) as any[];
-  const total: number = data?.total || 0;
-  const totalPages: number = data?.totalPages || Math.max(1, Math.ceil(total / limit));
+  const total: number = data?.meta?.total || 0;
+  const totalPages: number = data?.meta?.totalPages || Math.max(1, Math.ceil(total / limit));
   console.log('[AllStaffPage] data:', { total, page, limit, totalPages, staffLength: staff.length });
 
   const handleSearch = () => {
