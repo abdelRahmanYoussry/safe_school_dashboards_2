@@ -1,11 +1,25 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import { authSessionManager } from "./authSessionManager";
+
+// Event-based 401 handling for modal display
+const SESSION_EXPIRED_EVENT = "session-expired";
+
+export function dispatchSessionExpired() {
+  window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
+}
+
+export function onSessionExpired(callback: () => void) {
+  window.addEventListener(SESSION_EXPIRED_EVENT, callback);
+  return () => window.removeEventListener(SESSION_EXPIRED_EVENT, callback);
+}
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     if (res.status === 401) {
-      // Redirect to the appropriate login page based on the current route
-      const isAdminRoute = window.location.pathname.startsWith('/admin');
-      window.location.href = isAdminRoute ? '/admin/login' : '/login';
+      // Emit event instead of redirecting - let the modal handle it
+      dispatchSessionExpired();
+      const text = (await res.text()) || res.statusText;
+      throw new Error("session_expired");
     }
     const text = (await res.text()) || res.statusText;
     throw new Error(`${res.status}: ${text}`);
@@ -20,6 +34,12 @@ export async function scopedFetch(
   
   const headers = new Headers(init?.headers);
   headers.set("X-Session-Scope", scope);
+
+  // Add authorization token if available
+  const tokens = authSessionManager.getTokens();
+  if (tokens?.accessToken) {
+    headers.set("Authorization", `Bearer ${tokens.accessToken}`);
+  }
   
   return fetch(url, {
     ...init,

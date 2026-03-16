@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import {
     useQuery,
     useMutation,
@@ -6,13 +6,15 @@ import {
     UseMutationResult,
 } from "@tanstack/react-query";
 import { insertUserSchema, User as SelectUser, InsertUser } from "@shared/schema";
-import { queryClient, scopedFetch } from "../lib/queryClient";
+import { queryClient, scopedFetch, onSessionExpired } from "../lib/queryClient";
 import { useToast } from "./use-toast";
+import { authSessionManager } from "../lib/authSessionManager";
 
 type AuthContextType = {
     user: SelectUser | null;
     isLoading: boolean;
     error: Error | null;
+    isSessionExpired: boolean;
     loginMutation: UseMutationResult<SelectUser, Error, LoginData>;
     logoutMutation: UseMutationResult<void, Error, void>;
     registerMutation: UseMutationResult<SelectUser, Error, InsertUser>;
@@ -24,6 +26,20 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const { toast } = useToast();
+    const [isSessionExpired, setIsSessionExpired] = useState(false);
+
+    // Initialize auth session manager on mount
+    useEffect(() => {
+        authSessionManager.init();
+
+        // Subscribe to session expiry events
+        const unsubscribe = onSessionExpired(() => {
+            setIsSessionExpired(true);
+            authSessionManager.clearTokens();
+        });
+
+        return unsubscribe;
+    }, []);
 
     const {
         data: user,
@@ -51,9 +67,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const error = await response.json();
                 throw new Error(error.message || "Login failed");
             }
-            return response.json();
+            const data = await response.json();
+            
+            // Store tokens for auto-refresh
+            if (data.data?.access_token && data.data?.refresh_token) {
+                authSessionManager.setTokens({
+                    accessToken: data.data.access_token,
+                    refreshToken: data.data.refresh_token,
+                    expiresAt: Date.now() + 15 * 60 * 1000, // 15 minutes from now
+                });
+            }
+            
+            return data.data || data;
         },
         onSuccess: (user) => {
+            setIsSessionExpired(false);
             queryClient.setQueryData(["/api/user"], user);
             toast({
                 title: "Welcome back!",
@@ -77,7 +105,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         onSuccess: () => {
             localStorage.removeItem("safe_school_remember_me_super");
             localStorage.removeItem("safe_school_remember_me_admin");
+            authSessionManager.clearTokens();
             queryClient.setQueryData(["/api/user"], null);
+            setIsSessionExpired(false);
             toast({
                 title: "Logged out",
                 description: "See you next time!",
@@ -109,6 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 user: user ?? null,
                 isLoading,
                 error,
+                isSessionExpired,
                 loginMutation,
                 logoutMutation,
                 registerMutation,

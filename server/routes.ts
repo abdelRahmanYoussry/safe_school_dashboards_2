@@ -534,5 +534,36 @@ export async function registerRoutes(
     }
   });
 
+  // Super Admin — Global Listings
+  app.get(api.super.users.path, async (req, res) => {
+    try {
+      const backendRes = await proxyToBackend(req, "GET", "/safeschool/dashboard/admin/users");
+      const data = await backendRes.json() as any;
+      res.status(backendRes.status).json(data.data !== undefined ? data : data);
+    } catch (err: any) {
+      res.status(500).json({ message: "BFF_PROXY_ERROR: " + err.message });
+    }
+  });
+
+  app.get(api.super.students.path, async (req, res) => {
+    try {
+      const backendRes = await proxyToBackend(req, "GET", "/safeschool/dashboard/admin/students");
+      const data = await backendRes.json() as any;
+      res.status(backendRes.status).json(data);
+    } catch (err: any) {
+      res.status(500).json({ message: "BFF_PROXY_ERROR: " + err.message });
+    }
+  });
+
+  app.get(api.super.staff.path, async (req, res) => {
+    try {
+      const backendRes = await proxyToBackend(req, "GET", "/safeschool/dashboard/admin/staff");
+      const data = await backendRes.json() as any;
+      res.status(backendRes.status).json(data);
+    } catch (err: any) {
+      res.status(500).json({ message: "BFF_PROXY_ERROR: " + err.message });
+    }
+  });
+
   return httpServer;
 }

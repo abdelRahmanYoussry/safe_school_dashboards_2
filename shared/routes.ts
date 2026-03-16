@@ -245,6 +245,23 @@ export const api = {
       path: '/api/admin/pickup/active' as const,
       responses: { 200: z.any() }
     }
+  },
+  super: {
+    users: {
+      method: 'GET' as const,
+      path: '/api/super/users' as const,
+      responses: { 200: z.any() }
+    },
+    students: {
+      method: 'GET' as const,
+      path: '/api/super/students' as const,
+      responses: { 200: z.any() }
+    },
+    staff: {
+      method: 'GET' as const,
+      path: '/api/super/staff' as const,
+      responses: { 200: z.any() }
+    }
   }
 };
 

@@ -3,10 +3,11 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SessionExpiredModal } from "@/components/SessionExpiredModal";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 // Pages
@@ -23,7 +24,9 @@ import NotFound from "@/pages/not-found";
 import LoginPage from "./pages/LoginPage";
 import AdminLoginPage from "./admin/pages/AdminLoginPage";
 import SuperAdminSettingsPage from "./pages/SettingsPage";
-
+import UsersPage from "./pages/UsersPage";
+import AllStudentsPage from "./pages/AllStudentsPage";
+import AllStaffPage from "./pages/AllStaffPage";
 
 import { AdminLayout } from "./admin/components/AdminLayout";
 import AdminDashboard from "./admin/pages/AdminDashboard";
@@ -112,10 +115,18 @@ function AdminProtectedRoute({ component: Component, path }: { component: React.
   }
 
 function Router() {
-  const { user } = useAuth();
+  const { user, isSessionExpired } = useAuth();
+  const [showSessionModal, setShowSessionModal] = useState(false);
+
+  useEffect(() => {
+    if (isSessionExpired) {
+      setShowSessionModal(true);
+    }
+  }, [isSessionExpired]);
 
   return (
-    <Switch>
+    <>
+      <Switch>
       <Route path="/login" component={LoginPage} />
       <Route path="/admin/login" component={AdminLoginPage} />
       
@@ -130,6 +141,9 @@ function Router() {
       <ProtectedRoute path="/audit-logs" component={AuditLogs} />
       <ProtectedRoute path="/map" component={MapView} />
       <ProtectedRoute path="/settings" component={SuperAdminSettingsPage} />
+      <ProtectedRoute path="/users" component={UsersPage} />
+      <ProtectedRoute path="/students" component={AllStudentsPage} />
+      <ProtectedRoute path="/staff" component={AllStaffPage} />
 
       {/* School Admin Routes */}
       <AdminProtectedRoute path="/admin" component={AdminDashboard} />
@@ -142,6 +156,8 @@ function Router() {
 
       <Route component={NotFound} />
     </Switch>
+    <SessionExpiredModal isOpen={showSessionModal} onClose={() => setShowSessionModal(false)} />
+    </>
   );
 }
 
