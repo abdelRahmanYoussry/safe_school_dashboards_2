@@ -8,17 +8,34 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, MoreHorizontal, Eye, Edit2, Trash2 } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Plus, MoreHorizontal, Eye, Edit2, Trash2, Search, Filter, SortAsc, SortDesc, SlidersHorizontal, ArrowUpDown } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Schools() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const { data: schools, isLoading } = useSchools(page, limit);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [planFilter, setPlanFilter] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<string>("createdAt");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+
+  const { data: schoolsData, isLoading } = useSchools(page, limit, {
+    search: search || undefined,
+    isActive: statusFilter === "active" ? true : statusFilter === "inactive" ? false : undefined,
+    planId: planFilter === "all" ? undefined : planFilter,
+    sortBy,
+    sortOrder
+  });
+
+  const schools = schoolsData?.items;
+  const totalPages = schoolsData?.totalPages || 1;
+  const totalItems = schoolsData?.total || 0;
   const { data: plans } = usePlans();
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -346,12 +363,107 @@ export default function Schools() {
         </Dialog>
       </div>
 
+      <div className="flex flex-col md:flex-row gap-4 mb-6 items-center">
+        <div className="relative flex-1 group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+          <Input 
+            placeholder={t("Search schools by name, email or phone...")} 
+            className="pl-11 h-12 bg-white border-black/[0.08] rounded-2xl focus:ring-primary/20 transition-all border-black/[0.1] shadow-sm"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        
+        <div className="flex gap-2 w-full md:w-auto">
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-[140px] h-12 bg-white border-black/[0.08] rounded-2xl shadow-sm">
+              <Filter className="w-4 h-4 mr-2" />
+              <SelectValue placeholder={t("Status")} />
+            </SelectTrigger>
+            <SelectContent className="glass-panel border-black/[0.06] rounded-2xl">
+              <SelectItem value="all">{t("All Status")}</SelectItem>
+              <SelectItem value="active">{t("Active")}</SelectItem>
+              <SelectItem value="inactive">{t("Inactive")}</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={planFilter} onValueChange={setPlanFilter}>
+            <SelectTrigger className="w-[180px] h-12 bg-white border-black/[0.08] rounded-2xl shadow-sm">
+              <SlidersHorizontal className="w-4 h-4 mr-2" />
+              <SelectValue placeholder={t("Plan")} />
+            </SelectTrigger>
+            <SelectContent className="glass-panel border-black/[0.06] rounded-2xl">
+              <SelectItem value="all">{t("All Plans")}</SelectItem>
+              {plans?.map(plan => (
+                <SelectItem key={plan.id} value={plan.id}>{plan.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="h-12 border-black/[0.08] rounded-2xl bg-white shadow-sm px-4">
+                {sortOrder === "asc" ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
+                <span className="ml-2 hidden sm:inline">{t("Sort")}</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="glass-panel border-black/[0.06] rounded-2xl w-48">
+              <DropdownMenuLabel>{t("Sort By")}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem 
+                checked={sortBy === "createdAt"} 
+                onClick={() => setSortBy("createdAt")}
+              >
+                {t("Creation Date")}
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem 
+                checked={sortBy === "name"} 
+                onClick={() => setSortBy("name")}
+              >
+                {t("School Name")}
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem 
+                checked={sortBy === "updatedAt"} 
+                onClick={() => setSortBy("updatedAt")}
+              >
+                {t("Last Updated")}
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem 
+                checked={sortOrder === "asc"} 
+                onClick={() => setSortOrder("asc")}
+              >
+                {t("Ascending")}
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem 
+                checked={sortOrder === "desc"} 
+                onClick={() => setSortOrder("desc")}
+              >
+                {t("Descending")}
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+
       <div className="bg-white rounded-3xl overflow-hidden border border-black/[0.07] shadow-sm">
         <Table>
           <TableHeader className="bg-black/[0.03] border-b border-black/[0.07]">
             <TableRow className="hover:bg-transparent h-12 text-muted-foreground/60 uppercase text-[10px] font-black tracking-widest">
               <TableHead className="pl-6 pr-2 w-12">#</TableHead>
-              <TableHead className="px-2">{t("School")}</TableHead>
+              <TableHead className="px-2">
+                <button 
+                  className="flex items-center hover:text-foreground transition-colors"
+                  onClick={() => {
+                    if (sortBy === "name") setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                    else { setSortBy("name"); setSortOrder("asc"); }
+                  }}
+                >
+                  {t("School")}
+                  {sortBy === "name" && (sortOrder === "asc" ? <SortAsc className="w-3 h-3 ml-1" /> : <SortDesc className="w-3 h-3 ml-1" />)}
+                  {sortBy !== "name" && <ArrowUpDown className="w-3 h-3 ml-1 opacity-20" />}
+                </button>
+              </TableHead>
               <TableHead className="px-2">{t("Location")}</TableHead>
               <TableHead className="px-2">{t("Admin Email")}</TableHead>
               <TableHead className="px-2">{t("Plan")}</TableHead>
@@ -472,7 +584,7 @@ export default function Schools() {
 
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
-          {t("Showing page")} {page}
+          {t("Showing page")} {page} {t("of")} {totalPages} ({totalItems} {t("schools")})
         </div>
         <div className="flex gap-2">
           <Button
@@ -480,7 +592,7 @@ export default function Schools() {
             size="sm"
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1 || isLoading}
-            className="border-black/10"
+            className="border-black/10 rounded-xl"
           >
             {t("Previous")}
           </Button>
@@ -488,8 +600,8 @@ export default function Schools() {
             variant="outline"
             size="sm"
             onClick={() => setPage(p => p + 1)}
-            disabled={!schools || schools.length < limit || isLoading}
-            className="border-white/10"
+            disabled={page >= totalPages || isLoading}
+            className="border-white/10 rounded-xl"
           >
             {t("Next")}
           </Button>

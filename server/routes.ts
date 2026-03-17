@@ -14,33 +14,67 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 async function proxyToBackend(req: any, method: string, path: string, body?: any) {
   const sessionData = req.session as any;
-  const token = sessionData?.accessToken;
 
-  const headers: Record<string, string> = {
-    Accept: "application/json",
+  const makeRequest = async (token: string | undefined) => {
+    const headers: Record<string, string> = {
+      Accept: "application/json",
+    };
+
+    if (method !== "GET" && method !== "HEAD" && body !== undefined) {
+      headers["Content-Type"] = "application/json";
+    }
+
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+
+    // Pass through cache headers from client to backend
+    if (req.headers["if-none-match"]) {
+      headers["If-None-Match"] = req.headers["if-none-match"];
+    }
+    if (req.headers["if-modified-since"]) {
+      headers["If-Modified-Since"] = req.headers["if-modified-since"];
+    }
+
+    const query = new URLSearchParams(req.query).toString();
+    const url = `${BACKEND_URL}${path}${query ? `?${query}` : ""}`;
+
+    return fetch(url, {
+      method,
+      headers,
+      body: (method !== "GET" && method !== "HEAD" && body !== undefined) ? JSON.stringify(body) : undefined,
+    });
   };
 
-  if (token) headers["Authorization"] = `Bearer ${token}`;
+  let backendRes = await makeRequest(sessionData?.accessToken);
 
-  // Pass through cache headers from client to backend
-  if (req.headers["if-none-match"]) {
-    headers["If-None-Match"] = req.headers["if-none-match"];
+  // On 401, attempt a token refresh and retry the request once
+  if (backendRes.status === 401 && sessionData?.refreshToken) {
+    try {
+      const refreshRes = await fetch(`${BACKEND_URL}/safeschool/auth/refresh`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ refreshToken: sessionData.refreshToken }),
+      });
+
+      if (refreshRes.ok) {
+        const data = await refreshRes.json() as any;
+        const newAccessToken = data.data?.access_token || data.access_token;
+        const newRefreshToken = data.data?.refresh_token || data.refresh_token;
+
+        if (newAccessToken) {
+          sessionData.accessToken = newAccessToken;
+          if (newRefreshToken) sessionData.refreshToken = newRefreshToken;
+          console.log("[auth] Token refreshed successfully, retrying request:", path);
+          backendRes = await makeRequest(newAccessToken);
+        }
+      } else {
+        console.warn("[auth] Token refresh failed with status:", refreshRes.status);
+      }
+    } catch (err: any) {
+      console.warn("[auth] Token refresh error:", err.message);
+    }
   }
-  if (req.headers["if-modified-since"]) {
-    headers["If-Modified-Since"] = req.headers["if-modified-since"];
-  }
 
-  // Append query parameters if they exist
-  const query = new URLSearchParams(req.query).toString();
-  const url = `${BACKEND_URL}${path}${query ? `?${query}` : ""}`;
-
-  const fetchOptions: RequestInit = {
-    method,
-    headers,
-    body: (method !== "GET" && method !== "HEAD" && body !== undefined) ? JSON.stringify(body) : undefined
-  };
-
-  return fetch(url, fetchOptions);
+  return backendRes;
 }
 
 /**
@@ -199,10 +233,52 @@ export async function registerRoutes(
       if (backendRes.status === 304) return res.status(304).end();
 
       const data = await backendRes.json() as any;
+      console.log("[schools] Backend response type:", typeof data, "isArray:", Array.isArray(data), "hasData:", !!data?.data, "hasMeta:", !!data?.meta);
       if (!backendRes.ok) {
         return res.status(backendRes.status).json(data);
       }
-      res.json(data.data || []);
+
+      // Backend returns either:
+      // 1. Wrapped: { data: items[], meta: { total, page, limit, totalPages } }
+      // 2. Just array: [{ ... }, { ... }]
+      
+      let items: any[] = [];
+      let total: number = 0;
+      let page: number = parseInt(req.query.page as string) || 1;
+      let limit: number = parseInt(req.query.limit as string) || 10;
+      
+      if (Array.isArray(data)) {
+        // Raw array response - use it directly
+        console.log("[schools] Processing raw array with", data.length, "items");
+        items = data;
+        total = items.length;
+      } else if (data.data && Array.isArray(data.data)) {
+        // Wrapped response with metadata
+        console.log("[schools] Processing wrapped response with", data.data.length, "items");
+        items = data.data;
+        const meta = data.meta || {};
+        total = meta.total ?? items.length;
+        page = meta.page ?? page;
+        limit = meta.limit ?? limit;
+      } else if (data.items) {
+        // Already in expected format
+        console.log("[schools] Processing already-formatted response with", data.items.length, "items");
+        items = data.items;
+        total = data.total ?? items.length;
+        page = data.page ?? page;
+        limit = data.limit ?? limit;
+      }
+
+      const totalPages = limit > 0 ? Math.ceil(total / limit) : 1;
+
+      console.log("[schools] Sending to frontend:", { items: items.length, total, page, limit, totalPages });
+      res.json({
+        items,
+        total,
+        page,
+        limit,
+        totalPages,
+      });
     } catch (err: any) {
       console.warn("[schools] GET list proxy error:", err.message);
       res.status(500).json({ message: "Failed to reach backend" });

@@ -62,7 +62,15 @@ export const api = {
     list: {
       method: 'GET' as const,
       path: '/api/schools' as const,
-      responses: { 200: z.array(z.custom<typeof schools.$inferSelect & { plan?: string, planName?: string, planId?: string, adminName?: string, adminEmail?: string, adminPhone?: string }>()) }
+      responses: { 
+        200: z.object({
+          items: z.array(z.custom<typeof schools.$inferSelect & { plan?: string, planName?: string, planId?: string, adminName?: string, adminEmail?: string, adminPhone?: string }>()),
+          total: z.number(),
+          page: z.number(),
+          limit: z.number(),
+          totalPages: z.number()
+        })
+      }
     },
     get: {
       method: 'GET' as const,

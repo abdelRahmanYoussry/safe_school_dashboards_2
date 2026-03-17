@@ -3,17 +3,21 @@ import { api, buildUrl } from "@shared/routes";
 import { z } from "zod";
 import { scopedFetch } from "@/lib/queryClient";
 
-export function useSchools(page: number = 1, limit: number = 10) {
+export function useSchools(page: number = 1, limit: number = 10, filters?: { search?: string, isActive?: boolean, planId?: string, sortBy?: string, sortOrder?: 'asc' | 'desc' }) {
   return useQuery({
-    queryKey: [api.schools.list.path, page, limit],
+    queryKey: [api.schools.list.path, page, limit, filters],
     queryFn: async () => {
       const url = new URL(api.schools.list.path, window.location.origin);
       url.searchParams.append("page", page.toString());
       url.searchParams.append("limit", limit.toString());
+      if (filters?.search) url.searchParams.append("search", filters.search);
+      if (filters?.isActive !== undefined) url.searchParams.append("isActive", filters.isActive.toString());
+      if (filters?.planId) url.searchParams.append("planId", filters.planId);
+      if (filters?.sortBy) url.searchParams.append("sortBy", filters.sortBy);
+      if (filters?.sortOrder) url.searchParams.append("sortOrder", filters.sortOrder);
+      
       const res = await scopedFetch(url.toString());
       if (!res.ok) throw new Error("Failed to fetch schools");
-      // The current schema expects an array, but standard pagination returns { data, meta }. 
-      // We parse what the backend actually returns according to the schema (currently z.array).
       return api.schools.list.responses[200].parse(await res.json());
     },
   });
